@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Dashboard (Gradient Style) - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Header switcher dropdown styles (No background/border container as requested) */
+        .device-dropdown-container {
+            position: relative;
+            z-index: 100;
+        }
+
+        .device-dropdown-trigger {
+            background: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .device-dropdown-trigger:hover {
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.09);
+            transform: translateY(-1px);
+        }
+
+        .device-settings-btn {
+            background: transparent;
+            transition: all 0.2s ease;
+            border-radius: 50%;
+        }
+
+        .device-settings-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a !important;
+        }
+
+        .profile-avatar-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .profile-avatar-btn:hover {
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.09);
+            transform: translateY(-1px);
+        }
+
+        /* Rotated small device shape icon - NO BACKGROUND OR BORDER BOX */
+        .device-icon-small-wrapper {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            flex-shrink: 0;
+            background: transparent;
+            /* No background frame as requested */
+            border: none;
+            /* No border box as requested */
+        }
+
+        .device-icon-small {
+            width: 22px;
+            height: 14px;
+            /* Landscape ratio */
+            transform: rotate(90deg);
+            /* Rotated 90 degrees as requested */
+            transform-origin: center;
+            object-fit: contain;
+        }
+
+        /* Dropdown Menu Panel */
+        .device-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 0;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 1.15rem;
+            width: 250px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 8px;
+            opacity: 0;
+            transform: translateY(-8px) scale(0.96);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: top left;
+            z-index: 1000;
+        }
+
+        .device-dropdown-menu.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .device-dropdown-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 12px;
+        }
+
+        .device-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .device-dropdown-item:hover {
+            background: var(--muted);
+        }
+
+        .device-dropdown-item.active {
+            background: rgba(9, 9, 11, 0.06);
+        }
+
+        .device-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .device-name {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--foreground);
+        }
+
+        .device-meta {
+            font-size: 0.72rem;
+            color: var(--muted-foreground);
+        }
+
+        .device-dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 0;
+        }
+
+        /* Dropdown Add Button */
+        .device-dropdown-add {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 0.75rem;
+            background: transparent;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+        }
+
+        .device-dropdown-add:hover {
+            background: rgba(9, 9, 11, 0.05);
+            color: var(--foreground);
+        }
+
+        /* Mirror Live Bezel Screen Section */
+        .mirror-section {
+            margin-top: var(--space-1);
+            margin-bottom: var(--space-3);
+            background: #ffffff;
+            border: none !important;
+            border-radius: 1.35rem;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.01), 0 8px 20px -4px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mirror-section h3 {
+            color: var(--muted-foreground) !important;
+            transition: color 0.25s;
+        }
+
+        .mirror-bezel-container {
+            position: relative;
+            width: 100%;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .mirror-bezel {
+            width: 100%;
+            display: block;
+            height: auto;
+            pointer-events: none;
+        }
+
+        /* E-Ink mirrored screen overlay */
+        .mirror-screen-content {
+            position: absolute;
+            top: 6.4%;
+            left: 7.2%;
+            width: 80.6%;
+            height: 87.2%;
+            background-color: #f6f8fa;
+            /* Authentic off-white E-ink paper background */
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 12px 14px;
+            color: #0f172a;
+            box-sizing: border-box;
+            user-select: none;
+            background-image: radial-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 0), radial-gradient(rgba(0, 0, 0, 0.01) 1px, transparent 0);
+            background-size: 8px 8px;
+            background-position: 0 0, 4px 4px;
+        }
+
+        /* E-Ink Status Bar */
+        .eink-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1.5px solid #0f172a;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            font-family: monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .eink-icons {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* E-Ink Dashboard Layout */
+        .eink-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .eink-left {
+            border-right: 1.5px dashed #0f172a;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .eink-clock {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            line-height: 1;
+            margin-bottom: 4px;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .eink-date {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .eink-weather {
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: #e2e8f0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            width: fit-content;
+            border: 1px solid #94a3b8;
+        }
+
+        .eink-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .eink-section-title {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: #0f172a;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #0f172a;
+            padding-bottom: 2px;
+            width: fit-content;
+        }
+
+        .eink-todo-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .eink-todo-list li {
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .eink-todo-list input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            border: 1.5px solid #0f172a;
+            border-radius: 2px;
+            display: inline-block;
+            position: relative;
+            background: transparent;
+            cursor: default;
+        }
+
+        .eink-todo-list input[type="checkbox"]:checked {
+            background: #0f172a;
+        }
+
+        .eink-todo-list input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 3px;
+            width: 2px;
+            height: 4px;
+            border: solid #ffffff;
+            border-width: 0 1px 1px 0;
+            transform: rotate(45deg);
+            display: block;
+        }
+
+        /* Pulse Indicator */
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: inline-block;
+            position: relative;
+        }
+
+        .pulse-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 2px solid #22c55e;
+            animation: pulse-ring 1.8s infinite ease-out;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.6);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2.6);
+                opacity: 0;
+            }
+        }
+
+        /* Bottom Tab Bar (Clean 3-Tab Layout) */
+        .tab-bar {
+            border-top: 1px solid var(--border);
+            background: #ffffff;
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 999;
+            height: 64px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            color: var(--muted-foreground);
+            font-size: 0.68rem;
+            cursor: pointer;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            height: 100%;
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+        }
+
+        .ai-voice-btn {
+            position: fixed;
+            bottom: 24px;
+            /* 24px floating space from bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Premium dual-layered diffused shadow */
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            z-index: 9999;
+            outline: none;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .ai-voice-btn:hover {
+            background: #2d2d30;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.08);
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        .ai-voice-btn:active {
+            transform: translateX(-50%) translateY(1px) scale(0.95);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* App grid component styling (Redesigned as independent beautiful card-widgets) */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .widget-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 1.15rem;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            height: 112px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 6px;
+            transition: border-color 0.25s;
+        }
+
+        .widget-header-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .widget-app-icon {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+
+        .widget-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.25s;
+        }
+
+        /* Chevron Circle Badge style matching references */
+        .widget-chevron-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, background-color 0.25s, color 0.25s;
+            background-color: rgba(15, 23, 42, 0.05) !important;
+            color: var(--muted-foreground) !important;
+        }
+
+        .widget-card:hover .widget-chevron-circle {
+            transform: scale(1.1) translateX(1px);
+            background-color: rgba(15, 23, 42, 0.1) !important;
+        }
+
+        /* Gradient Color Variations for Cards (Associated with primary icon colors) */
+        
+        /* 1. Notes - Purple Icon (#AD6DED) -> Purple Gradient Card */
+        .widget-notes {
+            background: linear-gradient(to bottom, #F1EAFF 0%, #ffffff 50%) !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(173, 109, 237, 0.03), 0 8px 20px -4px rgba(173, 109, 237, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-notes:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(173, 109, 237, 0.06), 0 16px 32px -4px rgba(173, 109, 237, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* 2. Clock - Orange Icon (#FF8A33) -> Orange/Peach Gradient Card */
+        .widget-clock {
+            background: linear-gradient(to bottom, #FFEFE0 0%, #ffffff 50%) !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(255, 138, 51, 0.03), 0 8px 20px -4px rgba(255, 138, 51, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-clock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 138, 51, 0.06), 0 16px 32px -4px rgba(255, 138, 51, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* 3. Weather - Blue Icon (#097FE8) -> Blue Gradient Card */
+        .widget-weather {
+            background: linear-gradient(to bottom, #E6F2FF 0%, #ffffff 50%) !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(9, 127, 232, 0.03), 0 8px 20px -4px rgba(9, 127, 232, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-weather:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(9, 127, 232, 0.06), 0 16px 32px -4px rgba(9, 127, 232, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* 4. Reminder - Yellow Icon (#FEB010) -> Yellow/Gold Gradient Card */
+        .widget-reminder {
+            background: linear-gradient(to bottom, #FFF4D6 0%, #ffffff 50%) !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(254, 176, 16, 0.03), 0 8px 20px -4px rgba(254, 176, 16, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-reminder:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(254, 176, 16, 0.06), 0 16px 32px -4px rgba(254, 176, 16, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        /* Unified pill container styling within yellow gradient card */
+        .widget-reminder .note-pill {
+            background-color: rgba(15, 23, 42, 0.04) !important;
+            border: 1px solid rgba(15, 23, 42, 0.08) !important;
+            transition: all 0.25s;
+        }
+        .widget-reminder .note-pill.checked {
+            background-color: rgba(15, 23, 42, 0.02) !important;
+            opacity: 0.65;
+        }
+        .widget-reminder .note-pill.yellow .note-accent {
+            background-color: #EAB308 !important;
+        }
+        .widget-reminder .note-pill.blue .note-accent {
+            background-color: #3B82F6 !important;
+        }
+        .widget-reminder .note-check-circle {
+            border-color: var(--muted-foreground) !important;
+            color: var(--muted-foreground) !important;
+        }
+
+        /* 5. Photo - Teal Icon (#2A9D99) -> Teal Gradient Card */
+        .widget-photo {
+            background: linear-gradient(to bottom, #D5F5F0 0%, #ffffff 50%) !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(42, 157, 153, 0.03), 0 8px 20px -4px rgba(42, 157, 153, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-photo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(42, 157, 153, 0.06), 0 16px 32px -4px rgba(42, 157, 153, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-photo .photo-preview {
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+            border-radius: 8px !important;
+            transition: transform 0.25s;
+        }
+        .widget-photo:hover .photo-preview {
+            transform: scale(1.02);
+        }
+
+        /* 6. Coming Soon - Gray/Slate Icon -> Gray/Slate Gradient Card */
+        .widget-more {
+            background: linear-gradient(to bottom, #F1F5F9 0%, #ffffff 50%) !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-more:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02), 0 12px 24px -4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .widget-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* 1. Checklist styling */
+        .checklist {
+            justify-content: flex-start;
+            padding-top: 2px;
+            gap: 5px !important;
+        }
+        
+        .note-check-circle.checked {
+            opacity: 0.8;
+            position: relative;
+        }
+        .note-check-circle.checked::after {
+            content: '';
+            position: absolute;
+            left: 4.5px;
+            top: 1.5px;
+            width: 4px;
+            height: 7px;
+            border: solid currentColor;
+            border-width: 0 1.8px 1.8px 0;
+            transform: rotate(45deg);
+        }
+        .note-pill.checked .note-text {
+            text-decoration: line-through;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--foreground);
+            font-weight: 600;
+            font-size: 0.72rem;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .checklist-item.checked {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .checkbox-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1.5px solid var(--foreground);
+            flex-shrink: 0;
+        }
+
+        .checkbox-dot.checked {
+            background-color: var(--foreground);
+        }
+
+        .widget-card.span-2 {
+            grid-column: span 2;
+            min-height: 120px;
+        }
+
+        .widget-subheader {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 4px;
+            opacity: 0.85;
+        }
+
+        /* 2. Weather styling */
+        .weather-preview-new {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            padding-top: 4px;
+        }
+        .weather-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 2px;
+        }
+        .weather-meta-info {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            display: flex;
+            gap: 8px;
+        }
+        .weather-large-temp {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--foreground);
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin-top: auto;
+            margin-bottom: -2px;
+        }
+
+        /* 3. Photo styling */
+        .photo-preview {
+            border-radius: 10px;
+            overflow: hidden;
+            height: 100%;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .photo-img-sim {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-sun {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fef08a;
+            box-shadow: 0 0 6px rgba(254, 240, 138, 0.6);
+        }
+
+        /* Beautiful mountain layers overlay */
+        .photo-img-sim::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 45px;
+            background: #0284c7;
+            clip-path: polygon(0 100%, 100% 100%, 100% 30%, 70% 60%, 45% 20%, 20% 55%, 0 35%);
+            opacity: 0.9;
+        }
+
+        .photo-img-sim::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: #0c4a6e;
+            clip-path: polygon(0 100%, 100% 100%, 100% 40%, 60% 15%, 35% 70%, 0 50%);
+        }
+
+        /* More Widget styling */
+        .widget-more {
+            border: 1px dashed var(--border) !important;
+            background: #fafafa !important;
+            box-shadow: none !important;
+            cursor: default !important;
+            pointer-events: none; /* Disable all clicks/interactions */
+            opacity: 0.85;
+        }
+
+        .more-preview {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            gap: 2px;
+        }
+
+        .more-plus-icon {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: var(--muted-foreground);
+            line-height: 1;
+        }
+
+        .more-text {
+            font-size: 0.62rem;
+            color: var(--muted-foreground);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* 1. Memo/Notes styling */
+        .memo-preview {
+            justify-content: flex-start;
+            padding-top: 2px;
+            gap: 5px !important;
+        }
+
+        .memo-paragraph {
+            font-size: 0.68rem;
+            color: var(--muted-foreground);
+            font-weight: 500;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .note-pill {
+            display: flex;
+            align-items: center;
+            height: 24px;
+            border-radius: 6px;
+            padding: 0 8px;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+
+        .note-accent {
+            width: 3px;
+            height: 12px;
+            border-radius: 1.5px;
+            flex-shrink: 0;
+        }
+
+        .note-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-check-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            opacity: 0.4;
+            flex-shrink: 0;
+        }
+
+        /* Color variations matching user reference */
+        .note-pill.yellow {
+            background-color: #fefce8;
+            color: #ca8a04;
+        }
+        .note-pill.yellow .note-accent {
+            background-color: #eab308;
+        }
+        .note-pill.yellow .note-text {
+            color: #854d0e;
+        }
+
+        .note-pill.pink {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        .note-pill.pink .note-accent {
+            background-color: #f87171;
+        }
+        .note-pill.pink .note-text {
+            color: #991b1b;
+        }
+
+        .note-pill.blue {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+        .note-pill.blue .note-accent {
+            background-color: #60a5fa;
+        }
+        .note-pill.blue .note-text {
+            color: #1e40af;
+        }
+
+        /* 4. Clock styling */
+        .clock-preview {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .widget-time {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--foreground);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .widget-date {
+            font-size: 0.65rem;
+            color: #a1a1aa;
+            font-weight: 700;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* AI Voice Overlay Drawer */
+        .voice-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+
+        .voice-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .voice-drawer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f8fafc;
+            border-radius: 2rem 2rem 0 0;
+            padding: 20px 24px 32px;
+            transform: translateY(100%);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .voice-overlay.show .voice-drawer {
+            transform: translateY(0);
+        }
+
+        /* Voice Recording Overlay (Image 1 Style) */
+        .voice-recording-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.5) 45%, rgba(37, 99, 235, 0.85) 75%, rgba(0, 132, 255, 0.98) 100%);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 60px;
+            box-sizing: border-box;
+        }
+
+        .voice-recording-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .recording-prompt {
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+            opacity: 0.95;
+            letter-spacing: -0.01em;
+            transition: color 0.15s ease;
+        }
+
+        /* Soundwave lines (animated capsule bars) */
+        .voice-soundwave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 32px;
+            width: 100%;
+        }
+
+        .soundwave-bar {
+            width: 3px;
+            height: 6px;
+            background-color: #ffffff;
+            border-radius: 1.5px;
+            animation: soundwave-pulse 1.2s infinite ease-in-out;
+        }
+
+        @keyframes soundwave-pulse {
+            0%, 100% {
+                height: 6px;
+                opacity: 0.4;
+            }
+            50% {
+                height: 32px;
+                opacity: 1;
+            }
+        }
+
+        .soundwave-bar:nth-child(2n) {
+            animation-delay: 0.15s;
+        }
+        .soundwave-bar:nth-child(3n) {
+            animation-delay: 0.3s;
+            animation-duration: 0.9s;
+        }
+        .soundwave-bar:nth-child(4n) {
+            animation-delay: 0.45s;
+            animation-duration: 1.4s;
+        }
+        .soundwave-bar:nth-child(5n) {
+            animation-delay: 0.6s;
+        }
+
+        .voice-active-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Chat bubble styling */
+        .chat-bubble-user {
+            background: var(--muted);
+            color: var(--foreground);
+            border: 1px solid rgba(9, 9, 11, 0.04);
+            border-radius: 14px 14px 2px 14px;
+        }
+        .chat-bubble-ai {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 2px 14px 14px 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .drawer-voice-btn {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        .drawer-voice-btn:hover {
+            transform: scale(1.05);
+            background: #2d2d30;
+        }
+        .drawer-voice-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Theme overrides for Notion */
+        :root.theme-notion .chat-bubble-user {
+            background-color: #f1f1ef !important;
+            color: #37352f !important;
+            border: 1px solid rgba(55, 53, 47, 0.08) !important;
+            border-radius: 4px !important;
+        }
+        :root.theme-notion .chat-bubble-ai {
+            background-color: #37352f !important;
+            color: #ffffff !important;
+            border-radius: 4px !important;
+        }
+        :root.theme-notion .drawer-voice-btn {
+            background-color: #37352f !important;
+            border-radius: 4px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell" style="background: #f8fafc;">
+        <!-- Header -->
+        <header style="padding: var(--space-6) var(--space-6) var(--space-2); display: flex; justify-content: space-between; align-items: center; background: transparent;">
+            <!-- Top-Left Device Switcher Selector (No border/background frame as requested) -->
+            <div class="device-dropdown-container">
+                <button class="device-dropdown-trigger" id="deviceTrigger">
+                    <i data-lucide="menu" style="width: 16px; height: 16px; color: var(--muted-foreground);" title="Select Device"></i>
+                    <div class="device-icon-small-wrapper">
+                        <img src="device_external.png" class="device-icon-small" alt="Device">
+                    </div>
+                    <!-- Stacked Device Metadata (Battery & status placed below the device name) -->
+                    <div
+                        style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 2px;">
+                        <span id="currentDeviceName"
+                            style="font-size: 0.9rem; font-weight: 700; color: var(--foreground); max-width: 140px; line-height: 1.2;">reTerminal DM</span>
+                        <span class="device-status-sub" id="deviceStatusSub"
+                            style="font-size: 0.74rem; font-weight: 500; color: var(--muted-foreground); display: flex; align-items: center; gap: 4px;">
+                            <span
+                                style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                            Online <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e; margin-left: 2px;"></i> 88%
+                        </span>
+                    </div>
+                    <div class="device-settings-btn" onclick="event.stopPropagation(); window.location.href='device_details.html?device=' + encodeURIComponent(document.getElementById('currentDeviceName').textContent);" 
+                         style="padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--muted-foreground); margin-left: 4px;"
+                         title="Device Settings">
+                        <i data-lucide="settings" style="width: 15px; height: 15px;"></i>
+                    </div>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div class="device-dropdown-menu" id="deviceMenu">
+                    <div class="device-dropdown-header">Select Device</div>
+                    
+                    <div class="device-dropdown-item active" onclick="selectDevice('reTerminal DM', '88%', 'online')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_external.png" class="device-icon-small" alt="Device">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">reTerminal DM</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>88%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('SenseCAP Indicator', '72%', 'sleeping')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_external.png" class="device-icon-small" alt="Device">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">SenseCAP Indicator</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="moon" style="width: 10px; height: 10px; color: #3b82f6; fill: #3b82f6;"></i>
+                                <span>Sleeping</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>72%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('SenseCAP Watcher', '0%', 'offline')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_external.png" class="device-icon-small" alt="Device">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">SenseCAP Watcher</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #94a3b8; display: inline-block;"></span>
+                                <span>Offline</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #94a3b8;"></i>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-divider"></div>
+
+                    <!-- Add Device inside dropdown list -->
+                    <div class="device-dropdown-add" onclick="window.location.href='bluetooth_search.html'">
+                        <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                        <span>Add New Device</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Avatar -->
+            <div class="profile-avatar-btn" onclick="window.location.href='profile.html'">
+                <i data-lucide="user" style="width: 20px; color: var(--foreground);"></i>
+            </div>
+        </header>
+
+        <div class="container" style="padding-top: var(--space-2); padding-bottom: 6.5rem;">
+            <!-- Real-Time Device Mirror View (Visually grouped as an independent premium block card) -->
+            <div class="mirror-section" onclick="handleMirrorClick()" style="cursor: pointer;">
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <h3 id="nowShowingHeader" style="font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 6px; margin: 0; color: var(--muted-foreground) !important;">
+                        <img id="nowShowingHeaderIcon" src="32_notes.svg" style="width: 18px; height: 18px; object-fit: contain;" alt="Notes"> Now Showing
+                    </h3>
+                </div>
+
+                <div class="mirror-bezel-container" style="background: #f8fafc; border: none; border-radius: 12px; width: 100%; aspect-ratio: 16 / 7; box-sizing: border-box; padding: 18px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; position: relative;">
+                    <p id="einkNowShowingText" style="font-size: 0.92rem; font-weight: 600; color: var(--foreground); line-height: 1.5; max-width: 92%; margin: 0; font-style: normal;">
+                        Prepare a surprise cheer when Mom arrives at the airport. We will watch a short family video montage and complete the memory jar activity.
+                    </p>
+                    <img id="einkNowShowingImage" src="" style="display: none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 12px;" alt="Now Showing Photo">
+                    <!-- Eink Clock Preview -->
+                    <div id="einkNowShowingClock" style="display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;"></div>
+                    <!-- Eink Weather Preview -->
+                    <div id="einkNowShowingWeather" style="display: none; width: 100%; height: 100%; box-sizing: border-box; overflow: hidden;"></div>
+                </div>
+            </div>
+
+            <!-- Device Apps Section -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); margin-bottom: var(--space-2);">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--foreground);">Device Apps</h3>
+                <button class="btn btn-ghost" onclick="window.location.href='app_center.html'" style="height: auto; padding: 6px; border-radius: 50%; color: var(--primary); display: flex; align-items: center; justify-content: center; background: rgba(9, 9, 11, 0.05); border: none; cursor: pointer;">
+                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+
+            <div class="app-grid">
+                <!-- 1. Notes (Widget) -->
+                <div class="widget-card widget-notes" onclick="window.location.href='notes.html'">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <img src="32_notes.svg" class="widget-app-icon" alt="Notes">
+                            <span class="widget-title">Notes</span>
+                        </div>
+                    </div>
+                    <div class="widget-content memo-preview" style="gap: 6px; display: flex; flex-direction: column; justify-content: center; padding-top: 2px;">
+                        <div style="font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 6px; overflow: hidden;">
+                            <span style="width: 4px; height: 4px; border-radius: 50%; background-color: currentColor; display: inline-block; flex-shrink: 0; opacity: 0.6;"></span>
+                            <span id="noteItemText1" style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Prepare a surprise cheer</span>
+                        </div>
+                        <div style="font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 6px; overflow: hidden;">
+                            <span style="width: 4px; height: 4px; border-radius: 50%; background-color: currentColor; display: inline-block; flex-shrink: 0; opacity: 0.6;"></span>
+                            <span id="noteItemText2" style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Weekly team sync notes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Clock (Widget) -->
+                <div class="widget-card widget-clock" onclick="window.location.href='clock.html'">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <img src="32_clock.svg" class="widget-app-icon" alt="Clock">
+                            <span class="widget-title">Clock</span>
+                        </div>
+                    </div>
+                    <div class="widget-content clock-preview">
+                        <div class="widget-time" id="widgetClockTime">10:08</div>
+                        <div class="widget-date" id="widgetClockDate">Friday, May 22</div>
+                    </div>
+                </div>
+
+                <!-- 3. Weather (Widget) -->
+                <div class="widget-card widget-weather" onclick="window.location.href='weather.html'">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <img src="32_weather.svg" class="widget-app-icon" alt="Weather">
+                            <span class="widget-title">Weather</span>
+                        </div>
+                    </div>
+                    <div class="widget-content weather-layout-ref" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; height: 100%; padding-top: 4px; box-sizing: border-box;">
+                        <!-- Left Side: Large Temp -->
+                        <div style="font-size: 2.75rem; font-weight: 700; line-height: 1; display: flex; align-items: flex-start; margin-top: 2px;">
+                            15<span style="font-size: 1.45rem; font-weight: 600; margin-top: -2px; margin-left: 1px;">°</span>
+                        </div>
+                        <!-- Right Side: Status Column -->
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; margin-top: -2px;">
+                            <i data-lucide="sun" style="width: 20px; height: 20px;"></i>
+                            <span style="font-size: 0.65rem; font-weight: 500; line-height: 1.1; opacity: 0.85;">12° / 20°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Reminder (Widget) -->
+                <div class="widget-card widget-reminder" onclick="window.location.href='reminder.html'">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <img src="32_reminder.svg" class="widget-app-icon" alt="Reminder">
+                            <span class="widget-title">Reminder</span>
+                        </div>
+                    </div>
+                    <div class="widget-content checklist" style="justify-content: center; gap: 6px !important;">
+                        <div class="note-pill yellow checked">
+                            <div class="note-accent"></div>
+                            <span class="note-text">Alex - Lunch</span>
+                            <div class="note-check-circle checked"></div>
+                        </div>
+                        <div class="note-pill yellow">
+                            <div class="note-accent"></div>
+                            <span class="note-text">Sam - Decor</span>
+                            <div class="note-check-circle"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Photo (Widget) -->
+                <div class="widget-card widget-photo" onclick="window.location.href='photo.html'">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <img src="32_image.svg" class="widget-app-icon" alt="Photo">
+                            <span class="widget-title">Photo</span>
+                        </div>
+                    </div>
+                    <div class="widget-content photo-preview">
+                        <img src="image_bridge.jpg" style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="Bridge">
+                    </div>
+                </div>
+
+                <!-- 6. Explore (Widget) -->
+                <div class="widget-card widget-more">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <span class="widget-title" style="color: inherit;">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="widget-content more-preview" style="justify-content: center; height: 100%; display: flex; flex-direction: column; align-items: center; margin-top: -2px;">
+                        <img src="more apps.svg" style="width: 48px; height: 48px; object-fit: contain; opacity: 0.85;" alt="More Apps">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating AI Voice Assistant Button with Sparkles Overlay Badge and Dual Shadow -->
+        <button class="ai-voice-btn" id="aiVoiceBtn">
+            <div class="ai-mic-icon-wrapper"
+                style="position: relative; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; z-index: 2;">
+                <img src="AImic.svg" style="width: 32px; height: 32px; object-fit: contain;" alt="AI Voice">
+            </div>
+        </button>
+
+
+    </div>
+
+    <!-- Voice Recording Hold Overlay (Image 1 Style) -->
+    <div class="voice-recording-overlay" id="voiceRecordingOverlay">
+        <p class="recording-prompt" id="recordingPrompt">Release to Send, Slide Up to Cancel</p>
+        <div class="voice-soundwave">
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+        </div>
+    </div>
+
+    <!-- AI Voice Assistant Transcription Overlay (Image 2 Style) -->
+    <div class="voice-overlay" id="voiceOverlay">
+        <div class="voice-drawer" id="voiceDrawer">
+            <div style="width: 36px; height: 4px; background: #cbd5e1; border-radius: 2px; margin: 0 auto 16px;"></div>
+            
+            <!-- Dialogue Container -->
+            <div class="voice-dialogue-container" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; max-height: 280px; overflow-y: auto; padding: 4px 2px;">
+                <!-- User Bubble -->
+                <div class="chat-bubble user-bubble" style="align-self: flex-end; max-width: 85%;">
+                    <div class="chat-bubble-user" style="padding: 10px 14px; font-size: 0.88rem; font-weight: 500; line-height: 1.4; text-align: left;">
+                        Help me add a reminder to reserve a restaurant tonight
+                    </div>
+                </div>
+                
+                <!-- AI Bubble -->
+                <div class="chat-bubble ai-bubble" style="align-self: flex-start; max-width: 85%;">
+                    <div class="chat-bubble-ai" style="padding: 10px 14px; font-size: 0.88rem; font-weight: 500; line-height: 1.4; text-align: left;">
+                        Sure, added a reminder to reserve a restaurant tonight
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center; width: 100%;">
+                <button class="btn" id="voiceCancelBtn" style="background: rgba(9, 9, 11, 0.05); color: #09090b; font-weight: 700; border-radius: 9999px; padding: 12px; border: none; flex: 1; cursor: pointer; text-align: center; font-size: 0.85rem; transition: background 0.15s;">Cancel</button>
+                <button class="btn btn-primary" id="voiceConfirmBtn" style="background: #09090b; color: #ffffff; font-weight: 700; border-radius: 9999px; padding: 12px; border: none; flex: 1; cursor: pointer; text-align: center; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(9,9,11,0.12); transition: background 0.15s;">Confirm</button>
+            </div>
+
+            <!-- Bottom Voice Button to Continue Dialogue -->
+            <div style="display: flex; justify-content: center; align-items: center; margin-top: 24px; padding-bottom: 8px; border-top: 1px solid rgba(9, 9, 11, 0.04); padding-top: 16px;">
+                <button class="drawer-voice-btn" id="drawerVoiceBtn" style="width: 48px; height: 48px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; outline: none; transition: all 0.2s;" title="Press and hold to talk">
+                    <div class="ai-mic-icon-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; z-index: 2;">
+                        <img src="AImic.svg" style="width: 26px; height: 26px; object-fit: contain;" alt="AI Voice">
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dropdown toggle logic
+        const deviceTrigger = document.getElementById('deviceTrigger');
+        const deviceMenu = document.getElementById('deviceMenu');
+
+        deviceTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deviceMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            deviceMenu.classList.remove('show');
+        });
+
+        // Device Selection Interactivity
+        function selectDevice(name, battery, status) {
+            if (!status) status = 'online';
+            
+            // Update selected button labels
+            document.getElementById('currentDeviceName').textContent = name;
+            
+            let statusHtml = '';
+            if (status === 'online') {
+                statusHtml = `
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                    Online <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e; margin-left: 2px;"></i> ${battery}
+                `;
+            } else if (status === 'sleeping') {
+                statusHtml = `
+                    <i data-lucide="moon" style="width: 10px; height: 10px; color: #3b82f6; fill: #3b82f6;"></i>
+                    Sleeping <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e; margin-left: 2px;"></i> ${battery}
+                `;
+            } else if (status === 'offline') {
+                statusHtml = `
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #94a3b8; display: inline-block;"></span>
+                    Offline <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #94a3b8; margin-left: 2px;"></i> ${battery}
+                `;
+            }
+
+            document.getElementById('deviceStatusSub').innerHTML = statusHtml;
+
+            // Update E-Ink screen details
+            const einkBatterySmall = document.getElementById('einkBatteryPercentSmall');
+            if (einkBatterySmall) einkBatterySmall.textContent = battery;
+
+            const einkTitle = document.getElementById('einkScheduleTitle');
+            if (einkTitle) einkTitle.textContent = `${name} Tasks`;
+
+            // Update todo checklist items specific to device
+            const todoList = document.getElementById('einkTodoList');
+            if (todoList) {
+                if (name === 'reTerminal DM') {
+                    todoList.innerHTML = `
+                        <li><input type="checkbox" checked disabled> Sync E-Ink Smart Screen</li>
+                        <li><input type="checkbox" checked disabled> Check device connection</li>
+                        <li><input type="checkbox" id="voiceTodoCheckbox" disabled> UI Design Review</li>
+                    `;
+                } else if (name === 'SenseCAP Indicator') {
+                    todoList.innerHTML = `
+                        <li><input type="checkbox" checked disabled> Connect Indicator Sensors</li>
+                        <li><input type="checkbox" disabled> Calibrate CO2 Sensor</li>
+                        <li><input type="checkbox" disabled> Sync Dashboard Widgets</li>
+                    `;
+                } else {
+                    todoList.innerHTML = `
+                        <li><input type="checkbox" disabled> Connect Watcher Camera</li>
+                        <li><input type="checkbox" disabled> Enable AI Face Detection</li>
+                        <li><input type="checkbox" disabled> Set Up Notification Push</li>
+                    `;
+                }
+            }
+
+            // Update dropdown active status styling
+            const items = document.querySelectorAll('.device-dropdown-item');
+            items.forEach(item => {
+                const isMatch = item.querySelector('.device-name').textContent === name;
+                if (isMatch) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            // Re-render icons
+            lucide.createIcons();
+        }
+
+        // Live E-Ink Clock Update
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
+
+            const einkClock = document.getElementById('einkClock');
+            if (einkClock) einkClock.textContent = timeStr;
+            const einkTimeSmall = document.getElementById('einkTimeSmall');
+            if (einkTimeSmall) einkTimeSmall.textContent = timeStr;
+
+            // Update Clock Widget time and date
+            const widgetClockTime = document.getElementById('widgetClockTime');
+            if (widgetClockTime) widgetClockTime.textContent = timeStr;
+
+            const widgetClockDate = document.getElementById('widgetClockDate');
+            if (widgetClockDate) {
+                const options = { weekday: 'long', month: 'short', day: 'numeric' };
+                widgetClockDate.textContent = now.toLocaleDateString('en-US', options);
+            }
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Mirror section click redirect
+        function handleMirrorClick() {
+            const showingType = localStorage.getItem('currently_showing_type') || 'note';
+            if (showingType === 'photo') {
+                window.location.href = 'photo.html';
+            } else if (showingType === 'clock') {
+                window.location.href = 'clock.html';
+            } else if (showingType === 'weather') {
+                window.location.href = 'weather.html';
+            } else {
+                window.location.href = 'notes_template.html';
+            }
+        }
+
+        // Init now showing states
+        const cachedShowing = localStorage.getItem('eink_now_showing');
+        const cachedPhoto = localStorage.getItem('currently_showing_photo');
+        const showingType = localStorage.getItem('currently_showing_type') || 'note';
+
+        if (cachedShowing) {
+            const el = document.getElementById('einkNowShowingText');
+            if (el) el.textContent = cachedShowing;
+        }
+
+        if (cachedPhoto) {
+            const photoEl = document.querySelector('.widget-photo .photo-preview img');
+            if (photoEl) photoEl.src = cachedPhoto;
+        }
+
+        // Update E-Ink Mirror Display
+        const einkText = document.getElementById('einkNowShowingText');
+        const einkImg = document.getElementById('einkNowShowingImage');
+        const einkClock = document.getElementById('einkNowShowingClock');
+        const headerIcon = document.getElementById('nowShowingHeaderIcon');
+
+        const bezel = document.querySelector('.mirror-bezel-container');
+
+        if (showingType === 'photo' && cachedPhoto) {
+            if (bezel) {
+                bezel.style.backgroundImage = 'none';
+                bezel.style.background = '#f8fafc';
+                bezel.style.padding = '18px 24px';
+            }
+            if (einkText) einkText.style.display = 'none';
+            if (einkImg) {
+                einkImg.src = cachedPhoto;
+                einkImg.style.display = 'block';
+            }
+            if (einkClock) einkClock.style.display = 'none';
+            if (headerIcon) headerIcon.src = '32_image.svg';
+        } else if (showingType === 'clock') {
+            const currentTemplate = localStorage.getItem('clock_template') || 'MINIMAL DIGITAL';
+            if (bezel) {
+                bezel.style.backgroundImage = 'none';
+                if (currentTemplate === 'FLIQLO STYLE' || currentTemplate === 'INDUSTRIAL MATRIX') {
+                    bezel.style.background = '#0f172a';
+                } else if (currentTemplate === 'BOLD TYPOGRAPHIC') {
+                    bezel.style.background = '#ffffff';
+                } else if (currentTemplate === 'CLASSIC ANALOG') {
+                    bezel.style.background = '#ffffff';
+                } else {
+                    bezel.style.background = '#ffffff';
+                }
+                bezel.style.padding = '18px 24px';
+            }
+            if (einkText) einkText.style.display = 'none';
+            if (einkImg) einkImg.style.display = 'none';
+            if (einkClock) {
+                einkClock.style.display = 'flex';
+                renderEinkClock(currentTemplate);
+            }
+            if (headerIcon) headerIcon.src = '32_clock.svg';
+        } else if (showingType === 'weather') {
+            // Weather will be handled by renderWeatherOnEink() below
+            // just hide the text/image/clock containers here
+            if (einkText) einkText.style.display = 'none';
+            if (einkImg) einkImg.style.display = 'none';
+            if (einkClock) einkClock.style.display = 'none';
+            if (headerIcon) headerIcon.src = '32_weather.svg';
+            if (bezel) {
+                bezel.style.background = '#ffffff';
+                bezel.style.backgroundImage = 'none';
+                bezel.style.padding = '18px 24px';
+            }
+        } else {
+            if (bezel) {
+                const noteTemplate = localStorage.getItem('deployed_note_template') || 'minimal';
+                
+                bezel.style.backgroundSize = '100% 100%';
+                bezel.style.backgroundRepeat = 'no-repeat';
+                bezel.style.backgroundPosition = 'center center';
+                
+                // Let's use the landscape version because the dashboard bezel is landscape (16/7 aspect ratio)
+                if (noteTemplate === 'minimal') {
+                    bezel.style.backgroundImage = "url('note1_h.png')";
+                    bezel.style.padding = '18px 24px';
+                } else if (noteTemplate === 'classic') {
+                    bezel.style.backgroundImage = "url('note2_h.png')";
+                    bezel.style.padding = '18px 24px';
+                } else if (noteTemplate === 'spiral') {
+                    bezel.style.backgroundImage = "url('note3_h.png?v=3.2')";
+                    bezel.style.padding = '32px 24px 18px 24px'; // Extra top padding for spiral rings in landscape
+                } else {
+                    bezel.style.backgroundImage = 'none';
+                    bezel.style.background = '#f8fafc';
+                    bezel.style.padding = '18px 24px';
+                }
+            }
+            if (einkText) einkText.style.display = 'block';
+            if (einkImg) einkImg.style.display = 'none';
+            if (einkClock) einkClock.style.display = 'none';
+            if (headerIcon) headerIcon.src = '32_notes.svg';
+        }
+
+        // Render weather on E-Ink mirror preview
+        renderWeatherOnEink();
+        function renderEinkClock(template) {
+            if (!einkClock) return;
+            const now = new Date();
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
+            const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+
+            let html = '';
+            if (template === 'MINIMAL DIGITAL') {
+                html = `
+                    <div style="font-size: 2.2rem; font-weight: 700; color: #0f172a; letter-spacing: -0.02em; line-height: 1;">${timeStr}</div>
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 6px; letter-spacing: 0.05em;">${dateStr}</div>
+                `;
+            } else if (template === 'CLASSIC ANALOG') {
+                const hrAngle = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
+                const minAngle = now.getMinutes() * 6;
+                html = `
+                    <div style="width: 78px; height: 78px; border: 2px solid #0f172a; border-radius: 50%; position: relative; background: #ffffff; display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 5px; height: 5px; background: #0f172a; border-radius: 50%; z-index: 10;"></div>
+                        <div style="position: absolute; bottom: 50%; left: 50%; width: 2.5px; height: 20px; background: #0f172a; transform-origin: bottom center; transform: translateX(-50%) rotate(${hrAngle}deg); border-radius: 2px;"></div>
+                        <div style="position: absolute; bottom: 50%; left: 50%; width: 1.5px; height: 28px; background: #94a3b8; transform-origin: bottom center; transform: translateX(-50%) rotate(${minAngle}deg); border-radius: 2px;"></div>
+                    </div>
+                `;
+            } else if (template === 'FLIQLO STYLE' || template === 'INDUSTRIAL MATRIX') {
+                html = `
+                    <div style="display: flex; gap: 14px; justify-content: center; align-items: center; width: 100%; height: 100%;">
+                        <div style="background: #1e293b; border-radius: 8px; width: 72px; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; border: 1.5px solid #2e3b4e; box-shadow: 0 6px 12px rgba(0,0,0,0.4);">
+                            <div style="position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: rgba(0,0,0,0.55); z-index: 2;"></div>
+                            <span style="font-size: 2.7rem; font-weight: 800; color: #f8fafc; font-family: sans-serif; line-height: 1; z-index: 1;">${hours}</span>
+                        </div>
+                        <div style="background: #1e293b; border-radius: 8px; width: 72px; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; border: 1.5px solid #2e3b4e; box-shadow: 0 6px 12px rgba(0,0,0,0.4);">
+                            <div style="position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: rgba(0,0,0,0.55); z-index: 2;"></div>
+                            <span style="font-size: 2.7rem; font-weight: 800; color: #f8fafc; font-family: sans-serif; line-height: 1; z-index: 1;">${minutes}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (template === 'BOLD TYPOGRAPHIC') {
+                const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN", "TWENTY", "TWENTY ONE", "TWENTY TWO", "TWENTY THREE", "TWENTY FOUR", "TWENTY FIVE", "TWENTY SIX", "TWENTY SEVEN", "TWENTY EIGHT", "TWENTY NINE", "THIRTY", "THIRTY ONE", "THIRTY TWO", "THIRTY THREE", "THIRTY FOUR", "THIRTY FIVE", "THIRTY SIX", "THIRTY SEVEN", "THIRTY EIGHT", "THIRTY NINE", "FORTY", "FORTY ONE", "FORTY TWO", "FORTY THREE", "FORTY FOUR", "FORTY FIVE", "FORTY SIX", "FORTY SEVEN", "FORTY EIGHT", "FORTY NINE", "FIFTY", "FIFTY ONE", "FIFTY TWO", "FIFTY THREE", "FIFTY FOUR", "FIFTY FIVE", "FIFTY SIX", "FIFTY SEVEN", "FIFTY EIGHT", "FIFTY NINE"];
+                let hrVal = now.getHours();
+                if (hrVal > 12) hrVal -= 12;
+                if (hrVal === 0) hrVal = 12;
+                const hrWord = words[hrVal];
+                
+                let minVal = now.getMinutes();
+                let minWord = '';
+                if (minVal === 0) {
+                    minWord = "O'CLOCK";
+                } else if (minVal < 10) {
+                    minWord = "O' " + words[minVal];
+                } else {
+                    minWord = words[minVal];
+                }
+                html = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                        <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.1;">IT IS</div>
+                        <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.1;">${hrWord}</div>
+                        <div style="font-size: 1.15rem; font-weight: 900; color: #cbd5e1; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.1;">${minWord}</div>
+                    </div>
+                `;
+            }
+            einkClock.innerHTML = html;
+        }
+
+        // ============================
+        // Weather on E-Ink Mirror Preview
+        // ============================
+        function renderWeatherOnEink() {
+            const deployedTemplate = localStorage.getItem('weather_deployed_template') || '';
+            const showingType = localStorage.getItem('currently_showing_type') || 'note';
+            const isWeather = deployedTemplate && showingType === 'weather';
+
+            // E-Ink mirror elements
+            const einkText = document.getElementById('einkNowShowingText');
+            const einkImg = document.getElementById('einkNowShowingImage');
+            const einkClock = document.getElementById('einkNowShowingClock');
+            const headerIcon = document.getElementById('nowShowingHeaderIcon');
+            const einkWeather = document.getElementById('einkNowShowingWeather');
+            const bezel = document.querySelector('.mirror-bezel-container');
+
+            if (!isWeather) {
+                // Hide weather container, let other logic handle the mirror
+                if (einkWeather) einkWeather.style.display = 'none';
+                return;
+            }
+
+            // Show weather on mirror
+            if (einkText) einkText.style.display = 'none';
+            if (einkImg) einkImg.style.display = 'none';
+            if (einkClock) einkClock.style.display = 'none';
+            if (headerIcon) headerIcon.src = '32_weather.svg';
+
+            if (bezel) {
+                bezel.style.background = '#ffffff';
+                bezel.style.backgroundImage = 'none';
+                bezel.style.padding = '18px 24px';
+            }
+
+            if (einkWeather) {
+                einkWeather.style.display = 'flex';
+                einkWeather.style.flexDirection = 'column';
+                einkWeather.style.alignItems = 'stretch';
+                einkWeather.style.justifyContent = 'center';
+
+                if (deployedTemplate === 'CITY CARD') {
+                    einkWeather.style.flexDirection = 'row';
+                    einkWeather.style.alignItems = 'center';
+                    einkWeather.style.justifyContent = 'space-between';
+                    einkWeather.style.padding = '0 12px';
+                    einkWeather.innerHTML = `
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <span style="font-size:0.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;">Shenzhen</span>
+                            <div style="width:32px;height:1px;background:#e2e8f0;"></div>
+                            <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
+                        </div>
+                        <div style="text-align:right;display:flex;flex-direction:column;gap:4px;">
+                            <span style="font-size:0.8rem;font-weight:600;color:#475569;text-transform:uppercase;">Cloudy</span>
+                            <span style="font-size:0.8rem;font-weight:600;color:#64748b;">H 28° / L 19°</span>
+                        </div>
+                    `;
+                } else if (deployedTemplate === 'FORECAST STRIP') {
+                    einkWeather.innerHTML = `
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px;">
+                            <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
+                            <div style="text-align:right;">
+                                <div style="font-size:0.8rem;font-weight:600;color:#475569;text-transform:uppercase;">Cloudy</div>
+                                <div style="font-size:0.7rem;font-weight:600;color:#64748b;">H 28° / L 19°</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 12px 0;border-top:1px solid #e2e8f0;margin-top:6px;position:relative;">
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Mon</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">26°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓18°</span></div>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Tue</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">28°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓20°</span></div>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Wed</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">22°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓17°</span></div>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Thu</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">24°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓19°</span></div>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Fri</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">21°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓16°</span></div>
+                        </div>
+                    `;
+                } else if (deployedTemplate === 'DETAIL CARD') {
+                    einkWeather.innerHTML = `
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px;">
+                            <div style="display:flex;flex-direction:column;">
+                                <span style="font-size:0.75rem;font-weight:600;color:#475569;text-transform:uppercase;">Cloudy</span>
+                                <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
+                            </div>
+                            <span style="font-size:0.8rem;font-weight:700;color:#475569;">H 28° / L 19°</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;padding:8px 12px 0;border-top:1px solid #e2e8f0;margin-top:6px;">
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Wind</span>12 km/h NE</div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Humidity</span>65%</div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Sunrise</span>05:32</div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Sunset</span>18:45</div>
+                        </div>
+                    `;
+                } else if (deployedTemplate === 'COMPACT HEADER') {
+                    einkWeather.style.flexDirection = 'row';
+                    einkWeather.style.alignItems = 'center';
+                    einkWeather.style.justifyContent = 'space-between';
+                    einkWeather.style.padding = '0 12px';
+                    einkWeather.innerHTML = `
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <span style="font-size:0.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.03em;padding-bottom:3px;border-bottom:1px solid #e2e8f0;">Shenzhen</span>
+                            <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
+                        </div>
+                        <div style="text-align:right;display:flex;flex-direction:column;gap:4px;">
+                            <span style="font-size:0.8rem;font-weight:600;color:#64748b;">Cloudy</span>
+                            <span style="font-size:0.8rem;font-weight:700;color:#475569;">28° / 19°</span>
+                            <span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">Wind 12 km/h · Humidity 65%</span>
+                        </div>
+                    `;
+                }
+            }
+        }
+        // AI Voice Assistant Press-and-Hold & Bottom Sheet Logic
+        const aiVoiceBtn = document.getElementById('aiVoiceBtn');
+        const drawerVoiceBtn = document.getElementById('drawerVoiceBtn');
+        const voiceRecordingOverlay = document.getElementById('voiceRecordingOverlay');
+        const recordingPrompt = document.getElementById('recordingPrompt');
+        const voiceOverlay = document.getElementById('voiceOverlay');
+        const voiceCancelBtn = document.getElementById('voiceCancelBtn');
+        const voiceConfirmBtn = document.getElementById('voiceConfirmBtn');
+
+        let startY = 0;
+        let isHolding = false;
+        let isCancelled = false;
+
+        function startRecording(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            isHolding = true;
+            isCancelled = false;
+            
+            // Capture Y coordinate
+            if (e.touches && e.touches[0]) {
+                startY = e.touches[0].clientY;
+            } else {
+                startY = e.clientY;
+            }
+
+            recordingPrompt.textContent = "Release to Send, Slide Up to Cancel";
+            recordingPrompt.style.color = "#ffffff";
+            voiceRecordingOverlay.classList.add('show');
+        }
+
+        function checkDrag(e) {
+            if (!isHolding) return;
+            let currentY = 0;
+            if (e.touches && e.touches[0]) {
+                currentY = e.touches[0].clientY;
+            } else {
+                currentY = e.clientY;
+            }
+
+            const diffY = startY - currentY;
+            if (diffY > 60) {
+                isCancelled = true;
+                recordingPrompt.textContent = "Release to Cancel Voice Command";
+                recordingPrompt.style.color = "#ef4444"; // red warning
+            } else {
+                isCancelled = false;
+                recordingPrompt.textContent = "Release to Send, Slide Up to Cancel";
+                recordingPrompt.style.color = "#ffffff";
+            }
+        }
+
+        function stopRecording(e) {
+            if (!isHolding) return;
+            isHolding = false;
+            voiceRecordingOverlay.classList.remove('show');
+
+            if (!isCancelled) {
+                // Show transcription bottom sheet (Image 2 style)
+                voiceOverlay.classList.add('show');
+            }
+        }
+
+        // Add event listeners for holding (both main mic and drawer mic)
+        aiVoiceBtn.addEventListener('mousedown', startRecording);
+        aiVoiceBtn.addEventListener('touchstart', startRecording, { passive: false });
+        
+        if (drawerVoiceBtn) {
+            drawerVoiceBtn.addEventListener('mousedown', startRecording);
+            drawerVoiceBtn.addEventListener('touchstart', startRecording, { passive: false });
+        }
+
+        window.addEventListener('mousemove', checkDrag);
+        window.addEventListener('touchmove', checkDrag, { passive: true });
+
+        window.addEventListener('mouseup', stopRecording);
+        window.addEventListener('touchend', stopRecording);
+
+        // Cancel button in transcription sheet
+        voiceCancelBtn.addEventListener('click', () => {
+            voiceOverlay.classList.remove('show');
+        });
+
+        // Add Note button in transcription sheet
+        voiceConfirmBtn.addEventListener('click', () => {
+            const newText = "Reserve a restaurant tonight";
+            // Update Now Showing E-Ink preview text
+            const einkText = document.getElementById('einkNowShowingText');
+            if (einkText) {
+                einkText.textContent = newText;
+            }
+
+            // Update the Notes card widgets list
+            const note1 = document.getElementById('noteItemText1');
+            const note2 = document.getElementById('noteItemText2');
+            if (note1 && note2) {
+                // Shift notes
+                note2.textContent = note1.textContent;
+                note1.textContent = newText;
+            }
+            voiceOverlay.classList.remove('show');
+        });
+
+        voiceOverlay.addEventListener('click', (e) => {
+            if (e.target === voiceOverlay) {
+                voiceOverlay.classList.remove('show');
+            }
+        });
+
+        // Initialize Lucide icons on boot
+        lucide.createIcons();
+
+    </script>
+</body>
+
+</html>

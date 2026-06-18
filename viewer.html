@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview - Seeedash Mobile Simulator</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 10% 20%, rgba(244, 252, 230, 0.6) 0%, rgba(250, 250, 250, 0.9) 90%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Top control header */
+        .viewer-header {
+            height: 64px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(228, 228, 231, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--space-6);
+            z-index: 100;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .back-btn:hover {
+            color: #0f172a;
+            border-color: #d1d5db;
+            background: #f9fafb;
+            transform: translateX(-2px);
+        }
+
+        .page-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+        }
+
+        .page-url {
+            font-size: 0.72rem;
+            color: #64748b;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .action-icon-btn:hover {
+            color: #0f172a;
+            border-color: #d1d5db;
+            background: #f9fafb;
+            transform: translateY(-1px);
+        }
+
+        /* Center simulator workspace */
+        .simulator-workspace {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        /* Beautiful realistic iOS device mockup using CSS */
+        .phone-mockup {
+            width: 412px;
+            height: 860px;
+            background: #09090b;
+            border-radius: 54px;
+            padding: 11px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(9, 9, 11, 0.05), inset 0 0 3px 2px rgba(255, 255, 255, 0.2);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #3f3f46; /* Metallic boundary frame */
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
+
+        /* Responsive Auto-Scaling Media Queries to prevent vertical cutoff on smaller desktop monitors */
+        @media (max-height: 940px) {
+            .phone-mockup {
+                transform: scale(0.9);
+            }
+        }
+        @media (max-height: 850px) {
+            .phone-mockup {
+                transform: scale(0.8);
+            }
+        }
+        @media (max-height: 760px) {
+            .phone-mockup {
+                transform: scale(0.7);
+            }
+        }
+        @media (max-height: 670px) {
+            .phone-mockup {
+                transform: scale(0.6);
+            }
+        }
+        @media (max-height: 580px) {
+            .phone-mockup {
+                transform: scale(0.5);
+            }
+        }
+
+        /* Metallic side buttons */
+        .phone-mockup::before {
+            content: "";
+            position: absolute;
+            left: -12px;
+            top: 140px;
+            width: 4px;
+            height: 48px;
+            background: #27272a;
+            border-radius: 4px 0 0 4px;
+            box-shadow: inset 1px 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .phone-mockup::after {
+            content: "";
+            position: absolute;
+            right: -12px;
+            top: 200px;
+            width: 4px;
+            height: 76px;
+            background: #27272a;
+            border-radius: 0 4px 4px 0;
+            box-shadow: inset -1px 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Another volume buttons helper */
+        .volume-button {
+            position: absolute;
+            left: -12px;
+            top: 200px;
+            width: 4px;
+            height: 48px;
+            background: #27272a;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .volume-button-2 {
+            position: absolute;
+            left: -12px;
+            top: 260px;
+            width: 4px;
+            height: 48px;
+            background: #27272a;
+            border-radius: 4px 0 0 4px;
+        }
+
+        /* Inner container with precise rounded corners */
+        .inner-screen-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 43px;
+            overflow: hidden;
+            background: #ffffff;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+
+
+        /* Screen Iframe - Absolutely constrained to the device interior dimensions */
+        .simulator-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: #ffffff;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Decorative background blobs to look outstanding */
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .blob-red {
+            width: 400px;
+            height: 400px;
+            background: rgba(9, 9, 11, 0.02);
+            top: -100px;
+            right: -100px;
+        }
+
+        .blob-blue {
+            width: 350px;
+            height: 350px;
+            background: rgba(9, 9, 11, 0.03);
+            bottom: -50px;
+            left: -50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob blob-red"></div>
+    <div class="bg-blob blob-blue"></div>
+
+    <!-- Header controls -->
+    <header class="viewer-header">
+        <a href="overview.html" class="back-btn">
+            <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+            返回总览
+        </a>
+        <div class="page-indicator">
+            <span class="page-title" id="pageTitle">Seeedash Live Preview</span>
+            <span class="page-url" id="pageUrl">loading...</span>
+        </div>
+        <div class="header-actions">
+            <button class="action-icon-btn" onclick="reloadIframe()" title="刷新页面">
+                <i data-lucide="rotate-cw" style="width: 18px; height: 18px;"></i>
+            </button>
+            <a href="#" class="action-icon-btn" id="openExternalBtn" target="_blank" title="在新窗口打开">
+                <i data-lucide="external-link" style="width: 18px; height: 18px;"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Simulator Workspace -->
+    <main class="simulator-workspace">
+        <div class="phone-mockup">
+            <div class="volume-button"></div>
+            <div class="volume-button-2"></div>
+            <div class="inner-screen-container" id="screenContainer">
+                <!-- Dynamically injected iframe will render here to bypass any browser cache or race conditions -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Fail-safe icon creation to prevent script crashing if lucide fails to load offline
+        try {
+            lucide.createIcons();
+        } catch (e) {
+            console.warn("Lucide icons failed to initialize:", e);
+        }
+
+        // Get parameters from URL or Hash (hash is immune to server redirects/query stripping!)
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetPage = '';
+
+        // 1. Try to read from client-side Hash parameter (e.g. #login.html)
+        if (window.location.hash) {
+            targetPage = window.location.hash.substring(1); // remove '#'
+            if (targetPage.includes('?')) {
+                targetPage = targetPage.split('?')[0];
+            }
+        }
+
+        // 2. Fall back to search query page parameter (e.g. ?page=login.html)
+        if (!targetPage) {
+            targetPage = urlParams.get('page');
+        }
+
+        // 3. Absolute default fallback
+        if (!targetPage) {
+            targetPage = 'index.html';
+        }
+        
+        console.log("-----------------------------------------");
+        console.log("SIMULATOR LOAD INITIATED");
+        console.log("Raw Hash Param:", window.location.hash);
+        console.log("Raw Page Query Param:", urlParams.get('page'));
+        console.log("Resolved Target Page:", targetPage);
+        console.log("Window Location Search:", window.location.search);
+        console.log("Window Location Hash:", window.location.hash);
+        console.log("-----------------------------------------");
+
+        // Auto redirect to fullscreen on real mobile device
+        if (window.innerWidth <= 768) {
+            window.location.replace(targetPage);
+        }
+
+        const screenContainer = document.getElementById('screenContainer');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageUrl = document.getElementById('pageUrl');
+        const openExternalBtn = document.getElementById('openExternalBtn');
+
+        // Human readable page names map
+        const pageNamesMap = {
+            'index.html': 'Splash Screen (闪屏页)',
+            'login.html': 'Login Entry (登录主页)',
+            'login_otp.html': 'OTP Verification (验证码页面)',
+            'login_password.html': 'Password Login (密码登录页)',
+            'register.html': 'Registration (用户注册)',
+            'bluetooth_search.html': 'Bluetooth Discovery (搜索蓝牙设备)',
+            'bluetooth_connecting.html': 'Bluetooth Connecting (连接设备中)',
+            'bluetooth_success.html': 'Bluetooth Connected (连接设备成功)',
+            'bluetooth_fail.html': 'Bluetooth Connection Failed (连接失败)',
+            'wifi_search.html': 'Wi-Fi Network List (配网选择WiFi)',
+            'wifi_password.html': 'Wi-Fi Password Input (输入WiFi密码)',
+            'devices.html': 'Devices Empty State (空设备状态)',
+            'dashboard.html': 'Main Dashboard (设备主面板)',
+            'dashboard_empty.html': 'Dashboard Empty State (空白设备主面板)',
+            'device_details.html': 'Device Settings (设备设置页)',
+            'device_wifi_settings.html': 'Device Wi-Fi Settings (设备WiFi设置页)',
+            'clock.html': 'Clock Settings (时钟模版选择与设置)',
+            'app_center.html': 'App Center (已安装应用管理列表)',
+            'app_details.html': 'App Details (单个应用信息升级与卸载)',
+            'notes_template.html': 'Note Template Editor (笔记模版选择与预览)',
+            'reminder.html': 'Reminder App (待办清单主页)',
+            'reminder_add.html': 'Add Reminder Task (新建待办任务)',
+            'firmware_update.html': 'Firmware Update (固件升级界面)',
+            'firmware_downloading.html': 'Firmware Downloading (固件下载中)',
+            'firmware_success.html': 'Firmware Update Successful (固件升级成功)',
+            'firmware_failed.html': 'Firmware Update Failed (固件升级失败)',
+            'notes.html': 'Notes Sync App (便利贴应用同步)',
+            'photo.html': 'Photo Album (相册列表同步)',
+            'photo_edit.html': 'Photo Editor (照片裁剪编辑页)'
+        };
+
+        // Create the iframe dynamically
+        const iframe = document.createElement('iframe');
+        iframe.className = 'simulator-iframe';
+        iframe.id = 'simulatorFrame';
+        
+        // Monitor iframe navigation to update titles and url
+        iframe.addEventListener('load', () => {
+            try {
+                const innerLocation = iframe.contentWindow.location.pathname;
+                const innerFileName = innerLocation.substring(innerLocation.lastIndexOf('/') + 1);
+                if (innerFileName) {
+                    const cleanFileName = innerFileName.split('?')[0];
+                    pageTitle.innerText = pageNamesMap[cleanFileName] || 'Seeedash Mobile Screen';
+                    pageUrl.innerText = `./${innerFileName}`;
+                    openExternalBtn.href = innerFileName;
+                }
+            } catch (e) {
+                // Cross origin safety or local file block fallback
+            }
+        });
+
+        // Set source and open external link with cache buster
+        const cacheBuster = Date.now();
+        iframe.src = targetPage + (targetPage.includes('?') ? '&' : '?') + 'cb=' + cacheBuster;
+        openExternalBtn.href = targetPage;
+
+        // Append to DOM container
+        screenContainer.appendChild(iframe);
+
+        // Set human readable title
+        const baseName = targetPage.split('?')[0];
+        pageTitle.innerText = pageNamesMap[baseName] || 'Seeedash Mobile Screen';
+        pageUrl.innerText = `./${targetPage}`;
+
+        // Listen for hash changes to update iframe source
+        window.addEventListener('hashchange', () => {
+            let newPage = window.location.hash.substring(1);
+            if (newPage) {
+                if (newPage.includes('?')) {
+                    newPage = newPage.split('?')[0];
+                }
+                const cb = Date.now();
+                iframe.src = newPage + (newPage.includes('?') ? '&' : '?') + 'cb=' + cb;
+                openExternalBtn.href = newPage;
+                const base = newPage.split('?')[0];
+                pageTitle.innerText = pageNamesMap[base] || 'Seeedash Mobile Screen';
+                pageUrl.innerText = `./${newPage}`;
+            }
+        });
+
+        // Function to reload iframe
+        function reloadIframe() {
+            iframe.contentWindow.location.reload();
+        }
+    </script>
+</body>
+
+</html>

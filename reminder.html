@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Reminder App - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            letter-spacing: -0.01em;
+        }
+
+        .page-header-spacer {
+            width: 32px;
+        }
+
+        .reminder-content {
+            padding: 1.25rem 1.25rem 6.5rem;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            min-height: calc(100vh - 68px);
+            box-sizing: border-box;
+            gap: 1.25rem;
+        }
+
+        /* Collapsible Section styles */
+        .category-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .category-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: #ffffff;
+            user-select: none;
+            border-bottom: 1px solid transparent;
+            transition: background-color 0.2s;
+        }
+
+        .category-card.expanded .category-header {
+            border-bottom-color: #f1f5f9;
+        }
+
+        .category-header:hover {
+            background-color: #fafafa;
+        }
+
+        .category-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .category-count {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .category-chevron {
+            color: #64748b;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .category-card.expanded .category-chevron {
+            transform: rotate(180deg);
+        }
+
+        .category-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #ffffff;
+        }
+
+        .category-card.expanded .category-body {
+            max-height: 1000px; /* high value to allow expansion */
+        }
+
+        /* Task Item styles */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-item {
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Checkbox */
+        .task-checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 2px;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e1;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+        }
+
+        .task-checkbox:hover {
+            border-color: var(--primary);
+        }
+
+        .task-item.completed .task-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .task-checkbox::after {
+            content: '';
+            width: 5px;
+            height: 10px;
+            border: solid #ffffff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg) translate(-1px, -1px);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .task-item.completed .task-checkbox::after {
+            opacity: 1;
+        }
+
+        /* Task Info */
+        .task-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .task-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0f172a;
+            transition: all 0.2s;
+            word-break: break-word;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+
+        .task-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .task-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-repeat-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Delete Button */
+        .task-delete-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+        }
+
+        .task-item:hover .task-delete-btn,
+        .task-item.completed .task-delete-btn {
+            opacity: 1;
+        }
+
+        .task-delete-btn:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        /* Empty state helper */
+        .task-empty {
+            padding: 1.5rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Floating/Sticky Action Bar at bottom */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            padding: 1rem 1.25rem 1.5rem;
+            background: linear-gradient(to top, #ffffff 80%, rgba(255, 255, 255, 0));
+            z-index: 10;
+        }
+
+        .btn-add-task {
+            width: 100%;
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(9, 9, 11, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-add-task:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-add-task:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='device_details.html'">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Reminders</div>
+            <div class="page-header-spacer"></div>
+        </header>
+
+        <!-- Content -->
+        <div class="reminder-content">
+            <!-- Category: Today -->
+            <div class="category-card expanded" id="cat-today-card">
+                <div class="category-header" onclick="toggleCategory('today')">
+                    <div class="category-title-wrap">
+                        <span class="category-title">Today</span>
+                        <span class="category-count" id="count-today">0</span>
+                    </div>
+                    <i data-lucide="chevron-down" class="category-chevron" id="chevron-today" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div class="category-body" id="body-today" style="max-height: 1000px;">
+                    <div class="task-list" id="list-today">
+                        <!-- Tasks dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category: Future -->
+            <div class="category-card" id="cat-future-card">
+                <div class="category-header" onclick="toggleCategory('future')">
+                    <div class="category-title-wrap">
+                        <span class="category-title">Future</span>
+                        <span class="category-count" id="count-future">0</span>
+                    </div>
+                    <i data-lucide="chevron-down" class="category-chevron" id="chevron-future" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div class="category-body" id="body-future">
+                    <div class="task-list" id="list-future">
+                        <!-- Tasks dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category: Completed -->
+            <div class="category-card" id="cat-completed-card">
+                <div class="category-header" onclick="toggleCategory('completed')">
+                    <div class="category-title-wrap">
+                        <span class="category-title">Completed</span>
+                        <span class="category-count" id="count-completed">0</span>
+                    </div>
+                    <i data-lucide="chevron-down" class="category-chevron" id="chevron-completed" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div class="category-body" id="body-completed">
+                    <div class="task-list" id="list-completed">
+                        <!-- Tasks dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Action Bar at bottom -->
+        <div class="action-bar">
+            <button class="btn-add-task" onclick="window.location.href='reminder_add.html'">
+                <i data-lucide="plus" style="width: 20px; height: 20px;"></i>
+                Add Task
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Default tasks if localStorage is empty
+        const defaultTasks = [
+            {
+                id: 1,
+                title: "Pick up laundry",
+                dueDateTime: getTodayISOString(18, 30),
+                repeatType: "fixed",
+                repeatValue: "Weekly",
+                completed: false
+            },
+            {
+                id: 2,
+                title: "Submit weekly report",
+                dueDateTime: getTodayISOString(17, 0),
+                repeatType: "fixed",
+                repeatValue: "Weekdays",
+                completed: false
+            },
+            {
+                id: 3,
+                title: "Dentist appointment",
+                dueDateTime: getFutureISOString(12, 10, 0),
+                repeatType: "never",
+                repeatValue: "Never",
+                completed: false
+            },
+            {
+                id: 4,
+                title: "Car service checkup",
+                dueDateTime: getFutureISOString(17, 9, 30),
+                repeatType: "fixed",
+                repeatValue: "Every 6 months",
+                completed: false
+            },
+            {
+                id: 5,
+                title: "Water the indoor plants",
+                dueDateTime: getTodayISOString(9, 0),
+                repeatType: "fixed",
+                repeatValue: "Daily",
+                completed: true
+            },
+            {
+                id: 6,
+                title: "Buy organic whole milk",
+                dueDateTime: getTodayISOString(8, 30),
+                repeatType: "never",
+                repeatValue: "Never",
+                completed: true
+            }
+        ];
+
+        function getTodayISOString(hours, minutes) {
+            const d = new Date();
+            d.setHours(hours, minutes, 0, 0);
+            return d.toISOString().slice(0, 16);
+        }
+
+        function getFutureISOString(daysOffset, hours, minutes) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            d.setHours(hours, minutes, 0, 0);
+            return d.toISOString().slice(0, 16);
+        }
+
+        // Load tasks from storage or load defaults
+        let tasks = [];
+        try {
+            const stored = localStorage.getItem('reminder_tasks');
+            if (stored) {
+                tasks = JSON.parse(stored);
+            } else {
+                tasks = defaultTasks;
+                localStorage.setItem('reminder_tasks', JSON.stringify(tasks));
+            }
+        } catch (e) {
+            tasks = defaultTasks;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+            lucide.createIcons();
+        });
+
+        // Toggle category collapse
+        function toggleCategory(cat) {
+            const card = document.getElementById(`cat-${cat}-card`);
+            const body = document.getElementById(`body-${cat}`);
+            const isExpanded = card.classList.contains('expanded');
+
+            if (isExpanded) {
+                card.classList.remove('expanded');
+                body.style.maxHeight = '0';
+            } else {
+                card.classList.add('expanded');
+                body.style.maxHeight = '1000px';
+            }
+        }
+
+        // Render tasks grouped by categorization logic
+        function renderTasks() {
+            const listToday = document.getElementById('list-today');
+            const listFuture = document.getElementById('list-future');
+            const listCompleted = document.getElementById('list-completed');
+
+            listToday.innerHTML = '';
+            listFuture.innerHTML = '';
+            listCompleted.innerHTML = '';
+
+            let countToday = 0;
+            let countFuture = 0;
+            let countCompleted = 0;
+
+            const todayStr = new Date().toDateString();
+
+            tasks.forEach(task => {
+                const taskDate = new Date(task.dueDateTime);
+                const isToday = taskDate.toDateString() === todayStr;
+
+                // Format DateTime elegantly
+                const formattedTime = taskDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                const formattedDate = taskDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                
+                let dateDisplay = "";
+                if (isToday) {
+                    dateDisplay = `Today, ${formattedTime}`;
+                } else {
+                    dateDisplay = `${formattedDate}, ${formattedTime}`;
+                }
+
+                // Format repeat text
+                let repeatText = "";
+                if (task.repeatType === 'never') {
+                    repeatText = "Never";
+                } else if (task.repeatType === 'fixed') {
+                    repeatText = task.repeatValue;
+                } else if (task.repeatType === 'custom') {
+                    repeatText = task.repeatValue || "Custom";
+                }
+
+                // Create item markup
+                const item = document.createElement('div');
+                item.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                let deleteBtnHtml = '';
+                if (task.completed) {
+                    deleteBtnHtml = `
+                        <button class="task-delete-btn" onclick="deleteTask(${task.id}, event)" title="Delete Completed Task">
+                            <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                        </button>
+                    `;
+                }
+
+                item.innerHTML = `
+                    <div class="task-checkbox-container">
+                        <div class="task-checkbox" onclick="toggleTaskComplete(${task.id}, event)"></div>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <div class="task-meta-item">
+                                <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+                                <span>${dateDisplay}</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <i data-lucide="repeat" style="width: 12px; height: 12px;"></i>
+                                <span class="task-repeat-badge">${repeatText}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${deleteBtnHtml}
+                `;
+
+                if (task.completed) {
+                    listCompleted.appendChild(item);
+                    countCompleted++;
+                } else if (isToday) {
+                    listToday.appendChild(item);
+                    countToday++;
+                } else {
+                    listFuture.appendChild(item);
+                    countFuture++;
+                }
+            });
+
+            // Update badges
+            document.getElementById('count-today').textContent = countToday;
+            document.getElementById('count-future').textContent = countFuture;
+            document.getElementById('count-completed').textContent = countCompleted;
+
+            // Handle empty states
+            if (countToday === 0) {
+                listToday.innerHTML = '<div class="task-empty">No tasks due today</div>';
+            }
+            if (countFuture === 0) {
+                listFuture.innerHTML = '<div class="task-empty">No future tasks scheduled</div>';
+            }
+            if (countCompleted === 0) {
+                listCompleted.innerHTML = '<div class="task-empty">No completed tasks yet</div>';
+            }
+
+            // Sync with lucide
+            lucide.createIcons();
+        }
+
+        // Toggle completed state
+        function toggleTaskComplete(id, event) {
+            event.stopPropagation();
+            tasks = tasks.map(t => {
+                if (t.id === id) {
+                    return { ...t, completed: !t.completed };
+                }
+                return t;
+            });
+            localStorage.setItem('reminder_tasks', JSON.stringify(tasks));
+            
+            // Re-render
+            renderTasks();
+        }
+
+        // Delete task
+        function deleteTask(id, event) {
+            event.stopPropagation();
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('reminder_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,995 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+:root {
+    /* Color Palette - Inspired by Shadcn/UI (Zinc/Lime) */
+    --background: #ffffff;
+    --foreground: #1e1e20;
+    /* Dark Charcoal instead of pure black */
+
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+
+    --popover: #ffffff;
+    --popover-foreground: #1e1e20;
+
+    --card: #ffffff;
+    --card-foreground: #1e1e20;
+
+    --border: #d4d4d8;
+    --input: #d4d4d8;
+
+    --primary: #1e1e20;
+    /* Dark Charcoal as primary color instead of Lime Green */
+    --primary-foreground: #ffffff;
+
+    --secondary: #f4f4f5;
+    --secondary-foreground: #1e1e20;
+
+    --accent: #f4f4f5;
+    --accent-foreground: #1e1e20;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+
+    --ring: #1e1e20;
+
+    --radius: 0.75rem;
+
+    /* Spacing Scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+}
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
+}
+
+/* Hide scrollbars for Chrome, Safari and Opera */
+*::-webkit-scrollbar,
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+    display: none !important;
+}
+
+code,
+pre,
+kbd,
+samp,
+.eink-status-bar,
+.brand-text,
+.monospace,
+[style*="monospace"] {
+    font-family: monospace !important;
+}
+
+body {
+    background-color: #fafafa;
+    color: var(--foreground);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* App Shell - Device Frame feel */
+.app-shell {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    background: var(--background);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.02);
+    margin: 0 auto;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+}
+
+/* Typography */
+h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+p {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+/* Components */
+
+/* Container */
+.container {
+    padding: var(--space-8) var(--space-6) var(--space-12);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--foreground);
+}
+
+/* Input */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+input {
+    width: 100%;
+    height: 2.75rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--input);
+    background-color: var(--background);
+    padding: 0 var(--space-3);
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--foreground);
+    outline: none;
+}
+
+input::placeholder {
+    color: var(--muted-foreground);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    height: 2.75rem;
+    padding: 0 var(--space-4);
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.btn-secondary:hover {
+    background-color: #e4e4e7;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+.btn-outline:hover {
+    background-color: var(--accent);
+}
+
+.btn-ghost {
+    background-color: transparent;
+    color: var(--foreground);
+}
+
+.btn-ghost:hover {
+    background-color: var(--accent);
+}
+
+/* Auth Specifics */
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-10);
+}
+
+.auth-header img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-4);
+}
+
+.auth-header p {
+    margin-top: var(--space-2);
+}
+
+.social-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+}
+
+.divider {
+    position: relative;
+    text-align: center;
+    margin: var(--space-8) 0;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--border);
+    z-index: 0;
+}
+
+.divider span {
+    position: relative;
+    background-color: var(--background);
+    padding: 0 var(--space-2);
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+}
+
+/* Icon positioning fix */
+.input-icon-right {
+    position: absolute;
+    right: var(--space-3);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Google Auth Layout */
+.google-auth-screen {
+    padding: var(--space-12) var(--space-6);
+    text-align: center;
+}
+
+.auth-exchange {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Permission Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
+}
+
+.modal-content {
+    background: var(--background);
+    width: 100%;
+    max-width: 420px;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    padding: var(--space-8) var(--space-6);
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h3 {
+    margin-bottom: var(--space-2);
+}
+
+.modal-footer {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+}
+
+.modal-footer .btn {
+    flex: 1;
+}
+
+/* Animation */
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Instagram / Uber Minimalist Black & White Theme Override */
+:root.theme-blackwhite {
+    --primary: #09090b;
+    /* Zinc dark/black */
+    --primary-foreground: #ffffff;
+    --ring: #09090b;
+}
+
+/* Dynamically make the lime logo monochromatic in black & white mode without turning transparent backgrounds black */
+:root.theme-blackwhite img[src="logo.png"],
+:root.theme-blackwhite img[src*="logo"] {
+    filter: grayscale(100%);
+}
+
+/* Make custom highlights in subpages monochromatic */
+:root.theme-blackwhite .highlight-green {
+    color: #09090b !important;
+}
+
+:root.theme-blackwhite .text-primary,
+:root.theme-blackwhite .color-primary {
+    color: #09090b !important;
+}
+
+:root.theme-blackwhite .bg-primary {
+    background-color: #09090b !important;
+}
+
+/* 2. Global clean up of green shadows in B&W theme */
+:root.theme-blackwhite input:focus {
+    box-shadow: 0 0 0 2px rgba(9, 9, 11, 0.1) !important;
+}
+
+:root.theme-blackwhite .btn-primary {
+    box-shadow: 0 4px 12px rgba(9, 9, 11, 0.12) !important;
+}
+
+:root.theme-blackwhite .btn-retry {
+    border-color: #09090b !important;
+    color: #09090b !important;
+    box-shadow: 0 4px 12px rgba(9, 9, 11, 0.05) !important;
+}
+
+:root.theme-blackwhite .btn-retry:hover {
+    background: rgba(9, 9, 11, 0.04) !important;
+    box-shadow: 0 6px 16px rgba(9, 9, 11, 0.08) !important;
+}
+
+:root.theme-blackwhite .btn-retry i {
+    color: #09090b !important;
+}
+
+/* Convert all custom green glow shadows on elements to soft neutral grey */
+:root.theme-blackwhite [style*="rgba(154, 205, 50, 0.35)"],
+:root.theme-blackwhite [style*="rgba(154, 205, 50, 0.22)"],
+:root.theme-blackwhite [style*="rgba(154, 205, 50, 0.15)"],
+:root.theme-blackwhite [style*="rgba(154, 205, 50, 0.08)"],
+:root.theme-blackwhite [style*="rgba(154, 205, 50, 0.12)"] {
+    box-shadow: 0 4px 12px rgba(9, 9, 11, 0.08) !important;
+}
+
+:root.theme-blackwhite [style*="rgba(154, 205, 50, 0.25)"] {
+    filter: drop-shadow(0 4px 12px rgba(9, 9, 11, 0.06)) !important;
+    background: rgba(9, 9, 11, 0.05) !important;
+}
+
+/* 3. High-fidelity Status-Aware Exceptions (Bluetooth = Blue, Success = Green) */
+/* Premium high-tech Bluetooth blue animations */
+:root.theme-blackwhite .radar-center {
+    background: #007aff !important;
+    /* iOS / Uber Premium Blue */
+    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.35) !important;
+}
+
+:root.theme-blackwhite .radar-ring {
+    border-color: #007aff !important;
+}
+
+/* Vibrant Success Green for connection screens */
+:root.theme-blackwhite .success-circle {
+    background: #22c55e !important;
+    /* Premium Success Green */
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35) !important;
+}
+
+:root.theme-blackwhite .success-pulse {
+    background: #22c55e !important;
+}
+
+:root.theme-blackwhite .connected-device-badge i {
+    color: #22c55e !important;
+}
+
+:root.theme-blackwhite .btn-action {
+    background: #09090b !important;
+    box-shadow: 0 8px 20px rgba(9, 9, 11, 0.15) !important;
+}
+
+/* Wi-Fi large dynamic icon override to premium blue in B&W theme */
+:root.theme-blackwhite .wifi-icon-large {
+    color: #007aff !important;
+    /* Premium tech blue matching Bluetooth radar */
+    filter: drop-shadow(0 4px 12px rgba(0, 122, 255, 0.25)) !important;
+}
+
+:root.theme-blackwhite .input-box-wrapper:focus-within {
+    border-color: #09090b !important;
+    box-shadow: 0 0 0 4px rgba(9, 9, 11, 0.08) !important;
+}
+
+/* 4. High-End Editorial Splash Page (index.html) Overrides */
+:root.theme-blackwhite .blob-1,
+:root.theme-blackwhite .blob-3 {
+    background: rgba(9, 9, 11, 0.02) !important;
+    /* Extremely soft neutral ambient shadow */
+}
+
+:root.theme-blackwhite .blob-2 {
+    background: rgba(9, 9, 11, 0.03) !important;
+}
+
+:root.theme-blackwhite .gradient-title {
+    background: linear-gradient(135deg, #09090b 0%, #3f3f46 50%, #71717a 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+:root.theme-blackwhite .logo-container {
+    box-shadow: 0 20px 40px rgba(9, 9, 11, 0.04) !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(9, 9, 11, 0.05) !important;
+}
+
+:root.theme-blackwhite .logo-container img {
+    filter: grayscale(100%) drop-shadow(0 8px 20px rgba(9, 9, 11, 0.04)) !important;
+}
+
+:root.theme-blackwhite .logo-glow {
+    box-shadow: 0 0 30px rgba(9, 9, 11, 0.03) !important;
+}
+
+/* Eliminate dirty blurry black glow rings behind buttons */
+:root.theme-blackwhite .btn-glow-ring {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+/* Flatten and clean the start button shadow */
+:root.theme-blackwhite .app-shell .btn-primary {
+    box-shadow: 0 4px 12px rgba(9, 9, 11, 0.08) !important;
+}
+
+/* 5. Main Dashboard (dashboard.html) Overrides */
+/* 5.1 Keep Now Showing pulse indicator dot vibrant green */
+:root.theme-blackwhite .pulse-indicator {
+    background: #22c55e !important;
+}
+
+:root.theme-blackwhite .pulse-indicator::after {
+    border-color: #22c55e !important;
+}
+
+/* 5.2 installed apps plus button background override to premium slate-gray */
+:root.theme-blackwhite button[style*="rgba(154, 205, 50, 0.1)"] {
+    background: rgba(9, 9, 11, 0.05) !important;
+    color: #09090b !important;
+}
+
+/* 5.3 AI Voice Button solid black-and-white theme styling overrides */
+:root.theme-blackwhite .ai-voice-btn {
+    background: var(--primary) !important;
+    animation: none !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+:root.theme-blackwhite .ai-voice-btn:hover {
+    background: #2d2d30 !important;
+    animation: none !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+    transform: translateX(-50%) translateY(-2px) !important;
+}
+
+:root.theme-blackwhite .ai-voice-btn:active {
+    animation: none !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+    transform: translateX(-50%) translateY(1px) scale(0.95) !important;
+}
+
+/* 5.4 AI Voice Waves color override to futuristic tech colors (violet, pink, tech-blue, indigo) */
+:root.theme-blackwhite .wave-1 {
+    background-color: #8b5cf6 !important;
+    /* Violet */
+}
+
+:root.theme-blackwhite .wave-2 {
+    background-color: #ec4899 !important;
+    /* Pink */
+}
+
+:root.theme-blackwhite .wave-3 {
+    background-color: #3b82f6 !important;
+    /* Tech Blue */
+}
+
+:root.theme-blackwhite .wave-4 {
+    background-color: #6366f1 !important;
+    /* Indigo */
+}
+
+/* 5.5 Dashboard Header Status Dot and Switcher Dropdown B&W Overrides */
+:root.theme-blackwhite #deviceStatusSub span {
+    background-color: #22c55e !important;
+    /* Online dot remains vibrant green */
+}
+
+:root.theme-blackwhite .device-dropdown-item.active {
+    background: rgba(9, 9, 11, 0.06) !important;
+    /* Monochromatic light gray background for active item */
+}
+
+/* ==========================================
+   6. Notion Theme (theme-notion) Overrides
+   ========================================== */
+
+/* Core variables reset */
+:root.theme-notion {
+    --primary: #37352f !important;
+    --primary-foreground: #ffffff !important;
+    --background: #ffffff !important;
+    --foreground: #37352f !important;
+    --muted: #f1f1ef !important;
+    --muted-foreground: #7c7b77 !important;
+    --border: rgba(55, 53, 47, 0.09) !important;
+    --radius: 4px !important;
+    --shadow: 0 1px 2px rgba(15, 15, 15, 0.05) !important;
+}
+
+/* Base resets & typography */
+:root.theme-notion body,
+:root.theme-notion .app-shell,
+:root.theme-notion .container,
+:root.theme-notion .page-header {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #37352f !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji" !important;
+    letter-spacing: -0.01em !important;
+}
+
+:root.theme-notion .bg-texture,
+:root.theme-notion .blob,
+:root.theme-notion .blob-1,
+:root.theme-notion .blob-2,
+:root.theme-notion .blob-3,
+:root.theme-notion .logo-glow,
+:root.theme-notion .btn-glow-ring {
+    display: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    opacity: 0 !important;
+}
+
+/* Titles */
+:root.theme-notion h1,
+:root.theme-notion h2,
+:root.theme-notion h3,
+:root.theme-notion .gradient-title {
+    background: none !important;
+    -webkit-text-fill-color: #37352f !important;
+    color: #37352f !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* Buttons */
+:root.theme-notion .btn {
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    padding: 8px 14px !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 1px 2px rgba(15, 15, 15, 0.05) !important;
+    transition: background 0.1s ease !important;
+}
+
+:root.theme-notion .btn-primary {
+    background-color: #37352f !important;
+    color: #ffffff !important;
+    border: 1px solid #37352f !important;
+}
+
+:root.theme-notion .btn-primary:hover {
+    background-color: #4f4c45 !important;
+}
+
+:root.theme-notion .btn-outline {
+    background-color: #ffffff !important;
+    color: #37352f !important;
+    border: 1px solid rgba(55, 53, 47, 0.16) !important;
+}
+
+:root.theme-notion .btn-outline:hover {
+    background-color: #f1f1ef !important;
+}
+
+:root.theme-notion .btn-action {
+    background-color: #2383e2 !important;
+    /* Notion blue */
+    color: #ffffff !important;
+    border: 1px solid #2383e2 !important;
+}
+
+:root.theme-notion .btn-action:hover {
+    background-color: #1a6cb8 !important;
+}
+
+:root.theme-notion .btn-ghost {
+    background-color: transparent !important;
+    color: #37352f !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+:root.theme-notion .btn-ghost:hover {
+    background-color: #f1f1ef !important;
+}
+
+/* Form controls & inputs */
+:root.theme-notion input[type="text"],
+:root.theme-notion input[type="email"],
+:root.theme-notion input[type="password"],
+:root.theme-notion select,
+:root.theme-notion textarea,
+:root.theme-notion .input-box-wrapper {
+    background-color: #f7f7f5 !important;
+    border: 1px solid rgba(55, 53, 47, 0.16) !important;
+    border-radius: 4px !important;
+    color: #37352f !important;
+    box-shadow: inset 0 1px 2px rgba(15, 15, 15, 0.05) !important;
+    font-size: 0.9rem !important;
+}
+
+:root.theme-notion input:focus,
+:root.theme-notion .input-box-wrapper:focus-within {
+    background-color: #ffffff !important;
+    border-color: #2383e2 !important;
+    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.15) !important;
+}
+
+:root.theme-notion #agreementCheckbox {
+    border-radius: 3px !important;
+    border: 1px solid rgba(55, 53, 47, 0.3) !important;
+}
+
+:root.theme-notion #agreementCheckbox:checked {
+    background-color: #2383e2 !important;
+    border-color: #2383e2 !important;
+}
+
+/* Logo styling */
+:root.theme-notion img[src="logo.png"],
+:root.theme-notion img[src*="logo"] {
+    filter: grayscale(100%) contrast(1.1) !important;
+}
+
+:root.theme-notion .logo-container {
+    background: #ffffff !important;
+    border: 1px solid rgba(55, 53, 47, 0.12) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 10px !important;
+}
+
+/* Divs & Dividers */
+:root.theme-notion .divider::before,
+:root.theme-notion .divider::after {
+    border-top: 1px solid rgba(55, 53, 47, 0.09) !important;
+}
+
+:root.theme-notion .divider span {
+    color: #7c7b77 !important;
+    font-size: 0.8rem !important;
+}
+
+/* ==========================================
+   6.1 Notion Dashboard Page Specifics
+   ========================================== */
+
+/* Dropdown switcher breadcrumb style */
+:root.theme-notion .device-dropdown-trigger {
+    background: transparent !important;
+    border: none !important;
+    padding: 6px 10px !important;
+    color: #37352f !important;
+    font-weight: 500 !important;
+}
+
+:root.theme-notion .device-dropdown-trigger:hover {
+    background-color: #f1f1ef !important;
+    border-radius: 4px !important;
+}
+
+:root.theme-notion .device-dropdown-menu {
+    border: 1px solid rgba(55, 53, 47, 0.09) !important;
+    box-shadow: 0 4px 12px rgba(15, 15, 15, 0.08) !important;
+    border-radius: 4px !important;
+    background: #ffffff !important;
+}
+
+:root.theme-notion .device-dropdown-item.active {
+    background-color: #f1f1ef !important;
+    color: #37352f !important;
+}
+
+/* Now Showing - Callout box styling */
+:root.theme-notion .mirror-section .mirror-bezel-container {
+    background: #f1f1ef !important;
+    border: 1px solid rgba(55, 53, 47, 0.08) !important;
+    border-radius: 4px !important;
+    padding: 16px 16px 16px 54px !important;
+    position: relative !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    min-height: auto !important;
+}
+
+:root.theme-notion .mirror-section .mirror-bezel-container::before {
+    content: "💡" !important;
+    position: absolute !important;
+    left: 18px !important;
+    top: 16px !important;
+    font-size: 1.5rem !important;
+}
+
+:root.theme-notion .mirror-section .mirror-bezel-container p {
+    font-family: inherit !important;
+    font-size: 0.9rem !important;
+    color: #37352f !important;
+    font-style: normal !important;
+    line-height: 1.6 !important;
+    font-weight: 400 !important;
+}
+
+/* Installed Apps - Horizontal Page List styling */
+:root.theme-notion .app-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+}
+
+:root.theme-notion .app-card {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    transition: background 0.1s ease !important;
+}
+
+:root.theme-notion .app-card:hover {
+    background-color: #f1f1ef !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
+:root.theme-notion .app-card img {
+    display: block !important;
+    width: 22px !important;
+    height: 22px !important;
+    object-fit: contain !important;
+    flex-shrink: 0 !important;
+}
+
+:root.theme-notion .app-card-name {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #37352f !important;
+    border-bottom: 1px dashed rgba(55, 53, 47, 0.2) !important;
+}
+
+/* AI Voice Assistant - Notion AI Theme */
+:root.theme-notion .ai-voice-btn {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(55, 53, 47, 0.16) !important;
+    box-shadow: 0 4px 12px rgba(15, 15, 15, 0.08) !important;
+    color: #37352f !important;
+    background-image: none !important;
+    animation: none !important;
+}
+
+:root.theme-notion .ai-voice-btn img {
+    display: none !important;
+}
+
+:root.theme-notion .ai-voice-btn::before {
+    content: "✨" !important;
+    font-size: 1.5rem !important;
+}
+
+:root.theme-notion .ai-voice-btn:hover {
+    background-color: #f1f1ef !important;
+    transform: translateX(-50%) translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(15, 15, 15, 0.12) !important;
+}
+
+:root.theme-notion .voice-drawer {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(55, 53, 47, 0.12) !important;
+    border-radius: 8px 8px 0 0 !important;
+    box-shadow: 0 -4px 20px rgba(15, 15, 15, 0.05) !important;
+}
+
+:root.theme-notion .voice-wave {
+    background-color: #9860f3 !important;
+    /* Notion AI Purple */
+}
+
+/* ==========================================
+   6.2 Notion Notes Page Specifics
+   ========================================== */
+:root.theme-notion .note-item {
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    border: 1px solid rgba(55, 53, 47, 0.08) !important;
+    box-shadow: none !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    transition: background 0.1s ease !important;
+}
+
+:root.theme-notion .note-item:hover {
+    background-color: #f7f7f5 !important;
+    border-color: rgba(55, 53, 47, 0.16) !important;
+    transform: none !important;
+}
+
+:root.theme-notion .note-item::before {
+    content: "📄" !important;
+    font-size: 1.1rem !important;
+    margin-right: 10px !important;
+    flex-shrink: 0 !important;
+}
+
+:root.theme-notion .note-content {
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    color: #37352f !important;
+}
+
+:root.theme-notion .bottom-sheet {
+    border-radius: 8px 8px 0 0 !important;
+    border: 1px solid rgba(55, 53, 47, 0.12) !important;
+    box-shadow: 0 -4px 24px rgba(15, 15, 15, 0.08) !important;
+}
+
+/* ==========================================
+   6.3 Notion Device Setup & Radars
+   ========================================== */
+:root.theme-notion .radar-center {
+    background: #37352f !important;
+    box-shadow: 0 4px 12px rgba(55, 53, 47, 0.16) !important;
+}
+
+:root.theme-notion .radar-ring {
+    border-color: rgba(55, 53, 47, 0.3) !important;
+    border-style: dashed !important;
+    background: none !important;
+}
+
+:root.theme-notion .connected-device-badge {
+    background-color: #f1f1ef !important;
+    border: 1px solid rgba(55, 53, 47, 0.1) !important;
+    color: #37352f !important;
+}
+
+:root.theme-notion .connected-device-badge i {
+    color: #37352f !important;
+}
+
+:root.theme-notion .success-circle {
+    background: #22c55e !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2) !important;
+}
+
+:root.theme-notion .success-pulse {
+    display: none !important;
+}
+
+/* ==========================================
+   6.4 Notion Splash Page Customization
+   ========================================== */
+:root.theme-notion .mockup-card img {
+    filter: drop-shadow(0 4px 12px rgba(55, 53, 47, 0.08)) !important;
+    width: 78px !important;
+    height: 78px !important;
+}
+
+/* Global Back Arrow Button */
+.back-arrow-btn {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    color: var(--muted-foreground);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    z-index: 10;
+    text-decoration: none;
+    border: none;
+}
+
+.back-arrow-btn:hover {
+    background-color: var(--muted);
+    color: var(--foreground);
+    transform: translateX(-2px);
+}

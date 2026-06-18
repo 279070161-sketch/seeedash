@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Profile - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn, .page-notify-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+
+        .page-back-btn:hover, .page-notify-btn:hover {
+            opacity: 0.7;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            border: 1.5px solid var(--background);
+        }
+
+        .profile-content {
+            padding: 1.5rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* User Overview Card */
+        .user-overview-card {
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            border: none;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 0.75rem;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .avatar-edit-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--foreground);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2.5px solid #ffffff;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.15s;
+        }
+
+        .avatar-edit-badge:hover {
+            transform: scale(1.1);
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .user-email {
+            font-size: 0.82rem;
+            color: var(--muted-foreground);
+            margin: 4px 0 0 0;
+        }
+
+        /* Grouped List Card */
+        .settings-group-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 0.25rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-value {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-align: right;
+        }
+
+        .row-arrow {
+            color: #cbd5e1;
+            transition: transform 0.2s;
+        }
+
+        .setting-row:hover .row-arrow {
+            transform: translateX(2px);
+            color: var(--foreground);
+        }
+
+        .setting-row.danger-row .setting-label {
+            color: #ef4444;
+        }
+
+        /* Bottom Logout Button */
+        .logout-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.25rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 10px 24px;
+            transition: opacity 0.2s;
+            width: fit-content;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Premium Modal Popup Style */
+        .premium-dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .premium-dialog-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .premium-dialog {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 340px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: scale(0.92);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+        }
+
+        .premium-dialog-overlay.show .premium-dialog {
+            transform: scale(1);
+        }
+
+        .dialog-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+
+        /* Selection List Styles */
+        .selection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .selection-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-radius: 0.75rem;
+            background: #f8fafc;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .selection-option:hover {
+            background: #f1f5f9;
+        }
+
+        .selection-option.active {
+            background: rgba(9, 9, 11, 0.05);
+            border-color: var(--foreground);
+            color: var(--foreground);
+        }
+
+        .dialog-btn-close {
+            width: 100%;
+            padding: 10px;
+            border-radius: 0.75rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            background: #f1f5f9;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+        .dialog-btn-close:hover {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='dashboard.html'" title="返回首页">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Profile</div>
+            <button class="page-back-btn" style="position: relative;" onclick="window.location.href='notifications.html'">
+            <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+            <span class="notification-badge"></span>
+        </button>
+        </header>
+
+        <!-- Content Area -->
+        <div class="profile-content">
+            <!-- User Overview -->
+            <div class="user-overview-card" style="cursor: pointer;" onclick="window.location.href='edit_profile.html'">
+                <div class="avatar-container">
+                    <div class="avatar-image" id="profileAvatarText">AR</div>
+                    <div class="avatar-edit-badge">
+                        <i data-lucide="pencil" style="width: 11px; height: 11px;"></i>
+                    </div>
+                </div>
+                <h2 class="user-name" id="profileNameVal">Alex Rivera</h2>
+                <p class="user-email" id="profileEmailVal">alex.rivera@example.com</p>
+            </div>
+
+            <!-- Group 1: General Settings -->
+            <div class="settings-group-card">
+                <div class="setting-row" onclick="openLanguageModal()">
+                    <span class="setting-label">Language</span>
+                    <span class="setting-value">
+                        <span id="languageValText">English</span>
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+                <div class="setting-row" onclick="openTimezoneModal()">
+                    <span class="setting-label">Timezone</span>
+                    <span class="setting-value">
+                        <span id="timezoneValText">Local</span>
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+                <div class="setting-row" onclick="alert('Manage Permissions')">
+                    <span class="setting-label">Permissions</span>
+                    <span class="setting-value">
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Group 2: Account Security -->
+            <div class="settings-group-card">
+                <div class="setting-row" onclick="window.location.href='change_password.html'">
+                    <span class="setting-label">Change Password</span>
+                    <span class="setting-value">
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+                <div class="setting-row danger-row" onclick="window.location.href='delete_account.html'">
+                    <span class="setting-label">Delete Account</span>
+                    <span class="setting-value">
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px; color: #ef4444;"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Group 3: Help & Support -->
+            <div class="settings-group-card">
+                <div class="setting-row" onclick="window.location.href='user_manual.html'">
+                    <span class="setting-label">User Manual</span>
+                    <span class="setting-value">
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+                <div class="setting-row" onclick="window.location.href='feedback.html'">
+                    <span class="setting-label">Feedback</span>
+                    <span class="setting-value">
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Group 4: App Info & Business -->
+            <div class="settings-group-card">
+                <div class="setting-row" onclick="window.location.href='about_app.html'">
+                    <span class="setting-label">About App</span>
+                    <span class="setting-value">
+                        v2.4.0
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+                <div class="setting-row" onclick="alert('Redirecting to Seeed Store')">
+                    <span class="setting-label" style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i>
+                        Get Device
+                    </span>
+                    <span class="setting-value">
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bottom Action: Log Out -->
+            <div class="settings-group-card" style="margin-top: 1.25rem; margin-bottom: 1.25rem;">
+                <div class="setting-row" style="justify-content: center; cursor: pointer; border-bottom: none;" onclick="window.location.href='login.html'">
+                    <span class="setting-label" style="color: #ef4444; font-weight: 700; width: auto; text-align: center;">Log Out</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Selector Modal -->
+    <div class="premium-dialog-overlay" id="languageOverlay">
+        <div class="premium-dialog">
+            <div class="dialog-title">Select Language</div>
+            <div class="selection-list" id="languageList">
+                <div class="selection-option" onclick="selectLanguage('English')">
+                    <span>English</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectLanguage('简体中文')">
+                    <span>简体中文</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectLanguage('日本語')">
+                    <span>日本語</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectLanguage('Deutsch')">
+                    <span>Deutsch</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+            </div>
+            <button class="dialog-btn-close" onclick="closeModal('languageOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Timezone Selector Modal -->
+    <div class="premium-dialog-overlay" id="timezoneOverlay">
+        <div class="premium-dialog">
+            <div class="dialog-title">Select Timezone</div>
+            <div class="selection-list" id="timezoneList">
+                <div class="selection-option" onclick="selectTimezone('Local')">
+                    <span id="localTzLabel">Local (Automatic)</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectTimezone('GMT+0 (London)')">
+                    <span>GMT+0 (London)</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectTimezone('GMT-5 (New York)')">
+                    <span>GMT-5 (New York)</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectTimezone('GMT+8 (Beijing)')">
+                    <span>GMT+8 (Beijing)</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+                <div class="selection-option" onclick="selectTimezone('GMT+9 (Tokyo)')">
+                    <span>GMT+9 (Tokyo)</span>
+                    <i data-lucide="check" class="check-icon" style="width: 16px; height: 16px; display: none;"></i>
+                </div>
+            </div>
+            <button class="dialog-btn-close" onclick="closeModal('timezoneOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // System Resolved Local Timezone
+        let systemTimezone = 'UTC';
+        try {
+            systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        } catch (e) {
+            console.error('Timezone resolution failed:', e);
+        }
+
+        // Initialize label
+        document.getElementById('localTzLabel').textContent = `Local (${systemTimezone})`;
+
+        // Load persisted values on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('profile_language') || 'English';
+            updateLanguageUI(savedLang);
+
+            const savedTz = localStorage.getItem('profile_timezone') || 'Local';
+            updateTimezoneUI(savedTz);
+
+            const savedName = localStorage.getItem('profile_nickname') || 'Alex Rivera';
+            const savedEmail = localStorage.getItem('profile_email') || 'alex.rivera@example.com';
+            
+            document.getElementById('profileNameVal').textContent = savedName;
+            document.getElementById('profileEmailVal').textContent = savedEmail;
+
+            // Set avatar text
+            const initials = savedName.trim().split(/\s+/).map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.getElementById('profileAvatarText').textContent = initials || 'AR';
+        });
+
+        // Language Logic
+        function openLanguageModal() {
+            const savedLang = localStorage.getItem('profile_language') || 'English';
+            const options = document.querySelectorAll('#languageList .selection-option');
+            options.forEach(opt => {
+                const text = opt.querySelector('span').textContent.trim();
+                const check = opt.querySelector('.check-icon');
+                if (text === savedLang) {
+                    opt.classList.add('active');
+                    if (check) check.style.display = 'block';
+                } else {
+                    opt.classList.remove('active');
+                    if (check) check.style.display = 'none';
+                }
+            });
+            document.getElementById('languageOverlay').classList.add('show');
+        }
+
+        function selectLanguage(lang) {
+            localStorage.setItem('profile_language', lang);
+            updateLanguageUI(lang);
+            closeModal('languageOverlay');
+        }
+
+        function updateLanguageUI(lang) {
+            document.getElementById('languageValText').textContent = lang;
+        }
+
+        // Timezone Logic
+        function openTimezoneModal() {
+            const savedTz = localStorage.getItem('profile_timezone') || 'Local';
+            const options = document.querySelectorAll('#timezoneList .selection-option');
+            options.forEach(opt => {
+                const text = opt.querySelector('span').textContent.trim();
+                const isLocal = opt.getAttribute('onclick').includes("'Local'");
+                const check = opt.querySelector('.check-icon');
+
+                if ((isLocal && savedTz === 'Local') || (!isLocal && savedTz === text)) {
+                    opt.classList.add('active');
+                    if (check) check.style.display = 'block';
+                } else {
+                    opt.classList.remove('active');
+                    if (check) check.style.display = 'none';
+                }
+            });
+            document.getElementById('timezoneOverlay').classList.add('show');
+        }
+
+        function selectTimezone(tz) {
+            localStorage.setItem('profile_timezone', tz);
+            updateTimezoneUI(tz);
+            closeModal('timezoneOverlay');
+        }
+
+        function updateTimezoneUI(tz) {
+            if (tz === 'Local') {
+                document.getElementById('timezoneValText').textContent = 'Local';
+            } else {
+                // Display short format like "GMT+8" or similar
+                const shortName = tz.split(' ')[0] || tz;
+                document.getElementById('timezoneValText').textContent = shortName;
+            }
+        }
+
+        // Modal Helpers
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+services:
+  seeedash-app-ui:
+    build: .
+    image: seeedash-app-ui:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped

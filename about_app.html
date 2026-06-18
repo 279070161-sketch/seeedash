@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>About App - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .about-content {
+            padding: 2rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* App Overview Area */
+        .app-overview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .app-logo {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.04));
+        }
+
+        .app-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--foreground);
+            letter-spacing: -0.02em;
+        }
+
+        .version-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Grouped List Card */
+        .settings-group-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 0.25rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .group-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.15rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .setting-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .row-arrow {
+            color: #cbd5e1;
+            transition: transform 0.2s, color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .setting-row:hover .row-arrow {
+            transform: translateX(2px);
+            color: var(--foreground);
+        }
+
+        /* Small Button Style */
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #334155;
+        }
+
+        .btn-sm:hover {
+            background: var(--accent);
+            border-color: #cbd5e1;
+        }
+
+        .btn-sm.btn-clearing {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='profile.html'" title="返回">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">About App</div>
+            <div style="width: 32px;"></div> <!-- Spacer to keep title centered -->
+        </header>
+
+        <!-- Content Area -->
+        <div class="about-content">
+            <!-- App Overview -->
+            <div class="app-overview">
+                <img src="seeedash_logo.svg" alt="Seeedash Logo" class="app-logo">
+                <div class="app-name">Seeedash</div>
+                <div class="version-badge">Version 2.4.0 • LATEST</div>
+            </div>
+
+            <!-- Maintenance & Management -->
+            <div>
+                <div class="group-title">Maintenance & Management</div>
+                <div class="settings-group-card">
+                    <!-- Check for Updates -->
+                    <div class="setting-row" onclick="checkForUpdates()">
+                        <span class="setting-label">Check for Updates</span>
+                        <span class="setting-value">
+                            <span id="update-status">Up to date</span>
+                            <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                        </span>
+                    </div>
+
+                    <!-- Clear Cache -->
+                    <div class="setting-row" style="cursor: default;">
+                        <span class="setting-label">Clear Cache</span>
+                        <span class="setting-value">
+                            <span id="cache-size" style="margin-right: 4px;">124 MB used</span>
+                            <button id="clear-cache-btn" class="btn-sm" onclick="clearCache()">Clear</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legal & Compliance -->
+            <div>
+                <div class="group-title">Legal & Compliance</div>
+                <div class="settings-group-card">
+                    <!-- Privacy Policy -->
+                    <div class="setting-row" onclick="alert('Redirecting to Privacy Policy...')">
+                        <span class="setting-label">Privacy Policy</span>
+                        <span class="setting-value">
+                            <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                        </span>
+                    </div>
+
+                    <!-- User Agreement -->
+                    <div class="setting-row" onclick="alert('Redirecting to User Agreement...')">
+                        <span class="setting-label">User Agreement</span>
+                        <span class="setting-value">
+                            <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        function checkForUpdates() {
+            const statusText = document.getElementById('update-status');
+            statusText.innerText = 'Checking...';
+
+            setTimeout(() => {
+                statusText.innerText = 'Up to date';
+                alert('You are on the latest version!');
+            }, 1000);
+        }
+
+        function clearCache() {
+            const cacheText = document.getElementById('cache-size');
+            const clearBtn = document.getElementById('clear-cache-btn');
+
+            if (cacheText.innerText === '0 MB used') {
+                alert('Cache is already cleared.');
+                return;
+            }
+
+            clearBtn.innerText = 'Clearing...';
+            clearBtn.classList.add('btn-clearing');
+            clearBtn.disabled = true;
+
+            setTimeout(() => {
+                cacheText.innerText = '0 MB used';
+                clearBtn.innerText = 'Clear';
+                clearBtn.classList.remove('btn-clearing');
+                clearBtn.disabled = false;
+                alert('Cache cleared successfully!');
+            }, 1200);
+        }
+    </script>
+</body>
+
+</html>

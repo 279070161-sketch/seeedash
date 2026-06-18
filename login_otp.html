@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Verification - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app-shell">
+        <div class="container fade-in">
+            <a href="login_password.html" class="back-arrow-btn" title="Back">
+                <i data-lucide="chevron-left"></i>
+            </a>
+            <header class="auth-header">
+                <img src="seeedash_logo.svg" alt="Seeedash">
+                <h1>Sign in</h1>
+                <p>We've sent a code to your email address</p>
+            </header>
+
+            <div class="form-group">
+                <label class="label">Email</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" value="admin@reterminal.io" readonly
+                        style="background-color: var(--muted); cursor: not-allowed;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Verification Code</label>
+                <div class="input-wrapper">
+                    <input type="text" id="otp" placeholder="6-digit code" maxlength="6">
+                    <div class="input-icon-right" id="sendCodeBtn">Send code</div>
+                    <div class="input-icon-right" id="timer" style="display: none; cursor: default;">60s</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="signInBtn" disabled style="width: 100%; margin-top: 1.5rem;">Sign
+                In</button>
+
+            <div style="margin-top: 2rem; text-align: center;">
+                <button class="btn btn-ghost" onclick="window.location.href='login_password.html'"
+                    style="font-size: 0.875rem;">
+                    <i data-lucide="key" style="width: 16px; margin-right: 8px;"></i>
+                    Login with Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const otpInput = document.getElementById('otp');
+        const signInBtn = document.getElementById('signInBtn');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const timerText = document.getElementById('timer');
+
+        otpInput.addEventListener('input', () => {
+            if (otpInput.value.length >= 4) {
+                signInBtn.disabled = false;
+            } else {
+                signInBtn.disabled = true;
+            }
+        });
+
+        sendCodeBtn.addEventListener('click', () => {
+            sendCodeBtn.style.display = 'none';
+            timerText.style.display = 'flex';
+            let seconds = 60;
+            const interval = setInterval(() => {
+                seconds--;
+                timerText.innerText = `${seconds}s`;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    sendCodeBtn.style.display = 'flex';
+                    timerText.style.display = 'none';
+                }
+            }, 1000);
+        });
+
+        signInBtn.addEventListener('click', () => {
+            window.location.href = 'overview.html';
+        });
+    </script>
+</body>
+
+</html>

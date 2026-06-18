@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Downloading Firmware - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-header-spacer {
+            width: 32px;
+            height: 32px;
+        }
+
+        .update-content {
+            padding: 1.5rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* Downloading Card */
+        .download-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 2.5rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .status-hint {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.01em;
+        }
+
+        .progress-percentage {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: var(--foreground);
+            line-height: 1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .download-progress-bar-bg {
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 9999px;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .download-progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            border-radius: 9999px;
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-sub-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 2px;
+        }
+
+        .left-ver {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+        }
+
+        .right-time {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+        }
+
+        /* User Notification Card */
+        .notification-card {
+            background: rgba(245, 158, 11, 0.07);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 1.15rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.02);
+        }
+
+        .notification-icon {
+            color: #d97706;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .notification-text {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #92400e;
+            line-height: 1.45;
+        }
+
+        /* Success dialog overlay style */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .success-box {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            width: 85%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-overlay.show .success-box {
+            transform: scale(1);
+        }
+
+        .success-icon-wrapper {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .success-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .success-desc {
+            font-size: 0.85rem;
+            color: var(--muted-foreground);
+            line-height: 1.45;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Page Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='firmware_update.html'">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Firmware Update</div>
+            <div class="page-header-spacer"></div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="update-content">
+            <!-- Download Progress Area Card -->
+            <div class="download-card">
+                <div class="status-hint">Downloading New Version...</div>
+                <div class="progress-percentage" id="downloadPercent">0%</div>
+                
+                <div class="download-progress-bar-bg">
+                    <div class="download-progress-bar-fill" id="downloadBar"></div>
+                </div>
+
+                <div class="progress-sub-info">
+                    <span class="left-ver">Firmware v2.4.0</span>
+                    <span class="right-time" id="remainingTime">~4 min remaining</span>
+                </div>
+            </div>
+
+            <!-- User Notification Card (Click to simulate fail in prototype) -->
+            <div class="notification-card" onclick="window.location.href='firmware_failed.html'" style="cursor: pointer;">
+                <div class="notification-icon">
+                    <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div class="notification-text">Keep the device close and Bluetooth connected.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-box">
+            <div class="success-icon-wrapper">
+                <i data-lucide="check-circle-2" style="width: 32px; height: 32px;"></i>
+            </div>
+            <div class="success-title">Update Complete</div>
+            <div class="success-desc">Firmware successfully updated to version v2.4.0. HMI panel is rebooting.</div>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // Simulate progress bar countdown
+        document.addEventListener('DOMContentLoaded', () => {
+            const percentEl = document.getElementById('downloadPercent');
+            const barEl = document.getElementById('downloadBar');
+            const timeEl = document.getElementById('remainingTime');
+            const successOverlay = document.getElementById('successOverlay');
+
+            let progress = 0;
+            
+            // If loaded inside an iframe (e.g. Design Overview), freeze at 42% to present a stable preview
+            if (window.self !== window.top) {
+                progress = 42;
+                percentEl.textContent = '42%';
+                barEl.style.width = '42%';
+                timeEl.textContent = '~3 min remaining';
+                return;
+            }
+
+            const interval = setInterval(() => {
+                // Increment progress dynamically
+                progress += Math.floor(Math.random() * 6) + 2;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Trigger complete state
+                    percentEl.textContent = '100%';
+                    barEl.style.width = '100%';
+                    timeEl.textContent = 'Download complete';
+
+                    // Save new version to localStorage
+                    localStorage.setItem('firmware_version', 'v2.4.0');
+
+                    setTimeout(() => {
+                        // Display success dialog overlay
+                        successOverlay.classList.add('show');
+                        setTimeout(() => {
+                            window.location.href = 'firmware_success.html';
+                        }, 2200);
+                    }, 400);
+                } else {
+                    percentEl.textContent = `${progress}%`;
+                    barEl.style.width = `${progress}%`;
+
+                    // Dynamic remaining time calculation
+                    if (progress < 25) {
+                        timeEl.textContent = '~4 min remaining';
+                    } else if (progress < 50) {
+                        timeEl.textContent = '~3 min remaining';
+                    } else if (progress < 75) {
+                        timeEl.textContent = '~2 min remaining';
+                    } else if (progress < 90) {
+                        timeEl.textContent = '~1 min remaining';
+                    } else {
+                        timeEl.textContent = '~30 sec remaining';
+                    }
+                }
+            }, 180);
+        });
+    </script>
+</body>
+
+</html>

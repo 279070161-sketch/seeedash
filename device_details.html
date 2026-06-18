@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Device Settings - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Specific Styles for Device Details Page */
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-done-btn {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            padding: 4px;
+            transition: opacity 0.2s;
+            width: auto;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-done-btn:hover {
+            opacity: 0.7;
+        }
+
+        .details-content {
+            padding: 0.5rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* Device Preview Area */
+        .device-preview-card {
+            background: transparent;
+            padding: 0.25rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.25rem;
+            border: none;
+            box-shadow: none;
+        }
+
+        .device-frame-mockup {
+            width: 140px;
+            height: 200px;
+            background: #e2e8f0;
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06), inset 0 1px 2px rgba(255,255,255,0.8);
+            border: 1.5px solid #cbd5e1;
+            position: relative;
+        }
+
+        /* The physical button on side of reTerminal */
+        .device-frame-mockup::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            right: -3px;
+            width: 3px;
+            height: 20px;
+            background: #94a3b8;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .device-screen-mockup {
+            width: 100%;
+            height: 100%;
+            background: #111827; /* Dark display screen */
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            position: relative;
+        }
+
+        /* Ginkgo Leaf Graphic in SVG */
+        .ginkgo-leaf-svg {
+            width: 70%;
+            height: 70%;
+            color: rgba(255, 255, 255, 0.9);
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+            animation: float-leaf 4s ease-in-out infinite;
+        }
+
+        @keyframes float-leaf {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(1deg); }
+        }
+
+        .device-screen-mockup .brand-text {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 0.45rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.05em;
+            font-family: monospace;
+        }
+
+        /* Detail List Card */
+        .detail-list-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-row.disabled-row {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+            transition: opacity 0.3s ease;
+        }
+
+        .detail-label {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .detail-value {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-align: right;
+        }
+
+        .detail-value.highlight-green {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .detail-edit-icon {
+            color: var(--primary);
+            cursor: pointer;
+            transition: transform 0.15s;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-edit-icon:hover {
+            transform: scale(1.15);
+        }
+
+        /* Pill switcher styles */
+        .mode-toggle-container {
+            background: #f1f5f9;
+            border-radius: 9999px;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .mode-toggle-btn {
+            border: none;
+            background: transparent;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #64748b;
+        }
+
+        .mode-toggle-btn.active {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        /* Action Buttons List */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 0.25rem;
+        }
+
+        .action-item-btn {
+            background: transparent;
+            border: none;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 0;
+            transition: opacity 0.2s;
+            width: fit-content;
+        }
+
+        .action-item-btn.disconnect-btn {
+            color: #64748b;
+        }
+
+        .action-item-btn.unbind-btn {
+            color: #ef4444;
+        }
+
+        .action-item-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Arrow Icon link symbol */
+        .row-arrow {
+            color: #94a3b8;
+            transition: transform 0.2s;
+        }
+
+        .row-clickable {
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .row-clickable:hover {
+            opacity: 0.8;
+        }
+
+        .row-clickable:hover .row-arrow {
+            transform: translateX(2px);
+        }
+
+        /* Premium Modal Popup Style */
+        .premium-dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .premium-dialog-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .premium-dialog {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 340px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: scale(0.92);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+        }
+
+        .premium-dialog-overlay.show .premium-dialog {
+            transform: scale(1);
+        }
+
+        .dialog-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .dialog-icon.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .dialog-icon.info {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+        }
+
+        .dialog-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .dialog-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .dialog-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .dialog-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 0.75rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dialog-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .dialog-btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .dialog-btn-confirm-danger {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .dialog-btn-confirm-danger:hover {
+            background: #dc2626;
+        }
+
+        .dialog-btn-confirm-primary {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .dialog-btn-confirm-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Inline Input Editor style */
+        .inline-editor {
+            border: 1px solid var(--primary);
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--primary);
+            outline: none;
+            width: 100px;
+            text-align: right;
+            background: rgba(9, 9, 11, 0.05);
+        }
+
+        /* Custom Select Dropdown Styling */
+        .custom-select-dropdown {
+            position: absolute;
+            top: calc(100% - 6px);
+            right: 0;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 140px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 6px;
+            opacity: 0;
+            transform: translateY(-8px) scale(0.96);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: top right;
+            z-index: 100;
+        }
+
+        .custom-select-dropdown.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .custom-dropdown-item {
+            padding: 8px 12px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--foreground);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-align: right;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--muted);
+        }
+
+        .custom-dropdown-item.active {
+            background: rgba(9, 9, 11, 0.06);
+            font-weight: 600;
+        }
+
+        /* iOS Toggle Switch */
+        .ios-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 26px;
+        }
+
+        .ios-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .ios-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 26px;
+        }
+
+        .ios-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input:checked + .ios-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .ios-slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Details Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="saveAndGoBack()">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Device Settings</div>
+            <div class="page-header-spacer"></div>
+        </header>
+
+        <!-- Details Content Area -->
+        <div class="details-content">
+            <!-- Top Card: Visual Frame Mockup -->
+            <div class="device-preview-card" style="margin: 0; padding: 0; overflow: hidden; height: 160px; display: flex; justify-content: center; align-items: center;">
+                <img src="sticky.png" alt="sticky device" style="width: auto; height: 150px; object-fit: contain;">
+            </div>
+
+            <!-- Device Properties Detail Card -->
+            <div class="detail-list-card">
+                <!-- Device Name -->
+                <div class="detail-row">
+                    <span class="detail-label">Device Name</span>
+                    <div class="detail-value">
+                        <span id="deviceNameVal" style="color: var(--foreground); font-weight: 600;">reTerminal Sticky</span>
+                        <input id="deviceNameInput" class="inline-editor" type="text" value="reTerminal Sticky" style="display: none;" onblur="finishEditName()" onkeydown="handleNameKey(event)">
+                        <div class="detail-edit-icon" id="editNameBtn" onclick="startEditName()">
+                            <i data-lucide="pencil" style="width: 14px; height: 14px; margin-left: 2px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SN -->
+                <div class="detail-row">
+                    <span class="detail-label">SN</span>
+                    <span class="detail-value">100056818263300001</span>
+                </div>
+
+                <!-- MAC Address -->
+                <div class="detail-row">
+                    <span class="detail-label">MAC Address</span>
+                    <span class="detail-value">00:18:1A:52:8F:D4</span>
+                </div>
+
+                <!-- Device Status -->
+                <div class="detail-row">
+                    <span class="detail-label">Device Status</span>
+                    <span class="detail-value highlight-green" id="deviceStatusVal">Online</span>
+                </div>
+
+                <!-- Model -->
+                <div class="detail-row">
+                    <span class="detail-label">Model</span>
+                    <span class="detail-value">E1005</span>
+                </div>
+            </div>
+
+            <!-- Configuration & Advanced Card -->
+            <div class="detail-list-card">
+                <!-- Buzzer Mute Switch -->
+                <div class="detail-row">
+                    <span class="detail-label">Buzzer Mute</span>
+                    <label class="ios-switch">
+                        <input type="checkbox" id="buzzerMuteSwitch" onchange="toggleBuzzerMute(this.checked)">
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Power Saving Mode Switch -->
+                <div class="detail-row">
+                    <span class="detail-label">Power Saving Mode</span>
+                    <label class="ios-switch">
+                        <input type="checkbox" id="batterySaverSwitch" onchange="toggleBatterySaver(this.checked)">
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Refresh Interval -->
+                <div class="detail-row" id="refreshIntervalRow" style="position: relative; cursor: pointer; display: none;" onclick="toggleIntervalDropdown(event)">
+                    <span class="detail-label">Refresh Interval</span>
+                    <div class="detail-value" style="gap: 6px; display: flex; align-items: center;">
+                        <span id="refreshValText" style="color: var(--foreground); font-weight: 600;">5m</span>
+                        <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #94a3b8;"></i>
+                    </div>
+
+                    <!-- Custom Dropdown Menu -->
+                    <div class="custom-select-dropdown" id="refreshDropdown">
+                        <div class="custom-dropdown-item" onclick="selectInterval('5m', '5m', event)">5m</div>
+                        <div class="custom-dropdown-item" onclick="selectInterval('30min', '30min', event)">30min</div>
+                        <div class="custom-dropdown-item" onclick="selectInterval('1h', '1h', event)">1h</div>
+                        <div class="custom-dropdown-item" onclick="selectInterval('1day', '1day', event)">1day</div>
+                    </div>
+                </div>
+
+
+
+                <!-- Wi-Fi Link -->
+                <div class="detail-row row-clickable" onclick="window.location.href='device_wifi_settings.html'">
+                    <span class="detail-label">Wi-Fi</span>
+                    <span class="detail-value">
+                        <span id="wifiVal">A205 home</span>
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+
+                <!-- Firmware Version -->
+                <div class="detail-row row-clickable" onclick="window.location.href='firmware_update.html'">
+                    <span class="detail-label">Firmware Version</span>
+                    <span class="detail-value" id="firmwareVal">
+                        v1.2.4
+                        <span id="firmwareDot" style="width: 6px; height: 6px; border-radius: 50%; background: #ef4444; display: inline-block; margin: 0 4px 0 2px;"></span>
+                        <i data-lucide="chevron-right" class="row-arrow" style="width: 16px; height: 16px;"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="detail-list-card" style="margin-top: 1rem; margin-bottom: 1.5rem;">
+                <div class="detail-row" style="justify-content: center; cursor: pointer;" onclick="showDisconnectDialog()">
+                    <span style="color: #64748b; font-weight: 600; font-size: 0.95rem;">Disconnect Bluetooth</span>
+                </div>
+                <div class="detail-row" style="justify-content: center; cursor: pointer;" onclick="showUnbindDialog()">
+                    <span style="color: #ef4444; font-weight: 700; font-size: 0.95rem;">Delete Device</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog Overlays -->
+    <!-- Disconnect Modal -->
+    <div class="premium-dialog-overlay" id="disconnectOverlay">
+        <div class="premium-dialog">
+            <div class="dialog-icon info">
+                <i data-lucide="bluetooth-off" style="width: 22px; height: 22px; stroke: #3b82f6;"></i>
+            </div>
+            <div class="dialog-title">Disconnect Bluetooth?</div>
+            <div class="dialog-desc">This will temporarily disconnect Bluetooth connection with your reTerminal smart screen. You can reconnect anytime.</div>
+            <div class="dialog-actions">
+                <button class="dialog-btn dialog-btn-cancel" onclick="closeDialog('disconnectOverlay')">Cancel</button>
+                <button class="dialog-btn dialog-btn-confirm-primary" onclick="confirmDisconnect()">Disconnect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unbind/Delete Modal -->
+    <div class="premium-dialog-overlay" id="unbindOverlay">
+        <div class="premium-dialog">
+            <div class="dialog-icon danger">
+                <i data-lucide="trash-2" style="width: 22px; height: 22px;"></i>
+            </div>
+            <div class="dialog-title">Delete Device?</div>
+            <div class="dialog-desc">This will delete the device from your account. You can bind it again at any time.</div>
+            <div class="dialog-actions">
+                <button class="dialog-btn dialog-btn-cancel" onclick="closeDialog('unbindOverlay')">Cancel</button>
+                <button class="dialog-btn dialog-btn-confirm-danger" onclick="confirmUnbind()">Delete Device</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firmware Modal -->
+    <div class="premium-dialog-overlay" id="firmwareOverlay">
+        <div class="premium-dialog">
+            <div class="dialog-icon info">
+                <i data-lucide="cpu" style="width: 22px; height: 22px;"></i>
+            </div>
+            <div class="dialog-title">Firmware Update Available</div>
+            <div class="dialog-desc">New firmware v1.2.5 is available. It brings optimized screen rendering response times and battery efficiency. Do you want to update now?</div>
+            <div class="dialog-actions">
+                <button class="dialog-btn dialog-btn-cancel" onclick="closeDialog('firmwareOverlay')">Later</button>
+                <button class="dialog-btn dialog-btn-confirm-primary" onclick="confirmFirmwareUpdate()">Update Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // Load firmware version on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedFirmware = localStorage.getItem('firmware_version') || 'v1.2.4';
+            const firmwareValSpan = document.getElementById('firmwareVal');
+            const firmwareDot = document.getElementById('firmwareDot');
+            if (firmwareValSpan) {
+                const textNode = Array.from(firmwareValSpan.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().startsWith('v'));
+                if (textNode) {
+                    textNode.textContent = '\n                        ' + savedFirmware + '\n                        ';
+                }
+            }
+            if ((savedFirmware === 'v1.2.5' || savedFirmware === 'v2.4.0') && firmwareDot) {
+                firmwareDot.style.display = 'none';
+            }
+
+            // Device Name Initialization
+            const savedName = localStorage.getItem('selected_device_name') || 'reTerminal Sticky';
+            document.getElementById('deviceNameVal').textContent = savedName;
+
+            // Device Status Initialization
+            const savedStatus = localStorage.getItem('selected_device_status') || 'Online';
+            const statusSpan = document.getElementById('deviceStatusVal');
+            if (statusSpan) {
+                statusSpan.textContent = savedStatus;
+                if (savedStatus === 'Online') {
+                    statusSpan.className = 'detail-value highlight-green';
+                } else if (savedStatus === 'Sleeping') {
+                    statusSpan.className = 'detail-value';
+                    statusSpan.style.color = '#eab308';
+                } else {
+                    statusSpan.className = 'detail-value';
+                    statusSpan.style.color = '#ef4444';
+                }
+            }
+
+            // Buzzer Mute Switch Initialization
+            const buzzerMute = localStorage.getItem('buzzer_mute') === 'true';
+            const buzzerMuteSwitch = document.getElementById('buzzerMuteSwitch');
+            if (buzzerMuteSwitch) {
+                buzzerMuteSwitch.checked = buzzerMute;
+            }
+
+            // Power Saving Switch Initialization
+            const batterySaver = localStorage.getItem('battery_saver_mode') === 'true';
+            const switchEl = document.getElementById('batterySaverSwitch');
+            if (switchEl) {
+                switchEl.checked = batterySaver;
+                updateRefreshIntervalState(batterySaver);
+            }
+
+            // Refresh Interval Initialization
+            const savedInterval = localStorage.getItem('refresh_interval') || '5m';
+            const refreshValText = document.getElementById('refreshValText');
+            if (refreshValText) {
+                refreshValText.textContent = savedInterval;
+            }
+
+            // Wi-Fi SSID Initialization
+            const savedWifi = localStorage.getItem('connected_wifi') || 'A205 home';
+            const wifiValSpan = document.getElementById('wifiVal');
+            if (wifiValSpan) {
+                if (savedWifi && savedWifi !== 'Disconnected') {
+                    wifiValSpan.textContent = savedWifi;
+                    wifiValSpan.style.color = '';
+                } else {
+                    wifiValSpan.textContent = 'Disconnected';
+                    wifiValSpan.style.color = '#ef4444';
+                }
+            }
+
+        });
+
+        // Save and navigate back
+        function saveAndGoBack() {
+            // Get modified name and details if any, save to localStorage
+            const name = document.getElementById('deviceNameVal').textContent;
+            localStorage.setItem('selected_device_name', name);
+            window.location.href = 'dashboard.html';
+        }
+
+        // Inline name editing
+        function startEditName() {
+            const valSpan = document.getElementById('deviceNameVal');
+            const inputEl = document.getElementById('deviceNameInput');
+            const editBtn = document.getElementById('editNameBtn');
+
+            valSpan.style.display = 'none';
+            editBtn.style.display = 'none';
+            inputEl.style.display = 'inline-block';
+            inputEl.value = valSpan.textContent;
+            inputEl.focus();
+            inputEl.select();
+        }
+
+        function finishEditName() {
+            const valSpan = document.getElementById('deviceNameVal');
+            const inputEl = document.getElementById('deviceNameInput');
+            const editBtn = document.getElementById('editNameBtn');
+
+            const newVal = inputEl.value.trim();
+            if (newVal) {
+                valSpan.textContent = newVal;
+                localStorage.setItem('selected_device_name', newVal);
+            }
+            inputEl.style.display = 'none';
+            valSpan.style.display = 'inline-block';
+            editBtn.style.display = 'flex';
+        }
+
+        function handleNameKey(e) {
+            if (e.key === 'Enter') {
+                finishEditName();
+            } else if (e.key === 'Escape') {
+                const valSpan = document.getElementById('deviceNameVal');
+                const inputEl = document.getElementById('deviceNameInput');
+                inputEl.value = valSpan.textContent;
+                finishEditName();
+            }
+        }
+
+        // Buzzer Mute Toggle Switch Action
+        function toggleBuzzerMute(checked) {
+            localStorage.setItem('buzzer_mute', checked);
+        }
+
+        // Custom Interval Dropdown Toggle
+        function toggleIntervalDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('refreshDropdown');
+            const show = dropdown.classList.contains('show');
+            
+            // Close any other dropdowns first
+            document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('show'));
+            
+            if (!show) {
+                dropdown.classList.add('show');
+                
+                // Set active item class
+                const currentVal = localStorage.getItem('refresh_interval') || '5m';
+                const items = dropdown.querySelectorAll('.custom-dropdown-item');
+                items.forEach(item => {
+                    if (item.getAttribute('onclick').includes(currentVal)) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        function selectInterval(val, text, e) {
+            e.stopPropagation();
+            localStorage.setItem('refresh_interval', val);
+            const valSpan = document.getElementById('refreshValText');
+            if (valSpan) {
+                valSpan.textContent = text;
+            }
+            
+            const dropdown = document.getElementById('refreshDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        // Close dropdown when clicking anywhere outside
+        document.addEventListener('click', () => {
+            const dropdown = document.getElementById('refreshDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Battery Saver Toggle
+        function toggleBatterySaver(checked) {
+            localStorage.setItem('battery_saver_mode', checked);
+            updateRefreshIntervalState(checked);
+        }
+
+        function updateRefreshIntervalState(enabled) {
+            const row = document.getElementById('refreshIntervalRow');
+            if (row) {
+                row.style.display = enabled ? 'flex' : 'none';
+            }
+        }
+
+        // Dialog Handling
+        function showDisconnectDialog() {
+            document.getElementById('disconnectOverlay').classList.add('show');
+        }
+
+        function showUnbindDialog() {
+            document.getElementById('unbindOverlay').classList.add('show');
+        }
+
+        function showFirmwareUpdateDialog() {
+            document.getElementById('firmwareOverlay').classList.add('show');
+        }
+
+        function closeDialog(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function confirmDisconnect() {
+            closeDialog('disconnectOverlay');
+            alert('Bluetooth connection has been disconnected successfully.');
+            window.location.href = 'dashboard.html';
+        }
+
+        function confirmUnbind() {
+            closeDialog('unbindOverlay');
+            alert('Device deleted successfully.');
+            localStorage.removeItem('selected_device_name');
+            window.location.href = 'dashboard.html';
+        }
+
+        function confirmFirmwareUpdate() {
+            closeDialog('firmwareOverlay');
+            alert('Firmware update started! Please keep the device powered on.');
+        }
+    </script>
+</body>
+
+</html>

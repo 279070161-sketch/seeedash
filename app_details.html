@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>App Details - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Specific Styles for App Details Page */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+            margin-right: 32px; /* balance the back button offset */
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .details-content {
+            padding: 1.5rem 1.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            min-height: calc(100vh - 68px);
+            box-sizing: border-box;
+            gap: 1.5rem;
+        }
+
+        /* App Info Header Card */
+        .app-info-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .app-detail-icon {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .app-metadata {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .app-name-large {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+        }
+
+        .app-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .meta-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+        }
+
+        /* Description Area */
+        .description-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .desc-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .desc-text {
+            font-size: 0.88rem;
+            color: #334155;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .hint-text {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.5;
+            font-weight: 500;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 0.88rem;
+        }
+
+        .learn-more-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .learn-more-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Status & Actions */
+        .actions-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.88rem;
+            margin-top: auto; /* Push actions to the bottom if container has height */
+        }
+
+        /* Status label container centered */
+        .status-badge-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Yellow status label styled green */
+        .status-badge-yellow {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .status-badge-green {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .btn-update-now {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            height: 3.25rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(9, 9, 11, 0.08);
+        }
+
+        .btn-update-now:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-update-now:active {
+            transform: translateY(0);
+        }
+
+        .btn-update-now:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-uninstall {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #fee2e2;
+            width: 100%;
+            height: 3.25rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-uninstall:hover {
+            background: #fff5f5;
+            border-color: #fecaca;
+        }
+
+        /* Toast notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            font-size: 0.88rem;
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Spinner keyframes */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='app_center.html'">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">App Details</div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="details-content">
+            <!-- App Info Card -->
+            <div class="app-info-card">
+                <img id="appIcon" src="32_reminder.svg" class="app-detail-icon" alt="Reminder">
+                <div class="app-metadata">
+                    <span id="appName" class="app-name-large">Reminder</span>
+                    <div class="app-meta-row">
+                        <span id="appVer">v1.0.0</span>
+                        <div class="meta-dot"></div>
+                        <span id="appSize">12.4 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description Card -->
+            <div class="description-card">
+                <div class="desc-section-title">What's New</div>
+                <div id="appDesc" class="desc-text">
+                    This update introduces a redesigned forecast engine with higher precision local data, alongside system-wide improvements for reliability and security.
+                </div>
+                <div class="hint-text">
+                    Some features may not be available in all regions or on all device models. For more details: <a href="#" class="learn-more-link" onclick="alert('Learn More clicked')">Learn more...</a>
+                </div>
+            </div>
+
+            <!-- Status tag & Action buttons -->
+            <div class="actions-section">
+                <div class="status-badge-container">
+                    <span id="statusBadge" class="status-badge-yellow">Update Available</span>
+                </div>
+                
+                <button class="btn-update-now" id="updateBtn" onclick="triggerUpdate()">
+                    <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+                    Update Now
+                </button>
+
+                <button class="btn-uninstall" onclick="triggerUninstall()">
+                    <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                    Uninstall
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification">
+        <i data-lucide="check-circle" style="width: 18px; height: 18px; color: #22c55e; flex-shrink: 0;"></i>
+        <span id="toastMessage">Successfully updated!</span>
+    </div>
+
+    <script>
+        // Details Database mapping
+        const appDetailsDb = {
+            'reminder': {
+                name: 'Reminder',
+                icon: '32_reminder.svg',
+                version: 'v1.0.0',
+                latestVer: 'v1.5.0',
+                size: '12.4 MB',
+                desc: 'This update introduces a redesigned forecast engine with higher precision local data, alongside system-wide improvements for reliability and security.',
+                updateAvailable: true
+            },
+            'notes': {
+                name: 'Notes',
+                icon: '32_notes.svg',
+                version: 'v1.2.0',
+                latestVer: 'v1.2.0',
+                size: '8.5 MB',
+                desc: 'This version includes performance optimizations for e-paper screen refresh rates and local cache synchronization stability.',
+                updateAvailable: false
+            },
+            'clock': {
+                name: 'Clock',
+                icon: '32_clock.svg',
+                version: 'v2.4.0',
+                latestVer: 'v2.5.1',
+                size: '6.2 MB',
+                desc: 'Introduces multiple lock screen widget layouts, optimized time-sync protocols, and a low-power background cron engine.',
+                updateAvailable: true
+            },
+            'weather': {
+                name: 'Weather',
+                icon: '32_weather.svg',
+                version: 'v1.0.4',
+                latestVer: 'v1.0.4',
+                size: '10.1 MB',
+                desc: 'Fixed location-search timeout errors, improved AQI data accuracy, and added support for storm warnings.',
+                updateAvailable: false
+            },
+            'photo': {
+                name: 'Photo',
+                icon: '32_image.svg',
+                version: 'v2.0.1',
+                latestVer: 'v2.2.0',
+                size: '15.8 MB',
+                desc: 'Supports high-resolution image compression, smart cropping algorithms, and custom sleep screen gallery rotations.',
+                updateAvailable: true
+            }
+        };
+
+        let currentAppId = 'reminder';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Read query params
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id && appDetailsDb[id]) {
+                currentAppId = id;
+            }
+
+            // Sync from localStorage if previously updated/uninstalled
+            syncFromCache();
+            renderDetails();
+        });
+
+        function syncFromCache() {
+            const cachedApps = localStorage.getItem('installed_apps');
+            if (cachedApps) {
+                const installedList = JSON.parse(cachedApps);
+                const appInList = installedList.find(a => a.id === currentAppId);
+
+                // If not found in the installed list, it means it has been uninstalled
+                if (!appInList) {
+                    alert('App is not installed on this device.');
+                    window.location.href = 'app_center.html';
+                    return;
+                }
+
+                // Sync versions
+                const dbApp = appDetailsDb[currentAppId];
+                dbApp.version = appInList.currentVer;
+                dbApp.updateAvailable = appInList.updateAvailable;
+            }
+        }
+
+        function renderDetails() {
+            const app = appDetailsDb[currentAppId];
+
+            document.getElementById('appName').textContent = app.name;
+            document.getElementById('appIcon').src = app.icon;
+            document.getElementById('appVer').textContent = app.version;
+            document.getElementById('appSize').textContent = app.size;
+            document.getElementById('appDesc').textContent = app.desc;
+
+            const badge = document.getElementById('statusBadge');
+            const updateBtn = document.getElementById('updateBtn');
+            const descCard = document.querySelector('.description-card');
+            const badgeContainer = document.querySelector('.status-badge-container');
+
+            if (app.updateAvailable) {
+                descCard.style.display = 'flex';
+                badgeContainer.style.display = 'flex';
+                updateBtn.style.display = 'flex';
+
+                badge.className = 'status-badge-yellow';
+                badge.textContent = 'Update Available';
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '<i data-lucide="sparkles" style="width: 18px; height: 18px;"></i> Update Now';
+            } else {
+                descCard.style.display = 'none';
+                badgeContainer.style.display = 'none';
+                updateBtn.style.display = 'none';
+            }
+
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // Action Trigger update
+        function triggerUpdate() {
+            const updateBtn = document.getElementById('updateBtn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width: 18px; height: 18px;"></i> Updating...';
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            showToast('Downloading package...', 'loading');
+
+            setTimeout(() => {
+                const app = appDetailsDb[currentAppId];
+                app.version = app.latestVer;
+                app.updateAvailable = false;
+
+                // Sync back to local storage
+                const cachedApps = localStorage.getItem('installed_apps');
+                if (cachedApps) {
+                    const installedList = JSON.parse(cachedApps);
+                    const appInList = installedList.find(a => a.id === currentAppId);
+                    if (appInList) {
+                        appInList.currentVer = app.latestVer;
+                        appInList.updateAvailable = false;
+                        localStorage.setItem('installed_apps', JSON.stringify(installedList));
+                    }
+                }
+
+                renderDetails();
+                showToast(`${app.name} updated successfully!`, 'success');
+            }, 2000);
+        }
+
+        // Action Trigger uninstall
+        function triggerUninstall() {
+            if (confirm(`Uninstall ${appDetailsDb[currentAppId].name}?`)) {
+                // Update local storage
+                const cachedApps = localStorage.getItem('installed_apps');
+                if (cachedApps) {
+                    let installedList = JSON.parse(cachedApps);
+                    installedList = installedList.filter(a => a.id !== currentAppId);
+                    localStorage.setItem('installed_apps', JSON.stringify(installedList));
+                }
+
+                showToast('Uninstalling...', 'loading');
+                setTimeout(() => {
+                    window.location.href = 'app_center.html';
+                }, 1000);
+            }
+        }
+
+        // Toast feedback handler
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = toast.querySelector('i');
+
+            toastMsg.textContent = message;
+
+            if (type === 'loading') {
+                toastIcon.setAttribute('data-lucide', 'loader-2');
+                toastIcon.classList.add('spinner');
+                toastIcon.style.color = '#3b82f6';
+            } else {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.classList.remove('spinner');
+                toastIcon.style.color = '#22c55e';
+            }
+
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            toast.classList.add('show');
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>

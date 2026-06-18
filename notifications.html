@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Notifications - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+            margin-left: 0.5rem;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .mark-all-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #64748b;
+            transition: color 0.2s;
+            white-space: nowrap;
+            padding: 4px 8px;
+        }
+
+        .mark-all-btn:hover {
+            color: #0f172a;
+        }
+
+        .mark-all-btn.disabled {
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .notifications-content {
+            padding: 1.5rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* Notifications List */
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .notification-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 1.15rem 1.25rem;
+            display: flex;
+            gap: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.025);
+            border-color: #cbd5e1;
+        }
+
+        /* Icon styling */
+        .notify-icon-container {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        .notify-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+        }
+
+        .notify-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .notify-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .notify-desc {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .notify-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 100%;
+            min-width: 52px;
+        }
+
+        .notify-time {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        /* Red Unread Dot */
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            margin-top: 0.5rem;
+        }
+
+        .unread-dot.read {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 1.5rem;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='profile.html'" title="返回">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Notifications</div>
+            <button class="mark-all-btn" id="markAllBtn" onclick="markAllAsRead()">Mark all as read</button>
+        </header>
+
+        <!-- Content Area -->
+        <div class="notifications-content">
+            <div class="notification-list" id="notificationList">
+                <!-- Firmware Update Card -->
+                <div class="notification-card" id="notify-1" onclick="markAsRead('notify-1')">
+                    <div class="notify-icon-container">
+                        <i data-lucide="download-cloud" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <div class="notify-info">
+                        <div class="notify-header-row">
+                            <span class="notify-title">Firmware Update Available</span>
+                        </div>
+                        <span class="notify-desc">Version 2.4.0 is ready to install.</span>
+                    </div>
+                    <div class="notify-meta">
+                        <span class="notify-time">2m ago</span>
+                        <div class="unread-dot" id="dot-notify-1"></div>
+                    </div>
+                </div>
+
+                <!-- New App Card -->
+                <div class="notification-card" id="notify-2" onclick="markAsRead('notify-2')">
+                    <div class="notify-icon-container">
+                        <i data-lucide="sparkles" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <div class="notify-info">
+                        <div class="notify-header-row">
+                            <span class="notify-title">New App</span>
+                        </div>
+                        <span class="notify-desc">A new “Daily Inspiration” app has been launched.</span>
+                    </div>
+                    <div class="notify-meta">
+                        <span class="notify-time">Yesterday</span>
+                        <div class="unread-dot" id="dot-notify-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State Container -->
+            <div class="empty-state" id="emptyState">
+                <i data-lucide="bell-off" style="width: 48px; height: 48px;"></i>
+                <p>No new notifications</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        function markAsRead(id) {
+            const dot = document.getElementById('dot-' + id);
+            if (dot && !dot.classList.contains('read')) {
+                dot.classList.add('read');
+                checkAllRead();
+            }
+        }
+
+        function markAllAsRead() {
+            const dots = document.querySelectorAll('.unread-dot');
+            dots.forEach(dot => {
+                dot.classList.add('read');
+            });
+            checkAllRead();
+        }
+
+        function checkAllRead() {
+            const unreadDots = Array.from(document.querySelectorAll('.unread-dot')).filter(dot => !dot.classList.contains('read'));
+            const markAllBtn = document.getElementById('markAllBtn');
+            if (unreadDots.length === 0) {
+                markAllBtn.classList.add('disabled');
+                markAllBtn.disabled = true;
+            }
+        }
+    </script>
+</body>
+
+</html>

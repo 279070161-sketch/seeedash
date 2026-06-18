@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Weather - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+            margin-left: 32px;
+        }
+
+        .btn-deploy {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(9, 9, 11, 0.1);
+        }
+
+        .btn-deploy:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-deploy:active {
+            transform: translateY(0);
+        }
+
+        .btn-deploy.deploying {
+            background: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        .details-content {
+            padding: 1rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        .section-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 0.25rem;
+        }
+
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-badge {
+            background: rgba(9, 9, 11, 0.06);
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 9999px;
+        }
+
+        /* 2x2 Templates Grid */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.88rem;
+        }
+
+        .template-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 2px solid var(--border);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            border-color: #cbd5e1;
+        }
+
+        .template-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(9, 9, 11, 0.06);
+        }
+
+        .template-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            text-align: center;
+            letter-spacing: -0.01em;
+            transition: color 0.2s;
+            margin-top: 8px;
+        }
+
+        .template-card.selected .template-title {
+            color: var(--primary);
+        }
+
+        .selected-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.6);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2;
+        }
+
+        .template-card.selected .selected-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ============================
+           WIDGET PREVIEW — mimics dashboard widget-card
+           Height ~112px, with header + content area
+           ============================ */
+        .widget-preview {
+            width: 100%;
+            aspect-ratio: 5 / 3;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.65rem;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .widget-preview-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ---- T1: CITY CARD (widget preview) ---- */
+        .wp-t1 {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .wp-t1-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .wp-t1-city {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .wp-t1-city::after {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: #e2e8f0;
+            margin-top: 3px;
+        }
+
+        .wp-t1-temp {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .wp-t1-temp sup {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .wp-t1-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .wp-t1-cond {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .wp-t1-hilo {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* ---- T2: FORECAST STRIP (widget preview) ---- */
+        .wp-t2 {}
+
+        .wp-t2-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .wp-t2-temp {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .wp-t2-temp sup {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .wp-t2-cond {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #475569;
+            text-align: right;
+        }
+
+        .wp-t2-strip {
+            display: flex;
+            justify-content: space-between;
+            gap: 2px;
+            margin-top: 3px;
+            padding-top: 3px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .wp-t2-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            flex: 1;
+            position: relative;
+        }
+
+        .wp-t2-day:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 15%;
+            height: 70%;
+            width: 1px;
+            background: #f1f5f9;
+        }
+
+        .wp-t2-dl {
+            font-size: 0.38rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .wp-t2-dt {
+            font-size: 0.45rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .wp-t2-dh {
+            font-size: 0.38rem;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .wp-t2-dh::before {
+            content: '↓';
+            font-size: 0.3rem;
+            margin-right: 1px;
+        }
+
+        /* ---- T3: DETAIL CARD (widget preview) ---- */
+        .wp-t3 {}
+
+        .wp-t3-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .wp-t3-temp {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .wp-t3-temp sup {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .wp-t3-cond {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        .wp-t3-hilo {
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .wp-t3-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px 8px;
+            margin-top: 3px;
+            padding-top: 3px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .wp-t3-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.42rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .wp-t3-item .lbl {
+            color: #94a3b8;
+        }
+
+        /* ---- T4: COMPACT HEADER (widget preview) ---- */
+        .wp-t4 {}
+
+        .wp-t4-row1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .wp-t4-city {
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .wp-t4-cond {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .wp-t4-mid {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .wp-t4-temp {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .wp-t4-temp sup {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .wp-t4-hilo {
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .wp-t4-extras {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.4rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-top: 1px;
+        }
+
+        /* Toast notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            font-size: 0.88rem;
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='dashboard.html'">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title" style="margin-left: 32px;">Weather</div>
+            <button class="btn-deploy" id="deployBtn" onclick="triggerDeploy()">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Deploy
+            </button>
+        </header>
+
+        <div class="details-content">
+            <div class="section-container">
+                <div class="section-header-row">
+                    <div class="section-title">Weather Templates</div>
+                    <span class="section-badge">4 Available</span>
+                </div>
+                <div class="templates-grid">
+
+                    <!-- Template 1: City Card -->
+                    <div class="template-card" id="card_city_card" onclick="selectTemplate('CITY CARD')">
+                        <div class="selected-indicator"><i data-lucide="check"
+                                style="width: 10px; height: 10px; color: #ffffff;"></i></div>
+                        <div class="widget-preview">
+                            <div class="widget-preview-content wp-t1">
+                                <div class="wp-t1-left">
+                                    <span class="wp-t1-city">Shenzhen</span>
+                                    <span class="wp-t1-temp">24<sup>°</sup></span>
+                                </div>
+                                <div class="wp-t1-right">
+                                    <span class="wp-t1-cond">Cloudy</span>
+                                    <span class="wp-t1-hilo">H 28° / L 19°</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-title">CITY CARD</div>
+                    </div>
+
+                    <!-- Template 2: Forecast Strip -->
+                    <div class="template-card" id="card_forecast_strip" onclick="selectTemplate('FORECAST STRIP')">
+                        <div class="selected-indicator"><i data-lucide="check"
+                                style="width: 10px; height: 10px; color: #ffffff;"></i></div>
+                        <div class="widget-preview">
+                            <div class="widget-preview-content wp-t2">
+                                <div class="wp-t2-main">
+                                    <span class="wp-t2-temp">24<sup>°</sup></span>
+                                    <div style="text-align:right;">
+                                        <div class="wp-t2-cond">Cloudy</div>
+                                        <div style="font-size:0.5rem;font-weight:600;color:#64748b;">H 28° / L 19°</div>
+                                    </div>
+                                </div>
+                                <div class="wp-t2-strip">
+                                    <div class="wp-t2-day"><span class="wp-t2-dl">Mon</span><span
+                                            class="wp-t2-dt">26°</span><span class="wp-t2-dh">18°</span></div>
+                                    <div class="wp-t2-day"><span class="wp-t2-dl">Tue</span><span
+                                            class="wp-t2-dt">28°</span><span class="wp-t2-dh">20°</span></div>
+                                    <div class="wp-t2-day"><span class="wp-t2-dl">Wed</span><span
+                                            class="wp-t2-dt">22°</span><span class="wp-t2-dh">17°</span></div>
+                                    <div class="wp-t2-day"><span class="wp-t2-dl">Thu</span><span
+                                            class="wp-t2-dt">24°</span><span class="wp-t2-dh">19°</span></div>
+                                    <div class="wp-t2-day"><span class="wp-t2-dl">Fri</span><span
+                                            class="wp-t2-dt">21°</span><span class="wp-t2-dh">16°</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-title">FORECAST STRIP</div>
+                    </div>
+
+                    <!-- Template 3: Detail Card -->
+                    <div class="template-card" id="card_detail_card" onclick="selectTemplate('DETAIL CARD')">
+                        <div class="selected-indicator"><i data-lucide="check"
+                                style="width: 10px; height: 10px; color: #ffffff;"></i></div>
+                        <div class="widget-preview">
+                            <div class="widget-preview-content wp-t3">
+                                <div class="wp-t3-top">
+                                    <span class="wp-t3-temp">24<sup>°</sup></span>
+                                    <div style="text-align:right;">
+                                        <div class="wp-t3-cond">Cloudy</div>
+                                        <div class="wp-t3-hilo">H 28° / L 19°</div>
+                                    </div>
+                                </div>
+                                <div class="wp-t3-grid">
+                                    <div class="wp-t3-item"><span class="lbl">Wind</span> 12 km/h</div>
+                                    <div class="wp-t3-item"><span class="lbl">Humidity</span> 65%</div>
+                                    <div class="wp-t3-item"><span class="lbl">Sunrise</span> 05:32</div>
+                                    <div class="wp-t3-item"><span class="lbl">Sunset</span> 18:45</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-title">DETAIL CARD</div>
+                    </div>
+
+                    <!-- Template 4: Compact Header -->
+                    <div class="template-card" id="card_compact_header" onclick="selectTemplate('COMPACT HEADER')">
+                        <div class="selected-indicator"><i data-lucide="check"
+                                style="width: 10px; height: 10px; color: #ffffff;"></i></div>
+                        <div class="widget-preview">
+                            <div class="widget-preview-content wp-t4">
+                                <div class="wp-t4-row1">
+                                    <span class="wp-t4-city">Shenzhen</span>
+                                    <span class="wp-t4-cond">Cloudy</span>
+                                </div>
+                                <div class="wp-t4-mid">
+                                    <span class="wp-t4-temp">24<sup>°</sup></span>
+                                    <span class="wp-t4-hilo">28° / 19°</span>
+                                </div>
+                                <div class="wp-t4-extras">
+                                    <span>Wind 12 km/h</span>
+                                    <span>Humidity 65%</span>
+                                    <span>Sunrise 05:32</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-title">COMPACT HEADER</div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toastNotification" class="toast-notification">
+        <span id="toastMessage" style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="check-circle" style="width:18px;height:18px;color:#22c55e;flex-shrink:0;"></i>
+            <span id="toastText">Successfully updated!</span>
+        </span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentTemplate = localStorage.getItem('weather_template') || 'CITY CARD';
+            selectTemplateCard(currentTemplate);
+
+            if (window.lucide) window.lucide.createIcons();
+        });
+
+        function selectTemplate(name) {
+            const previous = localStorage.getItem('weather_template') || 'CITY CARD';
+            if (previous === name) return;
+            localStorage.setItem('weather_template', name);
+            selectTemplateCard(name);
+            showToast(`Syncing weather template "${name}" to device...`, 'loading');
+            setTimeout(() => { showToast(`Weather template synced successfully!`, 'success'); }, 1500);
+        }
+
+        function selectTemplateCard(name) {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+            let cardId = 'card_city_card';
+            if (name === 'FORECAST STRIP') cardId = 'card_forecast_strip';
+            else if (name === 'DETAIL CARD') cardId = 'card_detail_card';
+            else if (name === 'COMPACT HEADER') cardId = 'card_compact_header';
+            const card = document.getElementById(cardId);
+            if (card) card.classList.add('selected');
+        }
+
+
+
+        function triggerDeploy() {
+            const currentTemplate = localStorage.getItem('weather_template') || 'CITY CARD';
+            const deployBtn = document.getElementById('deployBtn');
+            deployBtn.disabled = true;
+            deployBtn.className = 'btn-deploy deploying';
+            deployBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="spinner" style="margin-right:4px;">
+                    <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                    <line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line>
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                </svg>
+                Deploying
+            `;
+            showToast('Deploying weather template to smart screen...', 'loading');
+            setTimeout(() => {
+                // Save the deployed template and update showing type
+                localStorage.setItem('weather_deployed_template', currentTemplate);
+                localStorage.setItem('currently_showing_type', 'weather');
+                localStorage.setItem('eink_now_showing', 'Weather');
+
+                deployBtn.disabled = false;
+                deployBtn.className = 'btn-deploy';
+                deployBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Deploy
+                `;
+                showToast('Weather template deployed! Check your dashboard.', 'success');
+            }, 1500);
+        }
+
+        let toastTimer = null;
+        function showToast(message, type) {
+            const toast = document.getElementById('toastNotification');
+            const toastText = document.getElementById('toastText');
+            const icon = toast.querySelector('i');
+            if (toastTimer) { clearTimeout(toastTimer); toast.classList.remove('show'); }
+            setTimeout(() => {
+                if (type === 'loading') {
+                    icon.setAttribute('data-lucide', 'loader-2');
+                    icon.style.color = '#94a3b8';
+                    icon.className = 'spinner';
+                } else {
+                    icon.setAttribute('data-lucide', 'check-circle');
+                    icon.style.color = '#22c55e';
+                    icon.className = '';
+                }
+                toastText.textContent = message;
+                if (window.lucide) window.lucide.createIcons();
+                toast.classList.add('show');
+                if (type !== 'loading') {
+                    toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+                }
+            }, 50);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Wi-Fi Settings - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Specific Styles for Wi-Fi Settings Page */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-header-spacer {
+            width: 32px;
+            height: 32px;
+        }
+
+        .details-content {
+            padding: 1rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* Section Container & Titles */
+        .section-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-left: 0.25rem;
+        }
+
+        /* Detail List Card */
+        .detail-list-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 0.25rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .detail-value {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-align: right;
+        }
+
+        .row-clickable {
+            cursor: pointer;
+            transition: background-color 0.15s, opacity 0.15s;
+        }
+
+        .row-clickable:hover {
+            opacity: 0.85;
+        }
+
+        /* Connection Dialog (Bottom Sheet modal) matching wifi_password.html */
+        .premium-dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .premium-dialog-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bottom-sheet {
+            background: #ffffff;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            box-shadow: 0 -10px 45px rgba(0, 0, 0, 0.18);
+            width: 100%;
+            max-width: 420px;
+            padding: 24px 0 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-dialog-overlay.show .bottom-sheet {
+            transform: translateY(0);
+        }
+
+        .drag-handle {
+            width: 38px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            align-self: center;
+        }
+
+        /* Large blue Wi-Fi icon styling matching wifi_password.html */
+        .wifi-icon-large-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            align-self: center;
+        }
+
+        .wifi-icon-large {
+            color: #007aff;
+            animation: wifi-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes wifi-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+                filter: drop-shadow(0 4px 12px rgba(0, 122, 255, 0.25));
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+        }
+
+        .title-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 8px;
+            padding: 0 24px;
+        }
+
+        .subtitle-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 28px;
+            line-height: 1.5;
+            padding: 0 24px;
+        }
+
+        /* Premium Grey Input field box matching wifi_password.html */
+        .input-box-wrapper {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 0 24px 20px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 3.25rem;
+            transition: all 0.2s;
+        }
+
+        .input-box-wrapper:focus-within {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(9, 9, 11, 0.1);
+        }
+
+        .password-input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #0f172a;
+            width: 85%;
+            font-weight: 500;
+        }
+
+        .password-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .eye-toggle-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        .eye-toggle-btn:hover {
+            color: #0f172a;
+        }
+
+        /* Action Buttons styling */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin: 0 24px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            height: 3.25rem;
+            font-weight: 700;
+            border-radius: var(--radius);
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-connect {
+            flex: 1;
+            height: 3.25rem;
+            font-weight: 700;
+            border-radius: var(--radius);
+            border: none;
+            background: var(--primary);
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(9, 9, 11, 0.08);
+        }
+
+        .btn-connect:hover {
+            opacity: 0.9;
+        }
+
+        .btn-connect:disabled {
+            background: #cbd5e1;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Toast notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            font-size: 0.88rem;
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Spinner keyframes */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='device_details.html'">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Wi-Fi settings</div>
+            <div class="page-header-spacer"></div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="details-content">
+            <!-- 1. Current Network Area -->
+            <div class="section-container">
+                <div class="section-title">Current Networks</div>
+                <div class="detail-list-card">
+                    <div class="detail-row">
+                        <span class="detail-label" style="font-weight: 500;">Wi-Fi</span>
+                        <span class="detail-value" id="currentWifiVal" style="color: var(--foreground); font-weight: 600;">
+                            A205 home
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Other Networks Area -->
+            <div class="section-container">
+                <div class="section-title">Other Networks</div>
+                <div class="detail-list-card" id="otherWifiList">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Bottom Sheet -->
+    <div class="premium-dialog-overlay" id="wifiPasswordOverlay">
+        <div class="bottom-sheet">
+            <div class="drag-handle"></div>
+
+            <!-- Large blue Wi-Fi signal icon matching wifi_password.html -->
+            <div class="wifi-icon-large-container">
+                <i data-lucide="wifi" class="wifi-icon-large" style="width: 72px; height: 72px;"></i>
+            </div>
+
+            <!-- Dynamic Title & Subtitle matching wifi_password.html -->
+            <h2 class="title-text" id="wifiPopupTitle">Join "Office_Network"</h2>
+            <p class="subtitle-text">Enter the password to join this WLAN network.</p>
+
+            <form id="wifiConnectForm" onsubmit="submitWifiPassword(event)" style="display: flex; flex-direction: column;">
+                <div class="input-box-wrapper">
+                    <input type="password" id="popupPasswordInput" class="password-input" placeholder="Password" required>
+                    <button type="button" class="eye-toggle-btn" onclick="togglePopupPassword()">
+                        <i data-lucide="eye-off" id="popupEyeIcon" style="width: 20px; height: 20px;"></i>
+                    </button>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-cancel" onclick="closeWifiPopup()">Cancel</button>
+                    <button type="submit" id="popupConnectBtn" class="btn-connect">Connect</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification">
+        <i data-lucide="check-circle" style="width: 18px; height: 18px; color: #22c55e; flex-shrink: 0;"></i>
+        <span id="toastMessage">Successfully connected!</span>
+    </div>
+
+    <script>
+        // List of all networks
+        const allNetworks = [
+            { name: 'A205 home', protected: true, signal: 4 },
+            { name: 'Office_Network', protected: true, signal: 3 },
+            { name: 'FLOOR 4', protected: true, signal: 2 },
+            { name: 'Guest_WiFi', protected: false, signal: 1 }
+        ];
+
+        let currentConnectingWifi = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render list
+            renderNetworks();
+        });
+
+        // Render networks dynamically based on current connected state in localStorage
+        function renderNetworks() {
+            const connectedWifi = localStorage.getItem('connected_wifi') || 'A205 home';
+
+            // 1. Update current networks UI
+            const currentWifiVal = document.getElementById('currentWifiVal');
+            if (currentWifiVal) {
+                currentWifiVal.textContent = connectedWifi;
+            }
+
+            // 2. Render other networks
+            const otherWifiList = document.getElementById('otherWifiList');
+            if (otherWifiList) {
+                otherWifiList.innerHTML = '';
+
+                // Filter out the currently connected one
+                const otherNetworks = allNetworks.filter(net => net.name !== connectedWifi);
+
+                otherNetworks.forEach(net => {
+                    const row = document.createElement('div');
+                    row.className = 'detail-row row-clickable';
+                    row.onclick = () => selectWifi(net.name, net.protected);
+
+                    // Left Side: Name
+                    const leftDiv = document.createElement('div');
+                    leftDiv.style.display = 'flex';
+                    leftDiv.style.alignItems = 'center';
+                    leftDiv.style.gap = '8px';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'detail-label';
+                    nameSpan.style.fontWeight = '500';
+                    nameSpan.textContent = net.name;
+                    leftDiv.appendChild(nameSpan);
+
+                    // Right Side: Lock and Signal Strength Icon
+                    const rightDiv = document.createElement('div');
+                    rightDiv.className = 'detail-value';
+                    rightDiv.style.gap = '12px'; // Matches wifi_search.html gap
+
+                    if (net.protected) {
+                        const lockIcon = document.createElement('i');
+                        lockIcon.setAttribute('data-lucide', 'lock');
+                        lockIcon.style.width = '16px'; // 16px to match wifi_search.html
+                        lockIcon.style.height = '16px';
+                        lockIcon.style.color = '#64748b'; // color to match wifi_search.html
+                        rightDiv.appendChild(lockIcon);
+                    }
+
+                    // Dynamic SVG representing signal strength by number of active bars
+                    const wifiIconContainer = document.createElement('div');
+                    wifiIconContainer.style.width = '18px';
+                    wifiIconContainer.style.height = '18px';
+                    wifiIconContainer.style.display = 'inline-flex';
+                    wifiIconContainer.style.alignItems = 'center';
+                    wifiIconContainer.style.justifyContent = 'center';
+
+                    const color = '#1e1e20';
+                    const inactiveColor = '#e4e4e7';
+                    const signal = net.signal; // 1 to 4
+
+                    const arc1Color = signal >= 2 ? color : inactiveColor;
+                    const arc2Color = signal >= 3 ? color : inactiveColor;
+                    const arc3Color = signal >= 4 ? color : inactiveColor;
+
+                    wifiIconContainer.innerHTML = `
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h.01" stroke="${color}" />
+                        <path d="M8.5 16.5a5 5 0 0 1 7 0" stroke="${arc1Color}" />
+                        <path d="M5 13a10 10 0 0 1 14 0" stroke="${arc2Color}" />
+                        <path d="M2 9.5a15 15 0 0 1 20 0" stroke="${arc3Color}" />
+                      </svg>
+                    `;
+
+                    rightDiv.appendChild(wifiIconContainer);
+
+                    row.appendChild(leftDiv);
+                    row.appendChild(rightDiv);
+                    otherWifiList.appendChild(row);
+                });
+            }
+
+            // Refresh Lucide Icons
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // Selection trigger
+        function selectWifi(name, isProtected) {
+            if (isProtected) {
+                currentConnectingWifi = name;
+                document.getElementById('wifiPopupTitle').textContent = `Join "${name}"`;
+                document.getElementById('popupPasswordInput').value = '';
+                // Reset connecting button state
+                const connectBtn = document.getElementById('popupConnectBtn');
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = 'Connect';
+                
+                document.getElementById('wifiPasswordOverlay').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('popupPasswordInput').focus();
+                }, 200);
+            } else {
+                connectToWifi(name);
+            }
+        }
+
+        // Connection routine
+        function connectToWifi(name) {
+            const connectBtn = document.getElementById('popupConnectBtn');
+            const originalContent = connectBtn.innerHTML;
+
+            // Update modal button state to connecting
+            connectBtn.disabled = true;
+            connectBtn.innerHTML = `<i data-lucide="loader-2" class="spinner" style="width: 18px; height: 18px;"></i> Connecting...`;
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            showToast(`Connecting to "${name}"...`, 'loading');
+
+            setTimeout(() => {
+                localStorage.setItem('connected_wifi', name);
+                renderNetworks();
+                
+                // Reset button state and close popup
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = originalContent;
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+                
+                closeWifiPopup();
+                showToast(`Connected to "${name}" successfully.`, 'success');
+            }, 1800);
+        }
+
+        // Popup Actions
+        function submitWifiPassword(event) {
+            event.preventDefault();
+            const password = document.getElementById('popupPasswordInput').value;
+            if (!password) return;
+
+            connectToWifi(currentConnectingWifi);
+        }
+
+        function closeWifiPopup() {
+            document.getElementById('wifiPasswordOverlay').classList.remove('show');
+        }
+
+        function togglePopupPassword() {
+            const input = document.getElementById('popupPasswordInput');
+            const icon = document.getElementById('popupEyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye-off');
+            }
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // Toast feedback handler
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = toast.querySelector('i');
+
+            toastMsg.textContent = message;
+
+            if (type === 'loading') {
+                toastIcon.setAttribute('data-lucide', 'loader-2');
+                toastIcon.classList.add('spinner');
+                toastIcon.style.color = '#3b82f6';
+            } else {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.classList.remove('spinner');
+                toastIcon.style.color = '#22c55e';
+            }
+
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            toast.classList.add('show');
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>

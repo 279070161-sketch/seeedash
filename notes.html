@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>E-Ink Notes - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Unified Wi-Fi Item component style optimization */
+        .note-row-container {
+            position: relative;
+            margin-bottom: 12px;
+            overflow: hidden;
+            border-radius: var(--radius);
+            user-select: none;
+            border: 1.5px solid var(--border);
+            background: var(--background);
+            transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01);
+        }
+
+        .note-row-container.selected {
+            border-color: var(--primary);
+            background: var(--muted);
+        }
+
+        .note-row-container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .note-delete-underlay {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            background: #ef4444;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1;
+            transition: background 0.2s;
+        }
+
+        .note-delete-underlay:hover {
+            background: #dc2626;
+        }
+
+        .note-item {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--background);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+            box-sizing: border-box;
+            transform: translateX(0);
+        }
+
+        .note-item.selected {
+            background: var(--muted);
+        }
+
+        .note-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            margin-right: 28px;
+            text-align: left;
+        }
+
+        .note-content {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--foreground);
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .note-time {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--muted-foreground);
+        }
+
+        .note-select-indicator {
+            position: absolute;
+            bottom: 12px;
+            right: 14px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(30deg);
+            opacity: 0.85;
+        }
+
+        /* Unified Bottom Sheet Modal Container matching wifi_search.html exactly */
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 100%);
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            box-shadow: 0 -10px 45px rgba(0, 0, 0, 0.18);
+            z-index: 1000;
+            padding: 24px var(--space-6) 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            max-height: 85vh;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-sizing: border-box;
+        }
+
+        .bottom-sheet.open {
+            transform: translate(-50%, 0);
+        }
+
+        .drag-handle {
+            width: 38px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            align-self: center;
+        }
+
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-action-placeholder {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Backdrop overlay matching dark-overlay from wifi_search.html */
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 999;
+        }
+
+        .dark-overlay.open {
+            display: block;
+        }
+    </style>
+</head>
+
+<body style="background: #fafafa; margin: 0; padding: 0;">
+    <div class="app-shell" style="min-height: 100vh; display: flex; flex-direction: column;">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.history.back()">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Notes</div>
+            <div class="page-action-placeholder"></div>
+        </header>
+
+        <div class="container" style="background-color: #f8fafc; padding: 1.25rem; flex: 1; display: flex; flex-direction: column; box-sizing: border-box;">
+            <!-- Notes List -->
+            <div id="notesContainer" style="margin-bottom: var(--space-4);"></div>
+
+            <!-- Standard Unified Button inside normal flow matching form button standard perfectly -->
+            <button class="btn btn-primary" onclick="openAddNote()" style="width: 100%; height: 3rem; font-weight: 600; border-radius: var(--radius); margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                Add Note
+            </button>
+        </div>
+    </div>
+
+    <!-- Backdrop & Bottom Sheet for Editing -->
+    <div class="dark-overlay" id="backdrop" onclick="closeSheet()"></div>
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="drag-handle"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--foreground);" id="sheetTitle">Edit Note</h3>
+            <button class="btn btn-ghost" onclick="closeSheet()" style="padding: var(--space-1); height: auto;">
+                <i data-lucide="x" style="width: 20px;"></i>
+            </button>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.5rem;">
+            <label class="label" style="color: var(--muted-foreground); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem; display: block;">Note Details</label>
+            <textarea id="noteText" rows="6"
+                style="width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-3); font-family: inherit; font-size: 0.9rem; background-color: var(--background); color: var(--foreground); resize: none; outline: none; box-sizing: border-box;"
+                placeholder="Type your note content..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: var(--space-3); margin-top: 0.5rem;">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="closeSheet()">Discard</button>
+            <button class="btn btn-primary" style="flex: 1;" onclick="saveNote()">Sync & Save</button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let notes = [];
+        let dragEl = null;
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let isTouchDragging = false;
+
+        // Initialize notes list from localStorage or defaults
+        function initNotes() {
+            const stored = localStorage.getItem('notes_list');
+            if (stored) {
+                notes = JSON.parse(stored);
+            } else {
+                notes = [
+                    {
+                        id: '1',
+                        text: "Site B: Calibration Check Calibration Check Calibration Check Checkv",
+                        time: "2025/06/01 12:34",
+                        selected: true
+                    },
+                    {
+                        id: '2',
+                        text: "Motor Overheat Warning",
+                        time: "2025/06/01 14:20",
+                        selected: false
+                    }
+                ];
+                saveNotesToStorage();
+            }
+
+            // Sync the selected note to deployed_note_text for notes_template.html
+            const selectedNote = notes.find(n => n.selected);
+            if (selectedNote) {
+                localStorage.setItem('deployed_note_text', selectedNote.text);
+            }
+
+            renderNotes();
+            initSwipeEvents();
+        }
+
+        function saveNotesToStorage() {
+            localStorage.setItem('notes_list', JSON.stringify(notes));
+        }
+
+        // Render notes list UI
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            container.innerHTML = '';
+
+            notes.forEach(note => {
+                const row = document.createElement('div');
+                row.className = `note-row-container ${note.selected ? 'selected' : ''}`;
+                row.setAttribute('data-id', note.id);
+
+                row.innerHTML = `
+                    <div class="note-delete-underlay" onclick="event.stopPropagation(); deleteNote('${note.id}')">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="note-item ${note.selected ? 'selected' : ''}">
+                        <div class="note-info">
+                            <span class="note-content">${note.text.replace(/\n/g, '<br>')}</span>
+                            <span class="note-time">${note.time ? note.time.replace(' ', ' &nbsp; ') : ''}</span>
+                        </div>
+                        ${note.selected ? `
+                            <div class="note-select-indicator">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="17" x2="12" y2="22"></line>
+                                    <path d="M5 17h14v-1.76a2 2 0 0 0-.44-1.24l-2.78-3.56A2 2 0 0 1 15 9.2V5a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4.2a2 2 0 0 1-.78 1.24l-2.78 3.56a2 2 0 0 0-.44 1.24Z"></path>
+                                </svg>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Select note to be active/deployed
+        function selectNote(id) {
+            notes.forEach(n => {
+                n.selected = (n.id === id);
+            });
+            saveNotesToStorage();
+
+            const selectedNote = notes.find(n => n.selected);
+            if (selectedNote) {
+                localStorage.setItem('deployed_note_text', selectedNote.text);
+            }
+
+            renderNotes();
+
+            // Redirect to note template editor page
+            window.location.href = 'notes_template.html';
+        }
+
+        // Delete note
+        function deleteNote(id) {
+            const index = notes.findIndex(n => n.id === id);
+            if (index === -1) return;
+
+            const wasSelected = notes[index].selected;
+            notes.splice(index, 1);
+
+            if (wasSelected && notes.length > 0) {
+                notes[0].selected = true;
+            }
+
+            saveNotesToStorage();
+
+            // Sync active text
+            const selectedNote = notes.find(n => n.selected);
+            if (selectedNote) {
+                localStorage.setItem('deployed_note_text', selectedNote.text);
+            } else {
+                localStorage.removeItem('deployed_note_text');
+            }
+
+            renderNotes();
+        }
+
+        // Close all swiped note cards except target
+        function closeAllSwipes(exceptCard) {
+            document.querySelectorAll('.note-item.swiped').forEach(card => {
+                if (card !== exceptCard) {
+                    card.classList.remove('swiped');
+                    card.style.transition = 'transform 0.2s ease';
+                    card.style.transform = 'translateX(0)';
+                }
+            });
+        }
+
+        // Setup touch and mouse drag swipe events
+        function initSwipeEvents() {
+            const container = document.getElementById('notesContainer');
+
+            // Touch events
+            container.addEventListener('touchstart', handleTouchStart, { passive: true });
+            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchend', handleTouchEnd);
+
+            // Mouse events for emulator testing
+            container.addEventListener('mousedown', handleMouseDown);
+        }
+
+        function handleTouchStart(e) {
+            const card = e.target.closest('.note-item');
+            if (!card) return;
+            closeAllSwipes(card);
+            dragEl = card;
+            startX = e.touches[0].clientX;
+            dragEl.style.transition = 'none';
+            isTouchDragging = false;
+        }
+
+        function handleTouchMove(e) {
+            if (!dragEl) return;
+            currentX = e.touches[0].clientX;
+            let diffX = currentX - startX;
+            if (Math.abs(diffX) > 5) {
+                isTouchDragging = true;
+            }
+
+            const isSwiped = dragEl.classList.contains('swiped');
+            let offset = isSwiped ? -80 + diffX : diffX;
+
+            if (offset > 0) offset = 0;
+            if (offset < -120) {
+                offset = -120 + (offset + 120) * 0.2;
+            }
+
+            dragEl.style.transform = `translateX(${offset}px)`;
+        }
+
+        function handleTouchEnd(e) {
+            if (!dragEl) return;
+            dragEl.style.transition = 'transform 0.2s ease';
+            const isSwiped = dragEl.classList.contains('swiped');
+
+            if (!isTouchDragging) {
+                const noteId = dragEl.parentElement.getAttribute('data-id');
+                selectNote(noteId);
+            } else {
+                const diffX = currentX - startX;
+                let finalOffset = 0;
+                if (isSwiped) {
+                    if (diffX > 30) {
+                        dragEl.classList.remove('swiped');
+                        finalOffset = 0;
+                    } else {
+                        finalOffset = -80;
+                    }
+                } else {
+                    if (diffX < -40) {
+                        dragEl.classList.add('swiped');
+                        finalOffset = -80;
+                    } else {
+                        finalOffset = 0;
+                    }
+                }
+                dragEl.style.transform = `translateX(${finalOffset}px)`;
+            }
+            dragEl = null;
+        }
+
+        function handleMouseDown(e) {
+            if (e.target.closest('.note-delete-underlay')) return;
+            const card = e.target.closest('.note-item');
+            if (!card) return;
+
+            closeAllSwipes(card);
+            dragEl = card;
+            startX = e.clientX;
+            isDragging = true;
+            dragEl.style.transition = 'none';
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging || !dragEl) return;
+            currentX = e.clientX;
+            let diffX = currentX - startX;
+
+            const isSwiped = dragEl.classList.contains('swiped');
+            let offset = isSwiped ? -80 + diffX : diffX;
+
+            if (offset > 0) offset = 0;
+            if (offset < -120) {
+                offset = -120 + (offset + 120) * 0.2;
+            }
+
+            dragEl.style.transform = `translateX(${offset}px)`;
+        }
+
+        function handleMouseUp(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            if (!dragEl) return;
+
+            dragEl.style.transition = 'transform 0.2s ease';
+            const isSwiped = dragEl.classList.contains('swiped');
+            const diffX = e.clientX - startX;
+
+            let finalOffset = 0;
+            if (Math.abs(diffX) < 5) {
+                const noteId = dragEl.parentElement.getAttribute('data-id');
+                selectNote(noteId);
+            } else {
+                if (isSwiped) {
+                    if (diffX > 30) {
+                        dragEl.classList.remove('swiped');
+                        finalOffset = 0;
+                    } else {
+                        finalOffset = -80;
+                    }
+                } else {
+                    if (diffX < -40) {
+                        dragEl.classList.add('swiped');
+                        finalOffset = -80;
+                    } else {
+                        finalOffset = 0;
+                    }
+                }
+            }
+
+            dragEl.style.transform = `translateX(${finalOffset}px)`;
+            dragEl = null;
+
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+
+        let editingNoteId = null;
+
+        function openAddNote() {
+            editingNoteId = null;
+            document.getElementById('sheetTitle').innerText = 'Add Note';
+            document.getElementById('noteText').value = '';
+
+            document.getElementById('backdrop').classList.add('open');
+            document.getElementById('bottomSheet').classList.add('open');
+        }
+
+        function closeSheet() {
+            document.getElementById('backdrop').classList.remove('open');
+            document.getElementById('bottomSheet').classList.remove('open');
+        }
+
+        function formatCurrentDateTime() {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            return `${yyyy}/${mm}/${dd} ${hh}:${min}`;
+        }
+
+        function saveNote() {
+            const text = document.getElementById('noteText').value.trim();
+            if (!text) return alert('Note content cannot be empty.');
+
+            const newNote = {
+                id: String(Date.now()),
+                text: text,
+                time: formatCurrentDateTime(),
+                selected: false
+            };
+            notes.push(newNote);
+            
+            if (notes.length === 1) {
+                newNote.selected = true;
+            }
+
+            saveNotesToStorage();
+
+            const selectedNote = notes.find(n => n.selected);
+            if (selectedNote) {
+                localStorage.setItem('deployed_note_text', selectedNote.text);
+            }
+
+            renderNotes();
+            closeSheet();
+        }
+
+        window.addEventListener('DOMContentLoaded', initNotes);
+    </script>
+</body>
+</html>

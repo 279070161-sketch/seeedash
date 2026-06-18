@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Devices - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Static Device Illustration style */
+        .device-illustration-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4.5rem auto 2.5rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #4b5563;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Documentation link card - unified with standard card styling */
+        .doc-card {
+            border: 1px solid var(--border);
+            background: #ffffff;
+            border-radius: var(--radius);
+            padding: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            text-decoration: none;
+            color: inherit;
+            margin-top: auto;
+            margin-bottom: var(--space-4);
+            transition: all 0.2s;
+        }
+
+        .doc-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Bottom Nav Tab Style */
+        .tab-bar {
+            border-top: 1px solid var(--border);
+            background: var(--background);
+            padding: var(--space-3) var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--muted-foreground);
+            font-size: 0.72rem;
+            cursor: pointer;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <div class="container"
+            style="padding-top: var(--space-8); display: flex; flex-direction: column; height: 100%;">
+            <!-- Back Arrow -->
+            <a href="dashboard.html" class="back-arrow-btn" title="Back">
+                <i data-lucide="chevron-left"></i>
+            </a>
+
+            <!-- Static Device Illustration -->
+            <div class="device-illustration-container">
+                <img src="device.svg" alt="Device Illustration" style="width: 180px; height: auto;">
+            </div>
+
+            <!-- Empty state label -->
+            <h2 class="empty-state-title">No Devices Connected</h2>
+
+            <!-- Action Button -->
+            <button class="btn btn-primary" onclick="window.location.href='bluetooth_search.html'"
+                style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; height: 3.25rem;">
+                <i data-lucide="rss" style="width: 20px; height: 20px;"></i>
+                Connect Device
+            </button>
+
+            <!-- Documentation Link -->
+            <a href="#" class="doc-card">
+                <div
+                    style="width: 48px; height: 48px; background: var(--muted); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i data-lucide="file-text" style="width: 22px; color: var(--foreground);"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--foreground);">Documentation</div>
+                    <div style="font-size: 0.78rem; color: var(--muted-foreground); margin-top: 2px;">User Manual and
+                        FAQ</div>
+                </div>
+                <i data-lucide="chevron-right" style="width: 18px; color: var(--muted-foreground);"></i>
+            </a>
+        </div>
+
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

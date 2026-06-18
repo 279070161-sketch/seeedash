@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>New Reminder Task - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-save-header {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save-header:hover {
+            opacity: 0.9;
+        }
+
+        .reminder-content {
+            padding: 1.25rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            min-height: calc(100vh - 68px);
+            box-sizing: border-box;
+            gap: 1.25rem;
+            position: relative; /* Added for absolute positioning of popovers */
+        }
+
+        /* Floating popover styles */
+        .custom-dropdown-popover {
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.03);
+            padding: 6px;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+        }
+
+        .scrollable-popover {
+            max-height: 200px;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollable-popover::-webkit-scrollbar {
+            display: none;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            transition: all 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .dropdown-item.active {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .dropdown-item .check-icon {
+            width: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item:not(.active) .check-icon {
+            visibility: hidden;
+        }
+
+        /* Form Controls Card styling */
+        .form-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        /* TextInput with Voice option */
+        .input-group-voice {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .input-group-voice:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(9, 9, 11, 0.05);
+        }
+
+        .task-textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 0.75rem 2.75rem 0.75rem 0.75rem;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--foreground);
+            resize: none;
+            min-height: 80px;
+            background: transparent;
+        }
+
+        .voice-input-btn {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            background: #f1f5f9;
+            border: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+        .voice-input-btn:hover {
+            background: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        /* Date/Time pickers */
+        .datetime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .picker-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 0 10px;
+        }
+
+        .picker-wrapper i {
+            color: #64748b;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .picker-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--foreground);
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* Repeat type toggle selectors (Segment control) */
+        .repeat-segment {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            border: 1px solid var(--border);
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 2px;
+        }
+
+        .segment-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 4px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .segment-btn.active {
+            background: #ffffff;
+            color: var(--foreground);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Fixed Repeat Options (chips layout) */
+        .fixed-options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .chip-btn {
+            border: 1.5px solid #e2e8f0;
+            background: #ffffff;
+            padding: 8px 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .chip-btn:hover {
+            border-color: #cbd5e1;
+        }
+
+        .chip-btn.active {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border-color: var(--primary);
+        }
+
+        /* Custom options block */
+        .custom-options-block {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .custom-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .custom-row-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            min-width: 60px;
+        }
+
+        .custom-inputs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .spinner-input {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0f172a;
+            background: #ffffff;
+            width: 70px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .spinner-input:focus {
+            border-color: var(--primary);
+        }
+
+        .select-input {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 32px 8px 12px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0f172a;
+            background: #ffffff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 10px center;
+            background-size: 14px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .select-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(30, 30, 32, 0.05);
+        }
+
+        /* Voice Recognition Dialog Overlay */
+        .voice-overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .voice-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .voice-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 340px;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1.25rem;
+            transform: scale(0.92);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .voice-overlay.show .voice-card {
+            transform: scale(1);
+        }
+
+        .voice-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* Waveform bounce animation */
+        .wave-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            width: 100%;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { height: 10px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(2) { height: 20px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(3) { height: 30px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { height: 15px; animation-delay: 0.4s; }
+        .wave-bar:nth-child(5) { height: 25px; animation-delay: 0.5s; }
+        .wave-bar:nth-child(6) { height: 35px; animation-delay: 0.6s; }
+        .wave-bar:nth-child(7) { height: 18px; animation-delay: 0.7s; }
+        .wave-bar:nth-child(8) { height: 8px; animation-delay: 0.8s; }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scaleY(0.4);
+            }
+            50% {
+                transform: scaleY(1.2);
+            }
+        }
+
+        .voice-transcript {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            min-height: 48px;
+            width: 100%;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .voice-actions {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .voice-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .voice-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .voice-btn-done {
+            background: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        /* Large bottom action button */
+        .bottom-action-container {
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+
+        .btn-create-task {
+            width: 100%;
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(9, 9, 11, 0.1);
+            transition: all 0.2s;
+        }
+
+        .btn-create-task:hover {
+            opacity: 0.9;
+        }
+
+        /* Customized Date & Time Pickers styles */
+        .calendar-day-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.15s ease;
+            position: relative;
+            margin: 0 auto;
+            width: 34px;
+        }
+
+        .calendar-day-cell:hover:not(.empty-day):not(.selected-day) {
+            background-color: #f1f5f9;
+        }
+
+        .calendar-day-cell.empty-day {
+            cursor: default;
+        }
+
+        .calendar-day-cell.selected-day {
+            background-color: var(--primary); /* Zinc-950 active state */
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(9, 9, 11, 0.2);
+        }
+
+        .ios-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 26px;
+        }
+
+        .ios-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .ios-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 26px;
+        }
+
+        .ios-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ios-switch input:checked + .ios-slider {
+            background-color: var(--primary) !important;
+        }
+
+        .ios-switch input:checked + .ios-slider:before {
+            transform: translateX(18px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='reminder.html'">
+                <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div class="page-header-title">New Task</div>
+            <div style="width: 28px;"></div>
+        </header>
+
+        <!-- Content -->
+        <div class="reminder-content">
+            <!-- Form Card 1: Task content -->
+            <div class="form-card">
+                <span class="form-section-title">What is to be done?</span>
+                <div class="input-group-voice">
+                    <textarea class="task-textarea" id="taskTitle" placeholder="Enter task details (e.g. Shopping list for office sync)"></textarea>
+                    <button class="voice-input-btn" type="button" onclick="startVoiceInput()" title="Voice Input">
+                        <i data-lucide="mic" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Card 2: Date & Time Custom Calendar Interaction -->
+            <div class="form-card" style="padding: 0; overflow: hidden; border-radius: 20px; gap: 0;">
+                <!-- Header of DATE & TIME section -->
+                <div style="padding: 1.25rem 1.25rem 0.25rem; background: #ffffff;">
+                    <span class="form-section-title" style="margin-bottom: 0;">DATE & TIME</span>
+                </div>
+
+                <!-- Date Row -->
+                <div style="padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; background: #ffffff;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #0f172a;">
+                            <i data-lucide="calendar" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-size: 0.95rem; font-weight: 700; color: #0f172a; line-height: 1.2;">Date</span>
+                            <span id="dateSubtext" style="font-size: 0.8rem; font-weight: 600; color: #64748b; line-height: 1.2;">Today</span>
+                        </div>
+                    </div>
+                    <label class="ios-switch">
+                        <input type="checkbox" id="dateSwitch" checked onchange="toggleDateCalendar(this.checked)">
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Calendar Dropdown Panel -->
+                <div id="calendarPanel" style="padding: 0.5rem 1.25rem 1rem; background: #ffffff; border-bottom: 1px solid #f1f5f9; display: block;">
+                    <!-- Month Selector Header -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-top: 0.25rem;">
+                        <div id="calendarMonthYearTrigger" onclick="toggleMonthYearPopover(event)" style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <span id="calendarMonthYear" style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">April 2026</span>
+                            <i data-lucide="chevron-right" id="calendarMonthYearChevron" style="width: 14px; height: 14px; color: #0f172a; stroke-width: 3; transition: transform 0.2s ease;"></i>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button type="button" onclick="prevMonth()" style="background: none; border: none; cursor: pointer; color: #0f172a; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="chevron-left" style="width: 18px; height: 18px; stroke-width: 3;"></i>
+                            </button>
+                            <button type="button" onclick="nextMonth()" style="background: none; border: none; cursor: pointer; color: #0f172a; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="chevron-right" style="width: 18px; height: 18px; stroke-width: 3;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Days of Week Header -->
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">SUN</span>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">MON</span>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">TUE</span>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">WED</span>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">THU</span>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">FRI</span>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">SAT</span>
+                    </div>
+
+                    <!-- Days Grid -->
+                    <div id="calendarDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 8px; text-align: center;">
+                        <!-- JS renders numbers here -->
+                    </div>
+                </div>
+
+                <!-- Time Row -->
+                <div style="padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; background: #ffffff;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: #f8fafc; display: flex; align-items: center; justify-content: center; color: #64748b;">
+                            <i data-lucide="clock" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-size: 0.95rem; font-weight: 700; color: #0f172a; line-height: 1.2;">Time</span>
+                            <span id="timeSubtext" style="font-size: 0.8rem; font-weight: 600; color: #64748b; line-height: 1.2; display: none;">12:00</span>
+                        </div>
+                    </div>
+                    <label class="ios-switch">
+                        <input type="checkbox" id="timeSwitch" onchange="toggleTimePicker(this.checked)">
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Time Picker Dropdown Panel -->
+                <div id="timePanel" style="padding: 0.75rem 1.25rem 1.25rem; background: #ffffff; display: none; justify-content: center; align-items: center; gap: 8px; border-top: 1px solid #f1f5f9; position: relative;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="timeHourBtn" onclick="toggleHourPopover(event)" class="select-input-btn" style="font-size: 1.1rem; padding: 6px 12px; font-weight: 700; width: 68px; text-align: center; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); cursor: pointer; color: #0f172a; display: flex; align-items: center; justify-content: center; gap: 4px; height: 38px; box-sizing: border-box;">
+                            <span id="selectedHourVal">12</span>
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748b;"></i>
+                        </button>
+                        <span style="font-size: 1.2rem; font-weight: 700; color: #0f172a;">:</span>
+                        <button type="button" id="timeMinuteBtn" onclick="toggleMinutePopover(event)" class="select-input-btn" style="font-size: 1.1rem; padding: 6px 12px; font-weight: 700; width: 68px; text-align: center; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); cursor: pointer; color: #0f172a; display: flex; align-items: center; justify-content: center; gap: 4px; height: 38px; box-sizing: border-box;">
+                            <span id="selectedMinuteVal">00</span>
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748b;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Card 3: Repeat & End Repeat -->
+            <div class="form-card" style="padding: 0; overflow: hidden; border-radius: 20px; gap: 0;">
+                <!-- Repeat Row -->
+                <div id="repeatRow" onclick="toggleRepeatPopover(event)" style="padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; background: #ffffff; border-bottom: 1px solid #f1f5f9; cursor: pointer; user-select: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="color: #64748b; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px;">
+                            <i data-lucide="repeat" style="width: 20px; height: 20px;"></i>
+                        </div>
+                        <span style="font-size: 0.95rem; font-weight: 700; color: #0f172a;">Repeat</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span id="repeatValLabel" style="font-size: 0.9rem; font-weight: 600; color: #64748b;">Never</span>
+                        <i data-lucide="chevrons-up-down" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                    </div>
+                </div>
+
+                <!-- End Repeat Row -->
+                <div id="endRepeatRow" onclick="toggleEndRepeatPopover(event)" style="padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; background: #ffffff; cursor: pointer; user-select: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="color: #64748b; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m17 2 4 4-4 4"/>
+                                <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
+                                <path d="m7 22-4-4 4-4"/>
+                                <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+                                <circle cx="18" cy="18" r="3.5" fill="#ffffff" stroke="currentColor" stroke-width="2"/>
+                                <path d="m16.5 16.5 3 3" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <span style="font-size: 0.95rem; font-weight: 700; color: #0f172a;">End Repeat</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span id="endRepeatValLabel" style="font-size: 0.9rem; font-weight: 600; color: #64748b;">Never</span>
+                        <i data-lucide="chevrons-up-down" style="width: 16px; height: 16px; color: #94a3b8;"></i>
+                    </div>
+                </div>
+
+                <!-- End Date Row (Dynamic inside Card) -->
+                <div id="end-date-row" style="display: none; padding: 1rem 1.25rem; align-items: center; justify-content: space-between; background: #ffffff; border-top: 1px solid #f1f5f9; position: relative;">
+                    <span style="font-size: 0.95rem; font-weight: 700; color: #0f172a;">End Date</span>
+                    <button type="button" onclick="toggleEndDateCalendar(event)" id="endDatePill" style="background: rgba(9, 9, 11, 0.05); color: #0f172a; border: none; padding: 6px 14px; font-size: 0.88rem; font-weight: 700; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                        <span id="endDateValLabel">Apr 13, 2026</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom Repeat Panel (Collapsible) -->
+            <div id="panel-custom" class="custom-options-block" style="display: none; border-radius: 20px; background: #ffffff; padding: 1.25rem; border: 1px solid var(--border); margin-top: 0.75rem;">
+                <div class="custom-row" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 0.92rem; font-weight: 700; color: #334155;">Repeat Every</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <!-- Stepper -->
+                        <div style="display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 2px 6px; background: #f8fafc; height: 34px; box-sizing: border-box;">
+                            <button type="button" onclick="decrementInterval(event)" style="background: none; border: none; font-size: 1.2rem; font-weight: 700; color: #64748b; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; outline: none; user-select: none;">-</button>
+                            <span id="customIntervalVal" style="font-size: 1rem; font-weight: 700; color: #0f172a; min-width: 24px; text-align: center;">1</span>
+                            <button type="button" onclick="incrementInterval(event)" style="background: none; border: none; font-size: 1.2rem; font-weight: 700; color: #64748b; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; outline: none; user-select: none;">+</button>
+                        </div>
+                        
+                        <!-- Custom frequency dropdown btn -->
+                        <button type="button" id="customFrequencyBtn" onclick="toggleCustomFrequencyPopover(event)" class="select-input-btn" style="font-size: 0.95rem; padding: 6px 12px; font-weight: 700; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); cursor: pointer; color: #0f172a; display: flex; align-items: center; justify-content: center; gap: 4px; height: 34px; box-sizing: border-box;">
+                            <span id="selectedFrequencyVal">Day(s)</span>
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748b;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Custom Dropdown Popovers -->
+            <div id="repeatPopover" class="custom-dropdown-popover">
+                <div class="dropdown-item active" onclick="selectRepeatOption('never', 'Never')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Never</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Hourly', 'Hourly')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Hourly</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Daily', 'Daily')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Daily</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Weekdays', 'Weekdays')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Weekdays</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Weekends', 'Weekends')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Weekends</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Weekly', 'Weekly')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Weekly</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Biweekly', 'Biweekly')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Biweekly</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Monthly', 'Monthly')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Monthly</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Every 3 months', 'Every 3 Months')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Every 3 Months</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Every 6 months', 'Every 6 Months')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Every 6 Months</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('Yearly', 'Yearly')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Yearly</span>
+                </div>
+                <div class="dropdown-item" onclick="selectRepeatOption('custom', 'Custom...')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Custom...</span>
+                </div>
+            </div>
+
+            <div id="endRepeatPopover" class="custom-dropdown-popover">
+                <div class="dropdown-item active" onclick="selectEndRepeatOption('never', 'Never')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Never</span>
+                </div>
+                <div class="dropdown-item" onclick="selectEndRepeatOption('date', 'On Date')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>On Date</span>
+                </div>
+            </div>
+
+            <!-- Floating Calendar Popover -->
+            <div id="endDateCalendarPopover" class="custom-dropdown-popover" style="padding: 1.25rem; width: 280px; box-sizing: border-box;">
+                <!-- Month Selector Header -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <span id="popoverMonthYear" style="font-size: 0.95rem; font-weight: 800; color: #0f172a;">April 2026</span>
+                        <i data-lucide="chevron-right" style="width: 12px; height: 12px; color: #0f172a; stroke-width: 3;"></i>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button type="button" onclick="prevPopoverMonth(event)" style="background: none; border: none; cursor: pointer; color: #0f172a; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="chevron-left" style="width: 16px; height: 16px; stroke-width: 3;"></i>
+                        </button>
+                        <button type="button" onclick="nextPopoverMonth(event)" style="background: none; border: none; cursor: pointer; color: #0f172a; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="chevron-right" style="width: 16px; height: 16px; stroke-width: 3;"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Days of Week Header -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 0.5rem; gap: 2px;">
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">S</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">M</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">T</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">W</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">T</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">F</span>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #cbd5e1;">S</span>
+                </div>
+
+                <!-- Days Grid -->
+                <div id="popoverDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 6px; text-align: center; gap: 2px;">
+                    <!-- JS renders numbers here -->
+                </div>
+            </div>
+
+            <!-- Hour and Minute Scrollable Popovers -->
+            <div id="hourPopover" class="custom-dropdown-popover scrollable-popover" style="width: 100px;">
+                <!-- Populated dynamically by JS -->
+            </div>
+            <div id="minutePopover" class="custom-dropdown-popover scrollable-popover" style="width: 100px;">
+                <!-- Populated dynamically by JS -->
+            </div>
+
+            <!-- Custom Frequency Popover -->
+            <div id="customFrequencyPopover" class="custom-dropdown-popover" style="width: 120px;">
+                <div class="dropdown-item" onclick="selectCustomFrequency('Hour', 'Hour(s)')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Hour(s)</span>
+                </div>
+                <div class="dropdown-item active" onclick="selectCustomFrequency('Day', 'Day(s)')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Day(s)</span>
+                </div>
+                <div class="dropdown-item" onclick="selectCustomFrequency('Week', 'Week(s)')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Week(s)</span>
+                </div>
+                <div class="dropdown-item" onclick="selectCustomFrequency('Month', 'Month(s)')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Month(s)</span>
+                </div>
+                <div class="dropdown-item" onclick="selectCustomFrequency('Year', 'Year(s)')">
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>Year(s)</span>
+                </div>
+            </div>
+
+            <!-- Month & Year Selector Popover -->
+            <div id="monthYearPopover" class="custom-dropdown-popover" style="width: 250px; height: 230px; flex-direction: row; gap: 0; padding: 0; overflow: hidden;">
+                <!-- Left column: Months -->
+                <div id="monthScrollCol" class="scrollable-popover" style="flex: 1.1; border-right: 1px solid #f1f5f9; padding: 6px; box-sizing: border-box;">
+                    <!-- JS populated months -->
+                </div>
+                <!-- Right column: Years -->
+                <div id="yearScrollCol" class="scrollable-popover" style="flex: 0.9; padding: 6px; box-sizing: border-box;">
+                    <!-- JS populated years -->
+                </div>
+            </div>
+
+            <!-- Large Action Button -->
+            <div class="bottom-action-container">
+                <button class="btn-create-task" onclick="saveTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Input Simulated Dialog Overlay -->
+    <div class="voice-overlay" id="voiceOverlay">
+        <div class="voice-card">
+            <div class="voice-title" id="voiceTitle">Listening...</div>
+            
+            <div class="wave-container" id="voiceWave">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+
+            <div class="voice-transcript" id="voiceTranscript">
+                Speak now...
+            </div>
+
+            <div class="voice-actions">
+                <button class="voice-btn voice-btn-cancel" onclick="cancelVoiceInput()">Cancel</button>
+                <button class="voice-btn voice-btn-done" id="voiceDoneBtn" onclick="confirmVoiceInput()" disabled style="opacity: 0.6; cursor: not-allowed;">Wait...</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Beautiful Toast Notification Container -->
+    <div id="toastNotification" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); background: #1e293b; color: #ffffff; padding: 12px 24px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+        <i data-lucide="alert-circle" style="width: 18px; height: 18px; color: #f87171;"></i>
+        <span id="toastMessage">Please enter task details!</span>
+    </div>
+
+    <script>
+        let selectedRepeatType = 'never';
+        let selectedFixedValue = 'Hourly';
+        let selectedEndRepeatType = 'never';
+        let currentHour = '12';
+        let currentMinute = '00';
+        let customInterval = 1;
+        let customFrequency = 'Day';
+
+        // Calendar variables
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let selectedDate = new Date();
+        let currentMonth = selectedDate.getMonth();
+        let currentYear = selectedDate.getFullYear();
+
+        // End Date Calendar variables
+        let popoverSelectedDate = new Date();
+        popoverSelectedDate.setMonth(popoverSelectedDate.getMonth() + 1);
+        let popoverCurrentMonth = popoverSelectedDate.getMonth();
+        let popoverCurrentYear = popoverSelectedDate.getFullYear();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Time Dropdowns
+            initTimeSelects();
+
+            // Render calendars
+            renderCalendar();
+            renderPopoverCalendar();
+            updateDateDisplay();
+            updateTimeDisplay();
+            updateEndDateDisplay();
+
+            lucide.createIcons();
+
+            // Reset text area styles when typing
+            const textarea = document.getElementById('taskTitle');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.borderColor = 'var(--border)';
+                    this.style.background = '#ffffff';
+                });
+            }
+        });
+
+        // Initialize Time Select options
+        function initTimeSelects() {
+            const now = new Date();
+            const defaultHour = String((now.getHours() + 1) % 24).padStart(2, '0');
+            currentHour = defaultHour;
+            currentMinute = "00";
+            
+            document.getElementById('selectedHourVal').textContent = currentHour;
+            document.getElementById('selectedMinuteVal').textContent = currentMinute;
+
+            const hourPopover = document.getElementById('hourPopover');
+            const minutePopover = document.getElementById('minutePopover');
+            
+            hourPopover.innerHTML = '';
+            for (let h = 0; h < 24; h++) {
+                const hStr = String(h).padStart(2, '0');
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                if (hStr === currentHour) item.classList.add('active');
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    selectHour(hStr);
+                };
+                item.innerHTML = `
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>${hStr}</span>
+                `;
+                hourPopover.appendChild(item);
+            }
+            
+            minutePopover.innerHTML = '';
+            for (let m = 0; m < 60; m += 5) {
+                const mStr = String(m).padStart(2, '0');
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                if (mStr === currentMinute) item.classList.add('active');
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    selectMinute(mStr);
+                };
+                item.innerHTML = `
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>${mStr}</span>
+                `;
+                minutePopover.appendChild(item);
+            }
+        }
+
+        // Render Calendar Days
+        function renderCalendar() {
+            const monthYearSpan = document.getElementById('calendarMonthYear');
+            const daysGrid = document.getElementById('calendarDaysGrid');
+            
+            monthYearSpan.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            daysGrid.innerHTML = '';
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Empty preceding cells
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day-cell empty-day';
+                daysGrid.appendChild(emptyCell);
+            }
+            
+            // Render day numbers
+            for (let day = 1; day <= totalDays; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day-cell';
+                dayCell.textContent = day;
+                
+                // Highlight if matches selectedDate
+                if (selectedDate && 
+                    selectedDate.getDate() === day && 
+                    selectedDate.getMonth() === currentMonth && 
+                    selectedDate.getFullYear() === currentYear) {
+                    dayCell.classList.add('selected-day');
+                }
+                
+                dayCell.onclick = () => {
+                    selectedDate = new Date(currentYear, currentMonth, day);
+                    updateDateDisplay();
+                    renderCalendar();
+                };
+                
+                daysGrid.appendChild(dayCell);
+            }
+        }
+
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        function getReadableDateStr(date) {
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+
+            if (date.toDateString() === today.toDateString()) {
+                return "Today";
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return "Tomorrow";
+            } else {
+                const options = { month: 'long', day: 'numeric', year: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+        }
+
+        function updateDateDisplay() {
+            const subtext = document.getElementById('dateSubtext');
+            if (selectedDate) {
+                subtext.textContent = getReadableDateStr(selectedDate);
+            }
+        }
+
+        function updateTimeDisplay() {
+            const subtext = document.getElementById('timeSubtext');
+            subtext.textContent = `${currentHour}:${currentMinute}`;
+        }
+
+        function toggleHourPopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('hourPopover');
+            const btn = document.getElementById('timeHourBtn');
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+            } else {
+                showPopover(btn, popover);
+                // Scroll the active item into view
+                const activeItem = popover.querySelector('.dropdown-item.active');
+                if (activeItem) {
+                    popover.scrollTop = activeItem.offsetTop - 50;
+                }
+            }
+        }
+
+        function toggleMinutePopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('minutePopover');
+            const btn = document.getElementById('timeMinuteBtn');
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+            } else {
+                showPopover(btn, popover);
+                // Scroll the active item into view
+                const activeItem = popover.querySelector('.dropdown-item.active');
+                if (activeItem) {
+                    popover.scrollTop = activeItem.offsetTop - 50;
+                }
+            }
+        }
+
+        function selectHour(hStr) {
+            currentHour = hStr;
+            document.getElementById('selectedHourVal').textContent = hStr;
+            const popover = document.getElementById('hourPopover');
+            popover.querySelectorAll('.dropdown-item').forEach(item => {
+                if (item.querySelector('span:last-child').textContent.trim() === hStr) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            updateTimeDisplay();
+            popover.style.display = 'none';
+        }
+
+        function selectMinute(mStr) {
+            currentMinute = mStr;
+            document.getElementById('selectedMinuteVal').textContent = mStr;
+            const popover = document.getElementById('minutePopover');
+            popover.querySelectorAll('.dropdown-item').forEach(item => {
+                if (item.querySelector('span:last-child').textContent.trim() === mStr) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            updateTimeDisplay();
+            popover.style.display = 'none';
+        }
+
+        function toggleDateCalendar(checked) {
+            const panel = document.getElementById('calendarPanel');
+            const subtext = document.getElementById('dateSubtext');
+            if (checked) {
+                panel.style.display = 'block';
+                subtext.style.display = 'block';
+                updateDateDisplay();
+            } else {
+                panel.style.display = 'none';
+                subtext.style.display = 'none';
+            }
+        }
+
+        function toggleTimePicker(checked) {
+            const panel = document.getElementById('timePanel');
+            const subtext = document.getElementById('timeSubtext');
+            if (checked) {
+                panel.style.display = 'flex';
+                subtext.style.display = 'block';
+                updateTimeDisplay();
+            } else {
+                panel.style.display = 'none';
+                subtext.style.display = 'none';
+            }
+        }
+
+        function decrementInterval(e) {
+            if (e) e.stopPropagation();
+            if (customInterval > 1) {
+                customInterval--;
+                document.getElementById('customIntervalVal').textContent = customInterval;
+            }
+        }
+
+        function incrementInterval(e) {
+            if (e) e.stopPropagation();
+            customInterval++;
+            document.getElementById('customIntervalVal').textContent = customInterval;
+        }
+
+        function toggleCustomFrequencyPopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('customFrequencyPopover');
+            const btn = document.getElementById('customFrequencyBtn');
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+            } else {
+                showPopover(btn, popover);
+            }
+        }
+
+        function selectCustomFrequency(value, labelText) {
+            customFrequency = value;
+            document.getElementById('selectedFrequencyVal').textContent = labelText;
+            const popover = document.getElementById('customFrequencyPopover');
+            popover.querySelectorAll('.dropdown-item').forEach(item => {
+                if (item.querySelector('span:last-child').textContent.trim() === labelText) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            popover.style.display = 'none';
+        }
+
+        function toggleMonthYearPopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('monthYearPopover');
+            const trigger = document.getElementById('calendarMonthYearTrigger');
+            const chevron = document.getElementById('calendarMonthYearChevron');
+            
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                renderMonthYearPopoverOptions();
+                showPopover(trigger, popover, true);
+                if (chevron) chevron.style.transform = 'rotate(90deg)';
+            }
+        }
+
+        function renderMonthYearPopoverOptions() {
+            const monthCol = document.getElementById('monthScrollCol');
+            const yearCol = document.getElementById('yearScrollCol');
+            
+            // Populate Months
+            monthCol.innerHTML = '';
+            monthNames.forEach((name, index) => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                if (index === currentMonth) {
+                    item.classList.add('active');
+                }
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    selectCalendarMonth(index);
+                };
+                item.innerHTML = `
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>${name}</span>
+                `;
+                monthCol.appendChild(item);
+            });
+            
+            // Populate Years (range from current year - 2 to current year + 8)
+            yearCol.innerHTML = '';
+            const thisYear = new Date().getFullYear();
+            for (let y = thisYear - 2; y <= thisYear + 8; y++) {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                if (y === currentYear) {
+                    item.classList.add('active');
+                }
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    selectCalendarYear(y);
+                };
+                item.innerHTML = `
+                    <span class="check-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></span>
+                    <span>${y}</span>
+                `;
+                yearCol.appendChild(item);
+            }
+            
+            lucide.createIcons();
+            
+            // Auto scroll to active items
+            setTimeout(() => {
+                const activeMonth = monthCol.querySelector('.dropdown-item.active');
+                if (activeMonth) {
+                    monthCol.scrollTop = activeMonth.offsetTop - monthCol.offsetTop - 50;
+                }
+                const activeYear = yearCol.querySelector('.dropdown-item.active');
+                if (activeYear) {
+                    yearCol.scrollTop = activeYear.offsetTop - yearCol.offsetTop - 50;
+                }
+            }, 10);
+        }
+
+        function selectCalendarMonth(monthIdx) {
+            currentMonth = monthIdx;
+            renderCalendar();
+            
+            const monthCol = document.getElementById('monthScrollCol');
+            monthCol.querySelectorAll('.dropdown-item').forEach((item, idx) => {
+                if (idx === monthIdx) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function selectCalendarYear(yearVal) {
+            currentYear = yearVal;
+            renderCalendar();
+            
+            const yearCol = document.getElementById('yearScrollCol');
+            yearCol.querySelectorAll('.dropdown-item').forEach((item) => {
+                const yText = item.querySelector('span:last-child').textContent.trim();
+                if (parseInt(yText) === yearVal) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Global popover controls
+        function showPopover(triggerElement, popoverElement, forceBelow = false) {
+            closeAllPopovers();
+            popoverElement.style.display = 'flex';
+            
+            const rect = triggerElement.getBoundingClientRect();
+            const container = document.querySelector('.reminder-content');
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate absolute positions relative to the container
+            const top = rect.top - containerRect.top + container.scrollTop;
+            const left = rect.left - containerRect.left;
+            
+            const popoverHeight = popoverElement.offsetHeight;
+            const popoverWidth = popoverElement.offsetWidth;
+            
+            // Floating above by default
+            popoverElement.style.position = 'absolute';
+            if (forceBelow || (top - popoverHeight - 8 < container.scrollTop)) {
+                // Float below
+                popoverElement.style.top = `${top + rect.height + 8}px`;
+            } else {
+                // Float above
+                popoverElement.style.top = `${top - popoverHeight - 8}px`;
+            }
+            popoverElement.style.left = `${Math.max(8, left + (rect.width - popoverWidth) / 2)}px`; // Centered under/above trigger
+        }
+
+        function closeAllPopovers() {
+            document.getElementById('repeatPopover').style.display = 'none';
+            document.getElementById('endRepeatPopover').style.display = 'none';
+            document.getElementById('endDateCalendarPopover').style.display = 'none';
+            document.getElementById('hourPopover').style.display = 'none';
+            document.getElementById('minutePopover').style.display = 'none';
+            document.getElementById('customFrequencyPopover').style.display = 'none';
+            document.getElementById('monthYearPopover').style.display = 'none';
+
+            const chevron = document.getElementById('calendarMonthYearChevron');
+            if (chevron) {
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Click outside listener to dismiss popovers
+        document.addEventListener('click', (e) => {
+            const repeatRow = document.getElementById('repeatRow');
+            const repeatPopover = document.getElementById('repeatPopover');
+            const endRepeatRow = document.getElementById('endRepeatRow');
+            const endRepeatPopover = document.getElementById('endRepeatPopover');
+            const endDatePill = document.getElementById('endDatePill');
+            const endDatePopover = document.getElementById('endDateCalendarPopover');
+            const hourBtn = document.getElementById('timeHourBtn');
+            const hourPopover = document.getElementById('hourPopover');
+            const minuteBtn = document.getElementById('timeMinuteBtn');
+            const minutePopover = document.getElementById('minutePopover');
+            const freqBtn = document.getElementById('customFrequencyBtn');
+            const freqPopover = document.getElementById('customFrequencyPopover');
+            const myTrigger = document.getElementById('calendarMonthYearTrigger');
+            const myPopover = document.getElementById('monthYearPopover');
+            
+            if (repeatPopover && repeatPopover.style.display === 'flex' && !repeatRow.contains(e.target) && !repeatPopover.contains(e.target)) {
+                repeatPopover.style.display = 'none';
+            }
+            if (endRepeatPopover && endRepeatPopover.style.display === 'flex' && !endRepeatRow.contains(e.target) && !endRepeatPopover.contains(e.target)) {
+                endRepeatPopover.style.display = 'none';
+            }
+            if (endDatePopover && endDatePopover.style.display === 'flex' && endDatePill && !endDatePill.contains(e.target) && !endDatePopover.contains(e.target)) {
+                endDatePopover.style.display = 'none';
+            }
+            if (hourPopover && hourPopover.style.display === 'flex' && hourBtn && !hourBtn.contains(e.target) && !hourPopover.contains(e.target)) {
+                hourPopover.style.display = 'none';
+            }
+            if (minutePopover && minutePopover.style.display === 'flex' && minuteBtn && !minuteBtn.contains(e.target) && !minutePopover.contains(e.target)) {
+                minutePopover.style.display = 'none';
+            }
+            if (freqPopover && freqPopover.style.display === 'flex' && freqBtn && !freqBtn.contains(e.target) && !freqPopover.contains(e.target)) {
+                freqPopover.style.display = 'none';
+            }
+            if (myPopover && myPopover.style.display === 'flex' && myTrigger && !myTrigger.contains(e.target) && !myPopover.contains(e.target)) {
+                myPopover.style.display = 'none';
+                const chevron = document.getElementById('calendarMonthYearChevron');
+                if (chevron) {
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+
+        // Trigger toggles
+        function toggleRepeatPopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('repeatPopover');
+            const row = document.getElementById('repeatRow');
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+            } else {
+                showPopover(row, popover);
+            }
+        }
+
+        function toggleEndRepeatPopover(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('endRepeatPopover');
+            const row = document.getElementById('endRepeatRow');
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+            } else {
+                showPopover(row, popover);
+            }
+        }
+
+        function toggleEndDateCalendar(e) {
+            e.stopPropagation();
+            const popover = document.getElementById('endDateCalendarPopover');
+            const pill = document.getElementById('endDatePill');
+            if (popover.style.display === 'flex') {
+                popover.style.display = 'none';
+            } else {
+                showPopover(pill, popover);
+                renderPopoverCalendar();
+            }
+        }
+
+        // Selection Handlers
+        function selectRepeatOption(value, labelText) {
+            const label = document.getElementById('repeatValLabel');
+            label.textContent = labelText;
+            
+            const popover = document.getElementById('repeatPopover');
+            popover.querySelectorAll('.dropdown-item').forEach(item => {
+                if (item.querySelector('span:last-child').textContent.trim() === labelText) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            const customPanel = document.getElementById('panel-custom');
+            if (value === 'never') {
+                selectedRepeatType = 'never';
+                customPanel.style.display = 'none';
+            } else if (value === 'custom') {
+                selectedRepeatType = 'custom';
+                customPanel.style.display = 'block';
+            } else {
+                selectedRepeatType = 'fixed';
+                selectedFixedValue = value;
+                customPanel.style.display = 'none';
+            }
+            
+            popover.style.display = 'none';
+        }
+
+        function selectEndRepeatOption(value, labelText) {
+            const label = document.getElementById('endRepeatValLabel');
+            label.textContent = labelText;
+            
+            const popover = document.getElementById('endRepeatPopover');
+            popover.querySelectorAll('.dropdown-item').forEach(item => {
+                if (item.querySelector('span:last-child').textContent.trim() === labelText) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            selectedEndRepeatType = value;
+            const endDateRow = document.getElementById('end-date-row');
+            const endRepeatRowElement = document.getElementById('endRepeatRow');
+            
+            if (value === 'never') {
+                endDateRow.style.display = 'none';
+                endRepeatRowElement.style.borderBottom = 'none';
+            } else {
+                endDateRow.style.display = 'flex';
+                endRepeatRowElement.style.borderBottom = '1px solid #f1f5f9';
+                updateEndDateDisplay();
+            }
+            
+            popover.style.display = 'none';
+        }
+
+        // End Date Calendar Mini-widget
+        function renderPopoverCalendar() {
+            const monthYearSpan = document.getElementById('popoverMonthYear');
+            const daysGrid = document.getElementById('popoverDaysGrid');
+            
+            monthYearSpan.textContent = `${monthNames[popoverCurrentMonth]} ${popoverCurrentYear}`;
+            daysGrid.innerHTML = '';
+            
+            const firstDay = new Date(popoverCurrentYear, popoverCurrentMonth, 1).getDay();
+            const totalDays = new Date(popoverCurrentYear, popoverCurrentMonth + 1, 0).getDate();
+            
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day-cell empty-day';
+                emptyCell.style.fontSize = '0.75rem';
+                emptyCell.style.padding = '4px 0';
+                daysGrid.appendChild(emptyCell);
+            }
+            
+            for (let day = 1; day <= totalDays; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day-cell';
+                dayCell.textContent = day;
+                dayCell.style.fontSize = '0.75rem';
+                dayCell.style.padding = '4px 0';
+                dayCell.style.cursor = 'pointer';
+                dayCell.style.borderRadius = '50%';
+                dayCell.style.aspectRatio = '1';
+                dayCell.style.display = 'flex';
+                dayCell.style.alignItems = 'center';
+                dayCell.style.justifyContent = 'center';
+                
+                if (popoverSelectedDate && 
+                    popoverSelectedDate.getDate() === day && 
+                    popoverSelectedDate.getMonth() === popoverCurrentMonth && 
+                    popoverSelectedDate.getFullYear() === popoverCurrentYear) {
+                    dayCell.classList.add('selected-day');
+                }
+                
+                dayCell.onclick = (e) => {
+                    e.stopPropagation();
+                    popoverSelectedDate = new Date(popoverCurrentYear, popoverCurrentMonth, day);
+                    updateEndDateDisplay();
+                    renderPopoverCalendar();
+                    document.getElementById('endDateCalendarPopover').style.display = 'none';
+                };
+                
+                daysGrid.appendChild(dayCell);
+            }
+        }
+
+        function prevPopoverMonth(e) {
+            e.stopPropagation();
+            popoverCurrentMonth--;
+            if (popoverCurrentMonth < 0) {
+                popoverCurrentMonth = 11;
+                popoverCurrentYear--;
+            }
+            renderPopoverCalendar();
+        }
+
+        function nextPopoverMonth(e) {
+            e.stopPropagation();
+            popoverCurrentMonth++;
+            if (popoverCurrentMonth > 11) {
+                popoverCurrentMonth = 0;
+                popoverCurrentYear++;
+            }
+            renderPopoverCalendar();
+        }
+
+        function updateEndDateDisplay() {
+            const pillText = document.getElementById('endDateValLabel');
+            if (popoverSelectedDate) {
+                const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                pillText.textContent = popoverSelectedDate.toLocaleDateString('en-US', options);
+            }
+        }
+
+        // Voice simulator variables
+        let voiceTimer1, voiceTimer2;
+        
+        function startVoiceInput() {
+            const overlay = document.getElementById('voiceOverlay');
+            const transcript = document.getElementById('voiceTranscript');
+            const title = document.getElementById('voiceTitle');
+            const doneBtn = document.getElementById('voiceDoneBtn');
+            const wave = document.getElementById('voiceWave');
+
+            overlay.classList.add('show');
+            transcript.textContent = "Listening...";
+            title.textContent = "Listening...";
+            wave.style.opacity = '1';
+            
+            doneBtn.disabled = true;
+            doneBtn.style.opacity = '0.6';
+            doneBtn.style.cursor = 'not-allowed';
+            doneBtn.textContent = 'Recognizing...';
+
+            const simulatedPhrase = "Meeting with team on Thursday at 3 PM";
+
+            voiceTimer1 = setTimeout(() => {
+                transcript.textContent = "Meeting with team...";
+            }, 1000);
+
+            voiceTimer2 = setTimeout(() => {
+                transcript.textContent = simulatedPhrase;
+                title.textContent = "Voice input recognized";
+                doneBtn.disabled = false;
+                doneBtn.style.opacity = '1';
+                doneBtn.style.cursor = 'pointer';
+                doneBtn.textContent = 'Apply Text';
+                wave.style.opacity = '0.2';
+            }, 2400);
+        }
+
+        function cancelVoiceInput() {
+            clearTimeout(voiceTimer1);
+            clearTimeout(voiceTimer2);
+            document.getElementById('voiceOverlay').classList.remove('show');
+        }
+
+        function confirmVoiceInput() {
+            const transcript = document.getElementById('voiceTranscript').textContent;
+            if (transcript && transcript !== "Listening..." && transcript !== "Speak now...") {
+                document.getElementById('taskTitle').value = transcript;
+            }
+            document.getElementById('voiceOverlay').classList.remove('show');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            const msgSpan = document.getElementById('toastMessage');
+            msgSpan.textContent = message;
+            
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            
+            const textarea = document.getElementById('taskTitle');
+            textarea.style.borderColor = '#ef4444';
+            textarea.style.background = '#fef2f2';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(-20px)';
+            }, 3000);
+        }
+
+        // Save new task
+        function saveTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            if (!title) {
+                showToast('Please enter task details!');
+                return;
+            }
+
+            // Get date string
+            const dateSwitchChecked = document.getElementById('dateSwitch').checked;
+            let dateVal = "";
+            if (dateSwitchChecked && selectedDate) {
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                dateVal = `${year}-${month}-${day}`;
+            } else {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateVal = `${year}-${month}-${day}`;
+            }
+
+            // Get time string
+            const timeSwitchChecked = document.getElementById('timeSwitch').checked;
+            let timeVal = "12:00";
+            if (timeSwitchChecked) {
+                timeVal = `${currentHour}:${currentMinute}`;
+            }
+
+            const dueDateTime = `${dateVal}T${timeVal}`;
+
+            let repeatValue = 'Never';
+            if (selectedRepeatType === 'fixed') {
+                repeatValue = selectedFixedValue;
+                if (selectedEndRepeatType === 'date' && popoverSelectedDate) {
+                    const year = popoverSelectedDate.getFullYear();
+                    const month = String(popoverSelectedDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(popoverSelectedDate.getDate()).padStart(2, '0');
+                    const endDate = `${year}-${month}-${day}`;
+                    repeatValue += `, ends on ${endDate}`;
+                }
+            } else if (selectedRepeatType === 'custom') {
+                const interval = customInterval;
+                const freq = customFrequency;
+                
+                let endStr = "";
+                if (selectedEndRepeatType === 'date' && popoverSelectedDate) {
+                    const year = popoverSelectedDate.getFullYear();
+                    const month = String(popoverSelectedDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(popoverSelectedDate.getDate()).padStart(2, '0');
+                    const endDate = `${year}-${month}-${day}`;
+                    endStr = `, ends on ${endDate}`;
+                }
+                
+                repeatValue = `Every ${interval} ${freq}${interval > 1 ? 's' : ''}${endStr}`;
+            }
+
+            const newTask = {
+                id: Date.now(),
+                title: title,
+                dueDateTime: dueDateTime,
+                repeatType: selectedRepeatType,
+                repeatValue: repeatValue,
+                completed: false
+            };
+
+            let tasks = [];
+            try {
+                const stored = localStorage.getItem('reminder_tasks');
+                if (stored) {
+                    tasks = JSON.parse(stored);
+                }
+            } catch (e) {}
+
+            tasks.push(newTask);
+            localStorage.setItem('reminder_tasks', JSON.stringify(tasks));
+
+            window.location.href = 'reminder.html';
+        }
+    </script>
+</body>
+
+</html>

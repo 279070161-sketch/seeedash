@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Sign Up - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app-shell">
+        <div class="container fade-in">
+            <a href="login.html" class="back-arrow-btn" title="Back">
+                <i data-lucide="chevron-left"></i>
+            </a>
+            <header class="auth-header">
+                <img src="seeedash_logo.svg" alt="Seeedash">
+                <h1>Sign up</h1>
+                <p style="margin-top: 0.5rem; color: var(--muted-foreground); font-size: 0.875rem;">Get started with Seeedash</p>
+            </header>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="label">Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" placeholder="name@example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Verification Code</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="otp" placeholder="6-digit code" maxlength="6" required>
+                        <div class="input-icon-right" id="sendCodeBtn" style="font-size: 0.82rem; font-weight: 600; color: var(--primary); cursor: pointer; user-select: none;">Send code</div>
+                        <div class="input-icon-right" id="timer" style="display: none; font-size: 0.82rem; color: var(--muted-foreground); cursor: default;">60s</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label class="label">New Password</label>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="Min. 8 characters" minlength="8" required>
+                        <div class="input-icon-right" id="togglePassword">
+                            <i data-lucide="eye-off" style="width: 18px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: var(--muted); border-radius: var(--radius); padding: var(--space-4); margin-bottom: var(--space-6); margin-top: 0.5rem;">
+                    <p style="font-size: 0.75rem; display: flex; align-items: flex-start; gap: 8px; color: var(--muted-foreground); line-height: 1.4;">
+                        <i data-lucide="info" style="width: 14px; margin-top: 2px; flex-shrink: 0;"></i>
+                        Your password must be 8-16 characters and include both letters and numbers.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Register</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const emailInput = document.getElementById('email');
+        const otpInput = document.getElementById('otp');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const timerText = document.getElementById('timer');
+        const registerForm = document.getElementById('registerForm');
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const icon = togglePassword.querySelector('i');
+            icon.setAttribute('data-lucide', type === 'password' ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        });
+
+        // Send OTP Code Timer
+        sendCodeBtn.addEventListener('click', () => {
+            if (!emailInput.value || !emailInput.checkValidity()) {
+                alert('Please enter a valid email address first.');
+                return;
+            }
+            
+            sendCodeBtn.style.display = 'none';
+            timerText.style.display = 'flex';
+            let seconds = 60;
+            timerText.innerText = `${seconds}s`;
+            
+            const interval = setInterval(() => {
+                seconds--;
+                timerText.innerText = `${seconds}s`;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    sendCodeBtn.style.display = 'flex';
+                    timerText.style.display = 'none';
+                }
+            }, 1000);
+        });
+
+        // Handle Registration Submit
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Perform password requirement verification: both letters and numbers
+            const pwdVal = passwordInput.value;
+            const hasLetter = /[a-zA-Z]/.test(pwdVal);
+            const hasNumber = /[0-9]/.test(pwdVal);
+            
+            if (!hasLetter || !hasNumber) {
+                alert('Password must contain both letters and numbers.');
+                return;
+            }
+
+            const registerBtn = registerForm.querySelector('button[type="submit"]');
+            registerBtn.innerHTML = '正在注册...';
+            registerBtn.style.opacity = '0.7';
+            registerBtn.disabled = true;
+
+            setTimeout(() => {
+                alert('注册成功！正在跳转登录...');
+                window.location.href = 'login.html';
+            }, 1200);
+        });
+    </script>
+</body>
+
+</html>

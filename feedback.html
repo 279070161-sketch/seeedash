@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Feedback - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Unified Page Header Styles */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .edit-content {
+            padding: 2rem 1.25rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: #f8fafc;
+            flex: 1;
+        }
+
+        /* Form Layout Enhancements */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .feedback-prompt {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #475569;
+            line-height: 1.5;
+            padding-left: 0.25rem;
+        }
+
+        .input-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1rem 1.25rem;
+            display: flex;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+            height: 160px;
+        }
+
+        .form-textarea {
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--foreground);
+            outline: none;
+            text-align: left;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            resize: none;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .form-textarea:focus {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .form-textarea::placeholder {
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='profile.html'" title="返回">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">Feedback</div>
+            <div style="width: 32px;"></div> <!-- Spacer to keep title centered -->
+        </header>
+
+        <!-- Content Area -->
+        <div class="edit-content">
+            <form id="feedbackForm" class="form-section">
+                <div class="form-block">
+                    <div class="feedback-prompt">Have a feature request or found a bug? Let us know!</div>
+                    <div class="input-card">
+                        <textarea id="feedbackText" class="form-textarea" placeholder="Share your suggestions..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 50px; font-weight: 700; font-size: 1rem; border-radius: 12px;">Submit Suggestion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        const feedbackForm = document.getElementById('feedbackForm');
+        const feedbackText = document.getElementById('feedbackText');
+
+        feedbackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!feedbackText.value.trim()) {
+                alert('Please enter your suggestions first.');
+                return;
+            }
+
+            const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+            submitBtn.innerText = 'Submitting...';
+            submitBtn.style.opacity = '0.7';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                alert('Thank you for your feedback!');
+                window.location.href = 'profile.html';
+            }, 1200);
+        });
+    </script>
+</body>
+
+</html>

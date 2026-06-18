@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>设计总览 - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            display: block;
+            /* Remove flex from global body for this page */
+            background-color: var(--bg-light);
+            padding: 3rem;
+        }
+
+        .overview-header {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .overview-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-main);
+        }
+
+
+
+        /* Tabs styles */
+        .tabs-wrapper {
+            max-width: 1200px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .tabs-container {
+            display: inline-flex;
+            background: rgba(241, 245, 249, 0.8);
+            padding: 6px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #1e293b;
+        }
+
+        .tab-btn.active {
+            background: #0f172a;
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+        }
+
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .design-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .design-card:hover {
+            transform: translateY(-8px);
+            border-color: #94a3b8;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+        }
+
+        .thumbnail-container {
+            width: 100%;
+            height: 480px;
+            overflow: hidden;
+            position: relative;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Iframe Scaling to create thumbnail */
+        .thumbnail-container iframe {
+            width: 375px;
+            /* Mobile width */
+            height: 812px;
+            /* Mobile height */
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) scale(0.6);
+            /* Scale down */
+            transform-origin: top center;
+            pointer-events: none;
+            /* Disable interaction in preview */
+        }
+
+        .card-info {
+            padding: 1.5rem;
+        }
+
+        .card-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-info p {
+            display: none !important;
+        }
+
+        .view-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .design-card:hover .view-link {
+            color: #0f172a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-texture"></div>
+    <header class="overview-header">
+        <div>
+            <h1>Design Overview</h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Seeedash Ink Mobile App - 32 Pages Integrated</p>
+        </div>
+
+    </header>
+
+    <!-- Segmented Tab Switcher -->
+    <div class="tabs-wrapper">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="all" onclick="filterCategory('all')">
+                <i data-lucide="layers" style="width: 16px; height: 16px;"></i>全部页面
+            </button>
+            <button class="tab-btn" data-tab="startup" onclick="filterCategory('startup')">
+                <i data-lucide="power" style="width: 16px; height: 16px;"></i>开机登录页
+            </button>
+            <button class="tab-btn" data-tab="connect" onclick="filterCategory('connect')">
+                <i data-lucide="wifi" style="width: 16px; height: 16px;"></i>设备连接&配网
+            </button>
+            <button class="tab-btn" data-tab="management" onclick="filterCategory('management')">
+                <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>设备管理页面
+            </button>
+            <button class="tab-btn" data-tab="profile" onclick="filterCategory('profile')">
+                <i data-lucide="user" style="width: 16px; height: 16px;"></i>个人中心页
+            </button>
+            <button class="tab-btn" data-tab="apps" onclick="filterCategory('apps')">
+                <i data-lucide="box" style="width: 16px; height: 16px;"></i>内置应用页
+            </button>
+        </div>
+    </div>
+
+    <main class="design-grid">
+        <!-- Index Page -->
+        <a href="index.html" class="design-card" data-category="startup">
+            <div class="thumbnail-container">
+                <iframe src="index.html?v=1.2"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Splash Screen <span class="status-badge">Phase 1</span></h3>
+                <p>Minimalist entry with animated seeedash_logo.svg logo and automatic redirect to login.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Login Entry -->
+        <a href="login.html" class="design-card" data-category="startup">
+            <div class="thumbnail-container">
+                <iframe src="login.html?v=2.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Login Entry <span class="status-badge">Auth</span></h3>
+                <p>Main authentication portal with Google, Apple and Email options.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Login OTP -->
+        <a href="login_otp.html" class="design-card" data-category="startup">
+            <div class="thumbnail-container">
+                <iframe src="login_otp.html?v=1.2"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>OTP Login <span class="status-badge">Auth</span></h3>
+                <p>Verification code flow matching the latest mobile design prototypes.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Login Password -->
+        <a href="login_password.html" class="design-card" data-category="startup">
+            <div class="thumbnail-container">
+                <iframe src="login_password.html?v=1.2"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Password Login <span class="status-badge">Auth</span></h3>
+                <p>Traditional email and password sign-in interface.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+
+        <!-- Register Page -->
+        <a href="register.html" class="design-card" data-category="startup">
+            <div class="thumbnail-container">
+                <iframe src="register.html?v=1.2"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Registration <span class="status-badge">Auth</span></h3>
+                <p>Complete registration form with email, verification code, and password entry.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Bluetooth Search Page -->
+        <a href="bluetooth_search.html" class="design-card" data-category="connect">
+            <div class="thumbnail-container">
+                <iframe src="bluetooth_search.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Bluetooth Search <span class="status-badge">BLE</span></h3>
+                <p>Interactive BLE device discovery bottom sheet featuring a premium circular pulsing concentric ring
+                    radar scan animation.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Bluetooth Connecting Page -->
+        <a href="bluetooth_connecting.html" class="design-card" data-category="connect">
+            <div class="thumbnail-container">
+                <iframe src="bluetooth_connecting.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Bluetooth Connecting <span class="status-badge">BLE</span></h3>
+                <p>Connecting state showcasing a pulse radar and dynamic list loader feedback.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Bluetooth Success Page -->
+        <a href="bluetooth_success.html" class="design-card" data-category="connect">
+            <div class="thumbnail-container">
+                <iframe src="bluetooth_success.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Bluetooth Success <span class="status-badge">BLE</span></h3>
+                <p>Successful pairing badge page with options to continue Wi-Fi setup or jump straight in.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Bluetooth Fail Page -->
+        <a href="bluetooth_fail.html" class="design-card" data-category="connect">
+            <div class="thumbnail-container">
+                <iframe src="bluetooth_fail.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Bluetooth Fail <span class="status-badge">BLE</span></h3>
+                <p>Pairing failure feedback sheet featuring a hot pink circular pulsing radar and rotate-cw retry
+                    button.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Wi-Fi Scan / Search Page -->
+        <a href="wifi_search.html" class="design-card" data-category="connect">
+            <div class="thumbnail-container">
+                <iframe src="wifi_search.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Wi-Fi Network List <span class="status-badge">Wi-Fi</span></h3>
+                <p>Scanned Wi-Fi network cards list bottom sheet with dynamic lock and signal strength status.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Wi-Fi Password Input Page -->
+        <a href="wifi_password.html" class="design-card" data-category="connect">
+            <div class="thumbnail-container">
+                <iframe src="wifi_password.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Wi-Fi Password Input <span class="status-badge">Wi-Fi</span></h3>
+                <p>Wi-Fi password entry form featuring eye visibility toggler and concentric wave blue Wi-Fi signal
+                    icon.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Devices Empty State Page -->
+        <a href="devices.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="devices.html?v=3.5"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Devices Empty State <span class="status-badge">Core</span></h3>
+                <p>Interactive "No Devices Connected" screen featuring an animated sleeping E-ink illustration.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Dashboard Empty State Page -->
+        <a href="dashboard_empty.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="dashboard_empty.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Dashboard Empty State <span class="status-badge">Core</span></h3>
+                <p>Dashboard screen when no apps have been added, showing the discover illustration and add-app placeholder.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Dashboard Page -->
+        <a href="dashboard.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="dashboard.html?v=1.2"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Main Dashboard <span class="status-badge">Core</span></h3>
+                <p>E-ink device management with beautiful gradient app widgets.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Device Settings Configuration Page -->
+        <a href="device_details.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="device_details.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Device Settings <span class="status-badge">Core</span></h3>
+                <p>Detailed hardware properties, battery level, mode switching, network settings, and device unbinding.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Device Wi-Fi Settings Page -->
+        <a href="device_wifi_settings.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="device_wifi_settings.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Device Wi-Fi Settings <span class="status-badge">Core</span></h3>
+                <p>Manage currently connected Wi-Fi and choose from other available networks with secure password authentication.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Clock Settings Page -->
+        <a href="clock.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="clock.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Clock Settings <span class="status-badge">Core</span></h3>
+                <p>Choose clock dial templates and configure device timezone with search support.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- App Center Page -->
+        <a href="app_center.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="app_center.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>App Center <span class="status-badge">Core</span></h3>
+                <p>Manage installed applications, view version details, perform single or batch updates, and explore the app store.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- App Details Page -->
+        <a href="app_details.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="app_details.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>App Details <span class="status-badge">Core</span></h3>
+                <p>Individual application information center displaying version, updates, installation details, and uninstall controls.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Note Template Editor Page -->
+        <a href="notes_template.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="notes_template.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Note Template Editor <span class="status-badge">Core</span></h3>
+                <p>Notebook template selection and real-time screen content preview supporting landscape/portrait toggle and device deployment.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Firmware Update Page -->
+        <a href="firmware_update.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="firmware_update.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Firmware Update <span class="status-badge">Core</span></h3>
+                <p>Safety checks, changelog, and dynamic installation progress overlay.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Firmware Downloading Page -->
+        <a href="firmware_downloading.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="firmware_downloading.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Firmware Downloading <span class="status-badge">Core</span></h3>
+                <p>Real-time downloading progress indicators, version metadata, and bluetooth warning card.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Firmware Update Successful Page -->
+        <a href="firmware_success.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="firmware_success.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Update Successful <span class="status-badge">Core</span></h3>
+                <p>Confirmation page showing successful firmware update to v2.4.0 with action redirect.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Firmware Update Failed Page -->
+        <a href="firmware_failed.html" class="design-card" data-category="management">
+            <div class="thumbnail-container">
+                <iframe src="firmware_failed.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Update Failed <span class="status-badge">Core</span></h3>
+                <p>Error diagnostics page displaying failure details with retry and dismiss options.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Notes App Page -->
+        <a href="notes.html" class="design-card" data-category="apps">
+            <div class="thumbnail-container">
+                <iframe src="notes.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Notes App <span class="status-badge">Apps</span></h3>
+                <p>Paste notes, change themes, and automatically sync to E-ink displays.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Photo Album Page -->
+        <a href="photo.html" class="design-card" data-category="apps">
+            <div class="thumbnail-container">
+                <iframe src="photo.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Photo Album <span class="status-badge">Apps</span></h3>
+                <p>Upload, crop, zoom, and manage images synced to device.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Photo Editor Page -->
+        <a href="photo_edit.html?id=photo_1" class="design-card" data-category="apps">
+            <div class="thumbnail-container">
+                <iframe src="photo_edit.html?id=photo_1&v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Photo Editor <span class="status-badge">Apps</span></h3>
+                <p>Crop, rotate, scale, and adjust target area for device display.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Profile Settings Page -->
+        <a href="profile.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="profile.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Profile Settings <span class="status-badge">Profile</span></h3>
+                <p>Personal center settings hub with switchable languages, interactive timezone selectors, and security options.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Edit Profile Page -->
+        <a href="edit_profile.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="edit_profile.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Personal Information <span class="status-badge">Profile</span></h3>
+                <p>Edit user nickname, count characters dynamically, view bound email verification, and connect third-party accounts (Apple/Google).</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Change Password Page -->
+        <a href="change_password.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="change_password.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Change Password <span class="status-badge">Profile</span></h3>
+                <p>Change account password with email OTP verification code and complexity validation checks.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Delete Account Page -->
+        <a href="delete_account.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="delete_account.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Delete Account <span class="status-badge">Profile</span></h3>
+                <p>Warning screen detailing irreversible risks of account deletion with confirmation actions.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- User Manual Page -->
+        <a href="user_manual.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="user_manual.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>User Manual <span class="status-badge">Profile</span></h3>
+                <p>Interactive client-side user guide containing App User Manual, Device Manual, and FAQ modules.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Feedback Page -->
+        <a href="feedback.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="feedback.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Feedback <span class="status-badge">Profile</span></h3>
+                <p>Submit bug reports and feature requests inside a styled text suggestions container.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- About App Page -->
+        <a href="about_app.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="about_app.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>About App <span class="status-badge">Profile</span></h3>
+                <p>Overview of the application featuring version badge, update checking, cache control, and legal policies.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+
+        <!-- Notifications Page -->
+        <a href="notifications.html" class="design-card" data-category="profile">
+            <div class="thumbnail-container">
+                <iframe src="notifications.html?v=1.0"></iframe>
+            </div>
+            <div class="card-info">
+                <h3>Notifications <span class="status-badge">Profile</span></h3>
+                <p>Lists system notifications like firmware updates and feature releases with interactive read actions.</p>
+                <span class="view-link">Preview Page →</span>
+            </div>
+        </a>
+    </main>
+
+    <footer style="text-align: center; margin-top: 5rem; padding-bottom: 3rem;">
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Seeedash Design System © 2026</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Intercept card links to open them inside our mobile simulator viewer.html
+        document.querySelectorAll('.design-card').forEach(card => {
+            const originalHref = card.getAttribute('href');
+            if (originalHref && originalHref !== '#' && !originalHref.startsWith('javascript:') && !originalHref.startsWith('viewer.html')) {
+                // Use a client-side hash parameter (#page.html) which is 100% preserved by browsers during server redirects/rewrites!
+                card.setAttribute('href', `viewer.html?cb=${Date.now()}#${originalHref}`);
+            }
+        });
+
+        // Force-bust iframe caches dynamically on overview load by appending unique timestamp
+        document.querySelectorAll('iframe').forEach(iframe => {
+            const src = iframe.getAttribute('src');
+            if (src) {
+                const url = new URL(src, window.location.href);
+                url.searchParams.set('cb', Date.now() + Math.random().toString(36).substr(2, 5));
+                iframe.src = url.toString();
+            }
+        });
+
+        function filterCategory(category) {
+            // Update active tab button style
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('data-tab') === category) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Show/hide cards with smooth transition
+            document.querySelectorAll('.design-card').forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                if (category === 'all' || cardCat === category) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }, 50);
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 350);
+                }
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>

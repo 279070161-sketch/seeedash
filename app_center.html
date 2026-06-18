@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>App Center - Seeedash</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Specific Styles for App Center Page */
+        .page-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-header-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+            letter-spacing: -0.01em;
+        }
+
+        .page-back-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .page-back-btn:hover {
+            opacity: 0.7;
+        }
+
+        .header-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-align: right;
+            width: 50px;
+        }
+
+        .header-action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .details-content {
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            height: calc(100vh - 68px);
+            box-sizing: border-box;
+        }
+
+        .app-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* App Item Row card */
+        .app-item {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015);
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .app-item.selected-state {
+            border-color: var(--primary);
+            background: #fafafa;
+        }
+
+        .app-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.025);
+        }
+
+        .app-info-left {
+            display: flex;
+            align-items: center;
+            gap: 0.88rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .app-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .app-name {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .app-version {
+            font-size: 0.74rem;
+            color: #64748b;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        /* Checkbox styling for select mode */
+        .select-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            margin-right: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .select-checkbox.show {
+            display: inline-flex;
+        }
+
+        .select-checkbox.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        /* Badge/Button for updates */
+        .update-badge {
+            background: #f0fdf4;
+            color: #16a34a;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 1.5px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-update-action {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(9, 9, 11, 0.06);
+            flex-shrink: 0;
+        }
+
+        .btn-update-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-update-action:active {
+            transform: translateY(0);
+        }
+
+        .btn-update-action.updating {
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        /* Bottom Action Bar */
+        .bottom-action-bar {
+            padding: 1.25rem;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .btn-add-apps {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            height: 3.25rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(9, 9, 11, 0.08);
+        }
+
+        .btn-add-apps:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-add-apps:active {
+            transform: translateY(0);
+        }
+
+        /* Select Action buttons overlay */
+        .batch-actions-container {
+            display: none;
+            gap: 0.75rem;
+        }
+
+        .batch-actions-container.show {
+            display: flex;
+        }
+
+        .btn-batch-delete {
+            flex: 1;
+            background: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            height: 3rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-batch-delete:hover {
+            background: #fecaca;
+        }
+
+        .btn-batch-update {
+            flex: 1;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            height: 3rem;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-batch-update:hover {
+            opacity: 0.9;
+        }
+
+        /* Toast notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            font-size: 0.88rem;
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Spinner keyframes */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="page-header">
+            <button class="page-back-btn" onclick="window.location.href='dashboard.html'">
+                <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
+            </button>
+            <div class="page-header-title">App Center</div>
+            <button class="header-action-btn" id="selectBtn" onclick="toggleSelectMode()">Select</button>
+        </header>
+
+        <!-- Content Area -->
+        <div class="details-content">
+            <!-- App list vertical grid -->
+            <div class="app-list-container" id="appList">
+                <!-- Dynamically Rendered App Items -->
+            </div>
+
+            <!-- Bottom Action bar -->
+            <div class="bottom-action-bar">
+                <button class="btn-add-apps" id="addAppsBtn" onclick="handleAddApps()">
+                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                    Add Apps
+                </button>
+
+                <div class="batch-actions-container" id="batchContainer">
+                    <button class="btn-batch-delete" onclick="handleBatchDelete()">
+                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                        Uninstall
+                    </button>
+                    <button class="btn-batch-update" onclick="handleBatchUpdate()">
+                        <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+                        Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification">
+        <i data-lucide="check-circle" style="width: 18px; height: 18px; color: #22c55e; flex-shrink: 0;"></i>
+        <span id="toastMessage">Successfully updated!</span>
+    </div>
+
+    <script>
+        // Mock Installed Apps Database
+        let installedApps = [
+            { id: 'notes', name: 'Notes', icon: '32_notes.svg', currentVer: 'v1.2.0', latestVer: 'v1.2.0', updateAvailable: false },
+            { id: 'clock', name: 'Clock', icon: '32_clock.svg', currentVer: 'v2.4.0', latestVer: 'v2.5.1', updateAvailable: true },
+            { id: 'weather', name: 'Weather', icon: '32_weather.svg', currentVer: 'v1.0.4', latestVer: 'v1.0.4', updateAvailable: false },
+            { id: 'reminder', name: 'Reminder', icon: '32_reminder.svg', currentVer: 'v1.5.0', latestVer: 'v1.5.0', updateAvailable: false },
+            { id: 'photo', name: 'Photo', icon: '32_image.svg', currentVer: 'v2.0.1', latestVer: 'v2.2.0', updateAvailable: true }
+        ];
+
+        let selectMode = false;
+        let selectedAppIds = new Set();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if there are saved apps in localStorage, otherwise load default mocks
+            const cachedApps = localStorage.getItem('installed_apps');
+            if (cachedApps) {
+                installedApps = JSON.parse(cachedApps);
+            }
+            renderAppList();
+        });
+
+        // Save current state
+        function saveAppsState() {
+            localStorage.setItem('installed_apps', JSON.stringify(installedApps));
+        }
+
+        // Render installed apps dynamically
+        function renderAppList() {
+            const appList = document.getElementById('appList');
+            appList.innerHTML = '';
+
+            if (installedApps.length === 0) {
+                appList.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #64748b; text-align: center; gap: 12px; padding: 2rem;">
+                        <i data-lucide="layout-grid" style="width: 48px; height: 48px; opacity: 0.5;"></i>
+                        <p style="font-weight: 600; font-size: 0.95rem;">No apps installed</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8;">Tap "+ Add Apps" to download applications for your device.</p>
+                    </div>
+                `;
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+                return;
+            }
+
+            installedApps.forEach(app => {
+                const item = document.createElement('div');
+                item.className = `app-item ${selectedAppIds.has(app.id) ? 'selected-state' : ''}`;
+                
+                // Clicking on the item behaves differently depending on Select Mode
+                item.onclick = (e) => {
+                    if (selectMode) {
+                        toggleAppSelection(app.id, item);
+                    } else {
+                        window.location.href = `app_details.html?id=${app.id}`;
+                    }
+                };
+
+                // Checkbox for multi-select
+                const checkbox = document.createElement('div');
+                checkbox.className = `select-checkbox ${selectMode ? 'show' : ''} ${selectedAppIds.has(app.id) ? 'checked' : ''}`;
+                checkbox.innerHTML = selectedAppIds.has(app.id) ? '<i data-lucide="check" style="width: 12px; height: 12px;"></i>' : '';
+                item.appendChild(checkbox);
+
+                // Left Info Container (Icon, Title, Version Status)
+                const infoLeft = document.createElement('div');
+                infoLeft.className = 'app-info-left';
+
+                const img = document.createElement('img');
+                img.className = 'app-icon';
+                img.src = app.icon;
+                img.alt = app.name;
+                infoLeft.appendChild(img);
+
+                const details = document.createElement('div');
+                details.className = 'app-details';
+
+                const title = document.createElement('span');
+                title.className = 'app-name';
+                title.textContent = app.name;
+                details.appendChild(title);
+
+                const versionSpan = document.createElement('span');
+                versionSpan.className = 'app-version';
+
+                if (app.updateAvailable) {
+                    versionSpan.innerHTML = `${app.currentVer} / ${app.latestVer} Available <span class="update-badge">UPDATE</span>`;
+                } else {
+                    versionSpan.textContent = `${app.currentVer} / Latest`;
+                }
+                details.appendChild(versionSpan);
+                infoLeft.appendChild(details);
+                item.appendChild(infoLeft);
+
+
+
+                appList.appendChild(item);
+            });
+
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // Toggle Select Mode
+        function toggleSelectMode() {
+            selectMode = !selectMode;
+            selectedAppIds.clear();
+
+            const selectBtn = document.getElementById('selectBtn');
+            const addAppsBtn = document.getElementById('addAppsBtn');
+            const batchContainer = document.getElementById('batchContainer');
+
+            if (selectMode) {
+                selectBtn.textContent = 'Cancel';
+                addAppsBtn.style.display = 'none';
+                batchContainer.className = 'batch-actions-container show';
+            } else {
+                selectBtn.textContent = 'Select';
+                addAppsBtn.style.display = 'flex';
+                batchContainer.className = 'batch-actions-container';
+            }
+
+            renderAppList();
+        }
+
+        // Select / Deselect app
+        function toggleAppSelection(id, itemEl) {
+            if (selectedAppIds.has(id)) {
+                selectedAppIds.delete(id);
+                itemEl.classList.remove('selected-state');
+                const cb = itemEl.querySelector('.select-checkbox');
+                cb.classList.remove('checked');
+                cb.innerHTML = '';
+            } else {
+                selectedAppIds.add(id);
+                itemEl.classList.add('selected-state');
+                const cb = itemEl.querySelector('.select-checkbox');
+                cb.classList.add('checked');
+                cb.innerHTML = '<i data-lucide="check" style="width: 12px; height: 12px;"></i>';
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }
+        }
+
+        // Single App Update Animation
+        function handleSingleUpdate(id, buttonEl) {
+            buttonEl.disabled = true;
+            buttonEl.className = 'btn-update-action updating';
+            buttonEl.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width: 12px; height: 12px;"></i> Updating';
+            
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            showToast(`Updating app...`, 'loading');
+
+            setTimeout(() => {
+                // Update local model
+                const app = installedApps.find(a => a.id === id);
+                if (app) {
+                    app.currentVer = app.latestVer;
+                    app.updateAvailable = false;
+                }
+                saveAppsState();
+                renderAppList();
+                showToast(`${app ? app.name : 'App'} updated successfully!`, 'success');
+            }, 1800);
+        }
+
+        // Add Apps redirection trigger
+        function handleAddApps() {
+            showToast('Opening Seeed App Store...', 'loading');
+            setTimeout(() => {
+                showToast('Welcome to the App Store! Download more widgets.', 'success');
+            }, 1200);
+        }
+
+        // Batch uninstall action
+        function handleBatchDelete() {
+            if (selectedAppIds.size === 0) {
+                showToast('No apps selected.', 'success');
+                return;
+            }
+
+            const count = selectedAppIds.size;
+            if (confirm(`Uninstall ${count} selected app(s)?`)) {
+                installedApps = installedApps.filter(app => !selectedAppIds.has(app.id));
+                saveAppsState();
+                toggleSelectMode(); // exit select mode
+                showToast(`Uninstalled ${count} app(s).`, 'success');
+            }
+        }
+
+        // Batch update action
+        function handleBatchUpdate() {
+            if (selectedAppIds.size === 0) {
+                showToast('No apps selected.', 'success');
+                return;
+            }
+
+            // Find how many of the selected ones actually have updates
+            const toUpdate = installedApps.filter(app => selectedAppIds.has(app.id) && app.updateAvailable);
+
+            if (toUpdate.length === 0) {
+                showToast('Selected apps are already up to date.', 'success');
+                return;
+            }
+
+            showToast(`Updating ${toUpdate.length} app(s)...`, 'loading');
+
+            setTimeout(() => {
+                toUpdate.forEach(app => {
+                    app.currentVer = app.latestVer;
+                    app.updateAvailable = false;
+                });
+                saveAppsState();
+                toggleSelectMode(); // exit select mode
+                showToast(`Successfully updated selected app(s)!`, 'success');
+            }, 2000);
+        }
+
+        // Toast feedback handler
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = toast.querySelector('i');
+
+            toastMsg.textContent = message;
+
+            if (type === 'loading') {
+                toastIcon.setAttribute('data-lucide', 'loader-2');
+                toastIcon.classList.add('spinner');
+                toastIcon.style.color = '#3b82f6';
+            } else {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.classList.remove('spinner');
+                toastIcon.style.color = '#22c55e';
+            }
+
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            toast.classList.add('show');
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>

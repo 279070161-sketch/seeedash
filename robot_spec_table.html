@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Spec Table - Seeedash</title>
+    <!-- Google Fonts for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2canvas for PNG download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #121212;
+            --canvas-bg: #212121;
+            --card-bg: #161616;
+            --border-color: rgba(255, 255, 255, 0.07);
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --pill-bg: #22291f;
+            --pill-color: #a2d881;
+            --pill-border: #35452f;
+            --btn-bg: #2b2b2b;
+            --btn-hover: #3b3b3b;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: var(--font-family);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* Top navigation and action bar */
+        .action-bar {
+            width: 100%;
+            max-width: 1680px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+        .download-btn {
+            background-color: var(--btn-bg);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-btn:hover {
+            background-color: var(--btn-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Capture Wrapper - Exactly 1680x780 */
+        .capture-wrapper {
+            width: 1680px;
+            height: 780px;
+            background-color: var(--canvas-bg);
+            padding: 40px 50px;
+            display: flex;
+            gap: 40px;
+            align-items: stretch;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        /* Spec Card Styling */
+        .spec-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-card {
+            width: 740px;
+            flex: none;
+        }
+
+        .right-card {
+            width: 800px;
+            flex: none;
+        }
+
+        /* Tables Styling */
+        .spec-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .spec-table th, .spec-table td {
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .spec-table tr:last-child th, .spec-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Left Table Header */
+        .left-table-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            padding: 22px 20px;
+            letter-spacing: 0.2px;
+        }
+
+        /* Common row height calculations */
+        .left-card .spec-table td {
+            padding: 12px 24px;
+        }
+
+        .right-card .spec-table td {
+            padding: 6px 16px;
+        }
+
+        /* Column styles */
+        .col-param {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .left-card .col-param {
+            width: 25%;
+            font-size: 14px;
+        }
+
+        .left-card .col-val {
+            width: 75%;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .right-card .col-param {
+            width: 25%;
+            padding-left: 20px;
+        }
+
+        .right-card .col-val {
+            width: 37.5%;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .right-card .col-val-header {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Colspan alignment for right table */
+        .right-card td[colspan="2"] {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /* Software Pills */
+        .software-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 10px;
+            padding: 4px 0;
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--pill-bg);
+            color: var(--pill-color);
+            border: 1px solid var(--pill-border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.1px;
+        }
+
+        .tag-pill .check-icon {
+            color: var(--pill-color);
+            margin-right: 4px;
+            font-size: 12px;
+        }
+
+        /* protection list details */
+        .protection-list {
+            list-style: none;
+            line-height: 1.5;
+        }
+        
+        .protection-list li {
+            position: relative;
+            padding-left: 14px;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .protection-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--text-primary);
+        }
+
+        /* Hover animation to feel alive */
+        .spec-table tr:hover td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        /* Spinner for loading state */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Action Bar -->
+    <div class="action-bar">
+        <a href="weather.html" class="back-link">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            返回
+        </a>
+        <button id="download-btn" class="download-btn" onclick="downloadPNG()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            下载图片 (PNG)
+        </button>
+    </div>
+
+    <!-- Capture Target Area (Exactly 1680x780) -->
+    <div id="table-capture-area" class="capture-wrapper">
+        
+        <!-- Left Card (reBot Arm B601-RS) -->
+        <div class="spec-card left-card">
+            <table class="spec-table">
+                <thead>
+                    <tr>
+                        <th colspan="2" class="left-table-header">reBot Arm B601-RS Assembled Kit with Gripper</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-param">自由度</td>
+                        <td class="col-val">6+1</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">活动半径</td>
+                        <td class="col-val">
+                            754.7mm<br>
+                            587.5mm(无夹爪)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">负载</td>
+                        <td class="col-val">额定负载：2.5kg; 最大负载：5kg</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param" style="vertical-align: top; padding-top: 16px;">关节运动范围</td>
+                        <td class="col-val" style="line-height: 1.5; font-family: monospace, var(--font-family);">
+                            J1:±150°<br>
+                            J2:-220° - 0°<br>
+                            J3:-220° - 0°<br>
+                            J4:±90°<br>
+                            J5:±90°<br>
+                            J6:±180°<br>
+                            夹爪:-345° - 0°
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">重复定位精度</td>
+                        <td class="col-val">0.1 mm</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">自重</td>
+                        <td class="col-val">6.7kg</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">伺服电机</td>
+                        <td class="col-val">
+                            ROBSTRIDE 06 x3<br>
+                            ROBSTRIDE 00 x4
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">工作温度</td>
+                        <td class="col-val">-20°~50°</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">电源</td>
+                        <td class="col-val">DC 48V 15A</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">支持的软件平台</td>
+                        <td class="col-val">
+                            <div class="software-tags">
+                                <span class="tag-pill"><span class="check-icon">✓</span>ROS1</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>Moveit1</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>ROS2</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>Moveit2</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>Python</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>Lerobot</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>Isaac Sim</span>
+                                <span class="tag-pill"><span class="check-icon">✓</span>Pinocchio</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Right Card (Motor Specifications) -->
+        <div class="spec-card right-card">
+            <table class="spec-table">
+                <tbody>
+                    <tr>
+                        <td class="col-param col-val-header">电机型号</td>
+                        <td class="col-val col-val-header">RobStride 00</td>
+                        <td class="col-val col-val-header">RobStride 06</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">额定电压</td>
+                        <td class="col-val">48V</td>
+                        <td class="col-val">48V</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">额定电流</td>
+                        <td class="col-val">4.7Apk ± 10%</td>
+                        <td class="col-val">14.3 Apk± 10%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">峰值电流</td>
+                        <td class="col-val">15.5Apk ± 10%</td>
+                        <td class="col-val">57 Apk± 10%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">额定扭矩</td>
+                        <td class="col-val">5 N.m</td>
+                        <td class="col-val">11 N.m</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">峰值扭矩</td>
+                        <td class="col-val">14 N.m</td>
+                        <td class="col-val">36 N.m</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">额定转速</td>
+                        <td class="col-val">100 rpm ± 10%</td>
+                        <td class="col-val">100 rpm± 10%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">空载最大转速</td>
+                        <td class="col-val">315 rpm ± 10%</td>
+                        <td class="col-val">480 rpm± 10%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">减速比</td>
+                        <td class="col-val">10: 1</td>
+                        <td class="col-val">9: 1</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">极对数</td>
+                        <td class="col-val">28</td>
+                        <td class="col-val"></td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">电机电感</td>
+                        <td class="col-val">750±20μH</td>
+                        <td class="col-val">0.165mH<br>±10%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">线电阻</td>
+                        <td class="col-val">1.5±10%Ω</td>
+                        <td class="col-val">0.23Ω ± 10%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">外径</td>
+                        <td class="col-val">57</td>
+                        <td class="col-val">82</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">高度</td>
+                        <td class="col-val">51±1</td>
+                        <td class="col-val">49±0.5</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">电机重量</td>
+                        <td class="col-val">310g ± 3g</td>
+                        <td class="col-val">621g</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">编码器分辨率</td>
+                        <td colspan="2" class="col-val">14bit (单圈绝对值)</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">编码器数量</td>
+                        <td colspan="2" class="col-val">2</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">编码器类型</td>
+                        <td colspan="2" class="col-val">磁编码器 (单圈)</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">控制接口</td>
+                        <td colspan="2" class="col-val">CAN@1Mbps</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">调试接口</td>
+                        <td colspan="2" class="col-val">UART@921600bps</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param">控制模式</td>
+                        <td colspan="2" class="col-val">MIT Mode; Speed Mode; Position Mode; Torque Mode</td>
+                    </tr>
+                    <tr>
+                        <td class="col-param" style="vertical-align: top; padding-top: 10px;">保护功能</td>
+                        <td colspan="2" class="col-val" style="padding-top: 8px; padding-bottom: 8px;">
+                            <ul class="protection-list">
+                                <li>过温保护：电机热敏电阻温度超过145度</li>
+                                <li>欠压保护：电机电压低于保护电压12V</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        function downloadPNG() {
+            const area = document.getElementById('table-capture-area');
+            const btn = document.getElementById('download-btn');
+            
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btn.innerHTML = `
+                <svg class="spinner" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                    <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                    <line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line>
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                </svg>
+                正在生成图片...
+            `;
+
+            setTimeout(() => {
+                html2canvas(area, {
+                    scale: 2, // high quality
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#212121'
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'robot_specifications_1680x780.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    btn.innerHTML = `
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        下载图片 (PNG)
+                    `;
+                }).catch(err => {
+                    console.error('Failed to generate image:', err);
+                    alert('生成图片失败，请重试');
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    btn.innerHTML = `
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        下载图片 (PNG)
+                    `;
+                });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
