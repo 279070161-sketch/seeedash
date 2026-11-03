@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="html-to-image.min.js"></script>
+    <script src="html2canvas.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -106,6 +108,46 @@
             border-color: #d1d5db;
             background: #f9fafb;
             transform: translateY(-1px);
+        }
+
+        .screenshot-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: #0f172a;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+        }
+
+        .screenshot-btn:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+        }
+
+        .screenshot-btn:active {
+            transform: translateY(0);
+        }
+
+        .screenshot-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin {
+            animation: spin 1s linear infinite;
         }
 
         /* Center simulator workspace */
@@ -277,6 +319,10 @@
             <span class="page-url" id="pageUrl">loading...</span>
         </div>
         <div class="header-actions">
+            <button class="screenshot-btn" onclick="captureViewerScreenshot()" title="下载当前截图（纯界面不带样机）">
+                <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                <span>下载当前截图</span>
+            </button>
             <button class="action-icon-btn" onclick="reloadIframe()" title="刷新页面">
                 <i data-lucide="rotate-cw" style="width: 18px; height: 18px;"></i>
             </button>
@@ -376,7 +422,11 @@
             'firmware_failed.html': 'Firmware Update Failed (固件升级失败)',
             'notes.html': 'Notes Sync App (便利贴应用同步)',
             'photo.html': 'Photo Album (相册列表同步)',
-            'photo_edit.html': 'Photo Editor (照片裁剪编辑页)'
+            'photo_edit.html': 'Photo Editor (照片裁剪编辑页)',
+            'weather.html': 'Weather Settings (天气模版选择与设置)',
+            'canvas.html': 'Canvas App (画布管理列表)',
+            'canvas_edit.html': 'Canvas Editor (画布编辑页面)',
+            'canvas_preview.html': 'Canvas Preview (画布抖动与下发)'
         };
 
         // Create the iframe dynamically
@@ -432,6 +482,190 @@
         // Function to reload iframe
         function reloadIframe() {
             iframe.contentWindow.location.reload();
+        }
+
+        // Toast notification helper
+        function showViewerToast(message) {
+            const existing = document.querySelector('.viewer-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'viewer-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: #0f172a;
+                color: #ffffff;
+                padding: 12px 22px;
+                border-radius: 12px;
+                font-size: 0.88rem;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+                z-index: 9999;
+                opacity: 0;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                pointer-events: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            `;
+            toast.innerHTML = `<i data-lucide="check-circle" style="width: 18px; height: 18px; color: #4ade80;"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            if (window.lucide) lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+                toast.style.opacity = '1';
+            });
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Capture screenshot of iframe content (pure UI without mockup)
+        async function captureViewerScreenshot() {
+            const iframe = document.getElementById('simulatorFrame');
+            const btn = document.querySelector('.screenshot-btn');
+            if (!btn) return;
+
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="spin" style="width: 16px; height: 16px;"></i><span>生成截图...</span>`;
+            if (window.lucide) lucide.createIcons();
+
+            // Safely get iframe document across different browser security contexts
+            function getIframeDoc() {
+                try {
+                    if (iframe && (iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document))) {
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (doc && doc.body) return doc;
+                    }
+                } catch (e) {}
+                return null;
+            }
+
+            // Auto-retry up to 3 times if iframe is currently loading
+            let innerDoc = getIframeDoc();
+            if (!innerDoc) {
+                for (let i = 0; i < 3; i++) {
+                    await new Promise(r => setTimeout(r, 400));
+                    innerDoc = getIframeDoc();
+                    if (innerDoc) break;
+                }
+            }
+
+            // If still no document access (e.g. file:// CORS security restriction in Chrome/Edge)
+            if (!innerDoc) {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                if (window.lucide) lucide.createIcons();
+
+                if (window.location.protocol === 'file:') {
+                    if (confirm('由于 Chrome/Edge 浏览器的本地文件 (file://) 安全限制，请在 Web 服务器 (http://localhost:8080) 环境下使用，或点击【确定】直接在独立新标签页中打开当前页面下载截图。')) {
+                        const currentPage = typeof targetPage !== 'undefined' && targetPage ? targetPage : 'dashboard.html';
+                        window.open(currentPage, '_blank');
+                    }
+                } else {
+                    alert('页面内容尚未加载完成，请稍后刷新重试！');
+                }
+                return;
+            }
+
+            let innerLocation = 'page';
+            try {
+                if (iframe.contentWindow && iframe.contentWindow.location) {
+                    innerLocation = iframe.contentWindow.location.pathname;
+                }
+            } catch(e) {}
+            
+            const innerFileName = innerLocation.substring(innerLocation.lastIndexOf('/') + 1) || 'page.html';
+            const baseName = innerFileName.split('.')[0] || 'seeedash_page';
+            
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+            const fileName = `seeedash_${baseName}_${timeStr}.png`;
+
+            const triggerDownload = (blob) => {
+                if (!blob) throw new Error('Blob generation failed');
+                const blobUrl = URL.createObjectURL(blob);
+                const downloadLink = document.createElement('a');
+                downloadLink.style.display = 'none';
+                downloadLink.href = blobUrl;
+                downloadLink.download = fileName;
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+
+                setTimeout(() => {
+                    if (downloadLink.parentNode) downloadLink.parentNode.removeChild(downloadLink);
+                    URL.revokeObjectURL(blobUrl);
+                }, 500);
+
+                showViewerToast(`截图已成功下载 (${baseName} 纯界面)`);
+            };
+
+            try {
+                const targetEl = innerDoc.querySelector('.app-shell') || innerDoc.body;
+
+                // Priority 1: Use htmlToImage for 100% pixel-perfect SVG foreignObject browser layout rendering
+                if (typeof htmlToImage !== 'undefined') {
+                    const blob = await htmlToImage.toBlob(targetEl, {
+                        pixelRatio: 2,
+                        backgroundColor: '#ffffff',
+                        cacheBust: true,
+                        filter: (node) => {
+                            if (node.classList && node.classList.contains('standalone-screenshot-float-btn')) {
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+                    if (blob) {
+                        triggerDownload(blob);
+                        return;
+                    }
+                }
+
+                // Priority 2: Fallback to html2canvas if htmlToImage is unavailable
+                const canvas = await html2canvas(targetEl, {
+                    useCORS: true,
+                    allowTaint: true,
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                canvas.toBlob((blob) => {
+                    triggerDownload(blob);
+                }, 'image/png');
+
+            } catch (err) {
+                console.warn('Primary screenshot method error, attempting fallback:', err);
+                try {
+                    const targetEl = innerDoc.querySelector('.app-shell') || innerDoc.body;
+                    const canvas = await html2canvas(targetEl, {
+                        useCORS: true,
+                        allowTaint: true,
+                        scale: 2,
+                        backgroundColor: '#ffffff'
+                    });
+                    canvas.toBlob((blob) => {
+                        triggerDownload(blob);
+                    }, 'image/png');
+                } catch (fallbackErr) {
+                    console.error('All screenshot methods failed:', fallbackErr);
+                    alert('截图生成失败，请刷新页面重试！');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                if (window.lucide) lucide.createIcons();
+            }
         }
     </script>
 </body>

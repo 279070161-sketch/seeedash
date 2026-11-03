@@ -199,3 +199,135 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Standalone Page Screenshot Support (when page is opened directly without viewer.html)
+if (window.self === window.top) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPath = window.location.pathname;
+        if (currentPath.endsWith('overview.html') || currentPath.endsWith('viewer.html')) return;
+
+        if (typeof htmlToImage === 'undefined') {
+            const htiScript = document.createElement('script');
+            htiScript.src = 'html-to-image.min.js';
+            document.head.appendChild(htiScript);
+        }
+        if (typeof html2canvas === 'undefined') {
+            const h2cScript = document.createElement('script');
+            h2cScript.src = 'html2canvas.min.js';
+            document.head.appendChild(h2cScript);
+        }
+
+        const floatBtn = document.createElement('button');
+        floatBtn.className = 'standalone-screenshot-float-btn';
+        floatBtn.title = '下载当前截图（纯界面不带样机）';
+        floatBtn.style.cssText = `
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 99999;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        `;
+        floatBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>下载截图</span>
+        `;
+
+        floatBtn.addEventListener('mouseenter', () => {
+            floatBtn.style.transform = 'translateY(-2px) scale(1.03)';
+            floatBtn.style.background = '#0f172a';
+        });
+        floatBtn.addEventListener('mouseleave', () => {
+            floatBtn.style.transform = 'translateY(0) scale(1)';
+            floatBtn.style.background = 'rgba(15, 23, 42, 0.9)';
+        });
+
+        floatBtn.addEventListener('click', async () => {
+            const originalHTML = floatBtn.innerHTML;
+            floatBtn.disabled = true;
+            floatBtn.innerHTML = `<span>截图中...</span>`;
+
+            const innerFileName = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) || 'page.html';
+            const baseName = innerFileName.split('.')[0] || 'seeedash_page';
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+            const fileName = `seeedash_${baseName}_${timeStr}.png`;
+
+            const triggerDownload = (blob) => {
+                if (!blob) throw new Error('Blob output failed');
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.download = fileName;
+                a.href = blobUrl;
+                document.body.appendChild(a);
+                a.click();
+
+                setTimeout(() => {
+                    if (a.parentNode) a.parentNode.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
+                }, 500);
+            };
+
+            try {
+                const targetEl = document.querySelector('.app-shell') || document.body;
+
+                if (typeof htmlToImage !== 'undefined') {
+                    const blob = await htmlToImage.toBlob(targetEl, {
+                        pixelRatio: 2,
+                        backgroundColor: '#ffffff',
+                        cacheBust: true,
+                        filter: (node) => {
+                            if (node.classList && node.classList.contains('standalone-screenshot-float-btn')) {
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+                    if (blob) {
+                        triggerDownload(blob);
+                        return;
+                    }
+                }
+
+                if (typeof html2canvas !== 'undefined') {
+                    const canvas = await html2canvas(targetEl, {
+                        useCORS: true,
+                        allowTaint: true,
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false
+                    });
+                    canvas.toBlob((blob) => {
+                        triggerDownload(blob);
+                    }, 'image/png');
+                }
+            } catch (err) {
+                console.error('Screenshot error:', err);
+                alert('截图失败，请稍后重试！');
+            } finally {
+                floatBtn.disabled = false;
+                floatBtn.innerHTML = originalHTML;
+            }
+        });
+
+        document.body.appendChild(floatBtn);
+    });
+}

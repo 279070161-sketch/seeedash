@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Dashboard (Gradient Style) - Seeedash</title>
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=3.1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -198,11 +198,6 @@
         .mirror-section {
             margin-top: var(--space-1);
             margin-bottom: var(--space-3);
-            background: #ffffff;
-            border: none !important;
-            border-radius: 1.35rem;
-            padding: 16px;
-            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.01), 0 8px 20px -4px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -560,10 +555,16 @@
         }
 
         /* Gradient Color Variations for Cards (Associated with primary icon colors) */
+        .widget-card {
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+        }
         
         /* 1. Notes - Purple Icon (#AD6DED) -> Purple Gradient Card */
         .widget-notes {
-            background: linear-gradient(to bottom, #F1EAFF 0%, #ffffff 50%) !important;
+            background-image: linear-gradient(180deg, #F1EAFF 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
             border: none !important;
             box-shadow: 0 2px 4px rgba(173, 109, 237, 0.03), 0 8px 20px -4px rgba(173, 109, 237, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
         }
@@ -574,7 +575,9 @@
 
         /* 2. Clock - Orange Icon (#FF8A33) -> Orange/Peach Gradient Card */
         .widget-clock {
-            background: linear-gradient(to bottom, #FFEFE0 0%, #ffffff 50%) !important;
+            background-image: linear-gradient(180deg, #FFEFE0 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
             border: none !important;
             box-shadow: 0 2px 4px rgba(255, 138, 51, 0.03), 0 8px 20px -4px rgba(255, 138, 51, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
         }
@@ -585,7 +588,9 @@
 
         /* 3. Weather - Blue Icon (#097FE8) -> Blue Gradient Card */
         .widget-weather {
-            background: linear-gradient(to bottom, #E6F2FF 0%, #ffffff 50%) !important;
+            background-image: linear-gradient(180deg, #E6F2FF 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
             border: none !important;
             box-shadow: 0 2px 4px rgba(9, 127, 232, 0.03), 0 8px 20px -4px rgba(9, 127, 232, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
         }
@@ -596,7 +601,9 @@
 
         /* 4. Reminder - Yellow Icon (#FEB010) -> Yellow/Gold Gradient Card */
         .widget-reminder {
-            background: linear-gradient(to bottom, #FFF4D6 0%, #ffffff 50%) !important;
+            background-image: linear-gradient(180deg, #FFF4D6 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
             border: none !important;
             box-shadow: 0 2px 4px rgba(254, 176, 16, 0.03), 0 8px 20px -4px rgba(254, 176, 16, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
         }
@@ -627,7 +634,9 @@
 
         /* 5. Photo - Teal Icon (#2A9D99) -> Teal Gradient Card */
         .widget-photo {
-            background: linear-gradient(to bottom, #D5F5F0 0%, #ffffff 50%) !important;
+            background-image: linear-gradient(180deg, #D5F5F0 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
             border: none !important;
             box-shadow: 0 2px 4px rgba(42, 157, 153, 0.03), 0 8px 20px -4px rgba(42, 157, 153, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
         }
@@ -645,15 +654,57 @@
             transform: scale(1.02);
         }
 
-        /* 6. Coming Soon - Gray/Slate Icon -> Gray/Slate Gradient Card */
-        .widget-more {
-            background: linear-gradient(to bottom, #F1F5F9 0%, #ffffff 50%) !important;
+        /* 6. Canvas - Lime Green Icon (#AAD40F) -> Lime Gradient Card */
+        .widget-canvas {
+            background-image: linear-gradient(180deg, #F4FCD9 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
             border: none !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 2px 4px rgba(170, 212, 15, 0.03), 0 8px 20px -4px rgba(170, 212, 15, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
         }
-        .widget-more:hover {
+        .widget-canvas:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02), 0 12px 24px -4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 4px 8px rgba(170, 212, 15, 0.06), 0 16px 32px -4px rgba(170, 212, 15, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-canvas .canvas-widget-preview {
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            height: 100%;
+            overflow: hidden;
+            background: transparent !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .widget-canvas:hover .canvas-widget-preview {
+            transform: scale(1.02);
+        }
+
+        /* 7. AI Token - Coral/Red Icon (#FF655D) -> Coral Gradient Card */
+        .widget-token {
+            background-image: linear-gradient(180deg, #FFF0EF 0%, #ffffff 100%) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(255, 101, 93, 0.03), 0 8px 20px -4px rgba(255, 101, 93, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-token:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 101, 93, 0.06), 0 16px 32px -4px rgba(255, 101, 93, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+        .widget-token .token-balance {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #FF655D;
+            line-height: 1;
+        }
+        .widget-token .token-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            margin-top: 2px;
         }
 
         .widget-content {
@@ -1248,15 +1299,9 @@
         </header>
 
         <div class="container" style="padding-top: var(--space-2); padding-bottom: 6.5rem;">
-            <!-- Real-Time Device Mirror View (Visually grouped as an independent premium block card) -->
+            <!-- Real-Time Device Mirror View -->
             <div class="mirror-section" onclick="handleMirrorClick()" style="cursor: pointer;">
-                <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                    <h3 id="nowShowingHeader" style="font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 6px; margin: 0; color: var(--muted-foreground) !important;">
-                        <img id="nowShowingHeaderIcon" src="32_notes.svg" style="width: 18px; height: 18px; object-fit: contain;" alt="Notes"> Now Showing
-                    </h3>
-                </div>
-
-                <div class="mirror-bezel-container" style="background: #f8fafc; border: none; border-radius: 12px; width: 100%; aspect-ratio: 16 / 7; box-sizing: border-box; padding: 18px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; position: relative;">
+                <div class="mirror-bezel-container" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; width: 100%; aspect-ratio: 5 / 3; box-sizing: border-box; padding: 18px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; position: relative; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.025);">
                     <p id="einkNowShowingText" style="font-size: 0.92rem; font-weight: 600; color: var(--foreground); line-height: 1.5; max-width: 92%; margin: 0; font-style: normal;">
                         Prepare a surprise cheer when Mom arrives at the airport. We will watch a short family video montage and complete the memory jar activity.
                     </p>
@@ -1265,6 +1310,8 @@
                     <div id="einkNowShowingClock" style="display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;"></div>
                     <!-- Eink Weather Preview -->
                     <div id="einkNowShowingWeather" style="display: none; width: 100%; height: 100%; box-sizing: border-box; overflow: hidden;"></div>
+                    <!-- Eink Reminder Preview -->
+                    <div id="einkNowShowingReminder" style="display: none; width: 100%; height: 100%; box-sizing: border-box; overflow: hidden; padding: 14px 16px; display: none; flex-direction: column;"></div>
                 </div>
             </div>
 
@@ -1368,15 +1415,30 @@
                     </div>
                 </div>
 
-                <!-- 6. Explore (Widget) -->
-                <div class="widget-card widget-more">
+                <!-- 6. Canvas (Widget) -->
+                <div class="widget-card widget-canvas" onclick="window.location.href='canvas.html'">
                     <div class="widget-header">
                         <div class="widget-header-left">
-                            <span class="widget-title" style="color: inherit;">Coming Soon</span>
+                            <img src="32_canvas.svg" class="widget-app-icon" alt="Canvas">
+                            <span class="widget-title">Canvas</span>
                         </div>
                     </div>
-                    <div class="widget-content more-preview" style="justify-content: center; height: 100%; display: flex; flex-direction: column; align-items: center; margin-top: -2px;">
-                        <img src="more apps.svg" style="width: 48px; height: 48px; object-fit: contain; opacity: 0.85;" alt="More Apps">
+                    <div class="widget-content canvas-widget-preview">
+                        <img id="widgetCanvasPreviewImg" src="canvas_illustration@2x.png" style="width: 100%; height: 100%; object-fit: contain; display: block;" alt="Canvas Preview">
+                    </div>
+                </div>
+
+                <!-- 7. AI Token (Widget) -->
+                <div class="widget-card widget-token" onclick="window.location.href='token.html'">
+                    <div class="widget-header">
+                        <div class="widget-header-left">
+                            <img src="32_Token.svg" class="widget-app-icon" alt="AI Token">
+                            <span class="widget-title">AI Token</span>
+                        </div>
+                    </div>
+                    <div class="widget-content" style="justify-content: center; align-items: flex-start; padding-top: 2px;">
+                        <div class="token-balance" id="widgetTokenBalance">--</div>
+                        <div class="token-label">tokens remaining</div>
                     </div>
                 </div>
             </div>
@@ -1581,10 +1643,14 @@
             const showingType = localStorage.getItem('currently_showing_type') || 'note';
             if (showingType === 'photo') {
                 window.location.href = 'photo.html';
+            } else if (showingType === 'canvas') {
+                window.location.href = 'canvas.html';
             } else if (showingType === 'clock') {
                 window.location.href = 'clock.html';
             } else if (showingType === 'weather') {
                 window.location.href = 'weather.html';
+            } else if (showingType === 'reminder') {
+                window.location.href = 'reminder.html';
             } else {
                 window.location.href = 'notes_template.html';
             }
@@ -1605,6 +1671,20 @@
             if (photoEl) photoEl.src = cachedPhoto;
         }
 
+        // Set the Canvas widget preview dynamically if cached Canvas thumbnail exists!
+        const cachedCanvas = localStorage.getItem('currently_showing_canvas');
+        if (cachedCanvas) {
+            const canvasEl = document.getElementById('widgetCanvasPreviewImg');
+            if (canvasEl) canvasEl.src = cachedCanvas;
+        }
+
+        // Update AI Token balance widget
+        const tokenBalanceEl = document.getElementById('widgetTokenBalance');
+        if (tokenBalanceEl) {
+            const tokenBalance = localStorage.getItem('ai_token_balance');
+            tokenBalanceEl.textContent = tokenBalance ? Number(tokenBalance).toLocaleString() : '12,500';
+        }
+
         // Update E-Ink Mirror Display
         const einkText = document.getElementById('einkNowShowingText');
         const einkImg = document.getElementById('einkNowShowingImage');
@@ -1618,6 +1698,10 @@
                 bezel.style.backgroundImage = 'none';
                 bezel.style.background = '#f8fafc';
                 bezel.style.padding = '18px 24px';
+                bezel.style.width = '100%';
+                bezel.style.aspectRatio = '5 / 3';
+                bezel.style.margin = '0';
+                bezel.style.border = '1px solid #e2e8f0';
             }
             if (einkText) einkText.style.display = 'none';
             if (einkImg) {
@@ -1626,26 +1710,98 @@
             }
             if (einkClock) einkClock.style.display = 'none';
             if (headerIcon) headerIcon.src = '32_image.svg';
-        } else if (showingType === 'clock') {
-            const currentTemplate = localStorage.getItem('clock_template') || 'MINIMAL DIGITAL';
+        } else if (showingType === 'canvas' && cachedCanvas) {
+            const deployedOrientation = localStorage.getItem('canvas_deployed_orientation') || 'landscape';
+            const deployedName = localStorage.getItem('canvas_deployed_name') || 'Canvas Design';
             if (bezel) {
                 bezel.style.backgroundImage = 'none';
-                if (currentTemplate === 'FLIQLO STYLE' || currentTemplate === 'INDUSTRIAL MATRIX') {
-                    bezel.style.background = '#0f172a';
-                } else if (currentTemplate === 'BOLD TYPOGRAPHIC') {
-                    bezel.style.background = '#ffffff';
-                } else if (currentTemplate === 'CLASSIC ANALOG') {
-                    bezel.style.background = '#ffffff';
+                bezel.style.background = '#ffffff';
+
+                if (deployedOrientation === 'portrait') {
+                    bezel.style.width = '240px';
+                    bezel.style.aspectRatio = '3 / 5';
+                    bezel.style.margin = '0 auto';
+                    bezel.style.padding = '0';
+                    bezel.style.border = '1px solid #e2e8f0';
+                    bezel.style.overflow = 'hidden';
                 } else {
-                    bezel.style.background = '#ffffff';
+                    bezel.style.width = '100%';
+                    bezel.style.aspectRatio = '5 / 3';
+                    bezel.style.margin = '0';
+                    bezel.style.padding = '0';
+                    bezel.style.border = '1px solid #e2e8f0';
+                    bezel.style.overflow = 'hidden';
                 }
-                bezel.style.padding = '18px 24px';
+            }
+            if (einkText) einkText.style.display = 'none';
+            if (einkImg) {
+                einkImg.src = cachedCanvas;
+                einkImg.style.display = 'block';
+            }
+            if (einkClock) einkClock.style.display = 'none';
+            if (headerIcon) headerIcon.src = '32_canvas.svg';
+
+            const headerText = document.getElementById('nowShowingHeader');
+            if (headerText) {
+                headerText.innerHTML = `<img id="nowShowingHeaderIcon" src="32_canvas.svg" style="width: 18px; height: 18px; object-fit: contain;" alt="Canvas"> Now Showing: ${deployedName}`;
+            }
+        } else if (showingType === 'clock') {
+            const currentTemplate = localStorage.getItem('clock_template') || 'BIG DIGIT TIME';
+            const deployedOrientation = localStorage.getItem('clock_deployed_orientation') || 'portrait';
+            if (bezel) {
+                bezel.style.backgroundImage = 'none';
+                bezel.style.background = '#ffffff';
+
+                if (deployedOrientation === 'portrait') {
+                    bezel.style.width = '240px';
+                    bezel.style.aspectRatio = '3 / 5';
+                    bezel.style.margin = '0 auto';
+                    bezel.style.padding = '0';
+                    bezel.style.border = '1px solid #e2e8f0';
+                    bezel.style.overflow = 'hidden';
+                } else {
+                    bezel.style.width = '100%';
+                    bezel.style.aspectRatio = '5 / 3';
+                    bezel.style.margin = '0';
+                    bezel.style.padding = '0';
+                    bezel.style.border = '1px solid #e2e8f0';
+                    bezel.style.overflow = 'hidden';
+                }
+
+                // Render edge-to-edge background image
+                let imgName = '';
+                const suffix = deployedOrientation === 'portrait' ? 'V' : 'H';
+                const suffixLower = deployedOrientation === 'portrait' ? '_s' : '_h';
+
+                if (currentTemplate === 'BIG DIGIT TIME') {
+                    imgName = `BigDigitTime${suffixLower}.png`;
+                } else if (currentTemplate === 'INFO PANEL') {
+                    imgName = `InfoPanel${suffixLower}.png`;
+                } else if (currentTemplate === 'DARK STACK CLOCK') {
+                    imgName = `Dark Stack Digital Clock ${suffix}.png`;
+                } else if (currentTemplate === 'SEMI-CIRCLE CLOCK') {
+                    imgName = `Semi-Circle Dark Clock ${suffix}.png`;
+                } else if (currentTemplate === 'STACKED TEXT CLOCK') {
+                    imgName = `Stacked Text Digital Clock ${suffix}.png`;
+                } else if (currentTemplate === 'WATER REFLECTION CLOCK') {
+                    imgName = `Water Reflection Clock ${suffix}.png`;
+                } else if (currentTemplate === 'ABSTRACT LINE CLOCK') {
+                    imgName = `Abstract Line Clock ${suffix}.png`;
+                } else if (currentTemplate === 'BOX DIGITAL CLOCK') {
+                    imgName = `Box Digital Clock ${suffix}.png`;
+                } else {
+                    imgName = `BigDigitTime${suffixLower}.png`;
+                }
+
+                bezel.style.backgroundImage = `url('${imgName}')`;
+                bezel.style.backgroundSize = '100% 100%';
+                bezel.style.backgroundRepeat = 'no-repeat';
+                bezel.style.backgroundPosition = 'center center';
             }
             if (einkText) einkText.style.display = 'none';
             if (einkImg) einkImg.style.display = 'none';
             if (einkClock) {
-                einkClock.style.display = 'flex';
-                renderEinkClock(currentTemplate);
+                einkClock.style.display = 'none';
             }
             if (headerIcon) headerIcon.src = '32_clock.svg';
         } else if (showingType === 'weather') {
@@ -1655,29 +1811,118 @@
             if (einkImg) einkImg.style.display = 'none';
             if (einkClock) einkClock.style.display = 'none';
             if (headerIcon) headerIcon.src = '32_weather.svg';
+        } else if (showingType === 'reminder') {
+            // Reminder deploy: render today's tasks in E-ink mirror preview
+            const reminderOrientation = localStorage.getItem('reminder_deployed_orientation') || 'landscape';
+            let reminderTasks = [];
+            try { reminderTasks = JSON.parse(localStorage.getItem('reminder_deployed_tasks') || '[]'); } catch(e) {}
+
             if (bezel) {
-                bezel.style.background = '#ffffff';
                 bezel.style.backgroundImage = 'none';
-                bezel.style.padding = '18px 24px';
+                bezel.style.background = '#ffffff';
+                bezel.style.border = '1px solid #e2e8f0';
+                bezel.style.overflow = 'hidden';
+                bezel.style.alignItems = 'stretch';
+                bezel.style.justifyContent = 'flex-start';
+                bezel.style.textAlign = 'left';
+                if (reminderOrientation === 'portrait') {
+                    bezel.style.width = '200px';
+                    bezel.style.aspectRatio = '3 / 5';
+                    bezel.style.margin = '0 auto';
+                    bezel.style.padding = '14px 16px';
+                } else {
+                    bezel.style.width = '100%';
+                    bezel.style.aspectRatio = '5 / 3';
+                    bezel.style.margin = '0';
+                    bezel.style.padding = '14px 16px';
+                }
+            }
+            if (einkText) einkText.style.display = 'none';
+            if (einkImg) einkImg.style.display = 'none';
+            if (einkClock) einkClock.style.display = 'none';
+            if (headerIcon) headerIcon.src = '32_reminder.svg';
+
+            const headerText = document.getElementById('nowShowingHeader');
+            if (headerText) {
+                headerText.innerHTML = `<img id="nowShowingHeaderIcon" src="32_reminder.svg" style="width: 18px; height: 18px; object-fit: contain;" alt="Reminder"> Now Showing`;
+            }
+
+            // Render reminder tasks in the einkNowShowingReminder container
+            const einkReminder = document.getElementById('einkNowShowingReminder');
+            const einkWeather = document.getElementById('einkNowShowingWeather');
+            if (einkWeather) einkWeather.style.display = 'none';
+            if (einkReminder) {
+                einkReminder.style.display = 'flex';
+                einkReminder.style.flexDirection = 'column';
+                einkReminder.style.textAlign = 'left';
+                einkReminder.style.padding = '0';
+                einkReminder.style.height = '100%';
+                const isLandscape = reminderOrientation === 'landscape';
+                const itemsPerPage = isLandscape ? 4 : 6;
+                const activeTasks = reminderTasks.filter(item => typeof item === 'object' ? !item.completed : true);
+                const displayTasks = activeTasks.slice(0, itemsPerPage);
+
+                let taskListHtml = displayTasks.map(item => {
+                    const title = typeof item === 'object' ? item.title : item;
+                    
+                    return `
+                        <div style="display: flex; align-items: center; gap: 10px; text-align: left; width: 100%;">
+                            <div style="width: 14px; height: 14px; border: 1.5px solid #a1a1aa; background: #ffffff; border-radius: 3px; flex-shrink: 0;"></div>
+                            <div style="flex: 1; min-width: 0; font-size: ${isLandscape ? '0.76rem' : '0.78rem'}; font-weight: 500; color: #111111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">${title}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                const headerTitle = "Today's Tasks";
+
+                const headerHtml = `
+                    <div style="font-size: 0.95rem; font-weight: 800; color: #000000; margin-bottom: 14px; border-bottom: 2px solid #000000; padding-bottom: 5px; width: 100%; text-align: left;">
+                        <span>${headerTitle}</span>
+                    </div>
+                `;
+
+                einkReminder.innerHTML = `
+                    <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+                        ${headerHtml}
+                        <!-- Task List -->
+                        <div style="display: flex; flex-direction: column; gap: 14px; flex: 1; overflow: hidden; justify-content: flex-start; width: 100%; text-align: left;">
+                            ${taskListHtml || '<div style="font-size: 0.75rem; color: #888888; text-align: center; margin-top: 12px;">No tasks</div>'}
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
             }
         } else {
             if (bezel) {
                 const noteTemplate = localStorage.getItem('deployed_note_template') || 'minimal';
+                const noteOrientation = localStorage.getItem('deployed_note_orientation') || localStorage.getItem('note_deployed_orientation') || localStorage.getItem('notes_deployed_orientation') || 'landscape';
+                const isPortrait = noteOrientation === 'portrait';
                 
                 bezel.style.backgroundSize = '100% 100%';
                 bezel.style.backgroundRepeat = 'no-repeat';
                 bezel.style.backgroundPosition = 'center center';
+                bezel.style.border = '1px solid #e2e8f0';
+
+                if (isPortrait) {
+                    bezel.style.width = '200px';
+                    bezel.style.aspectRatio = '3 / 5';
+                    bezel.style.margin = '0 auto';
+                } else {
+                    bezel.style.width = '100%';
+                    bezel.style.aspectRatio = '5 / 3';
+                    bezel.style.margin = '0';
+                }
                 
-                // Let's use the landscape version because the dashboard bezel is landscape (16/7 aspect ratio)
+                const suffix = isPortrait ? '_s' : '_h';
                 if (noteTemplate === 'minimal') {
-                    bezel.style.backgroundImage = "url('note1_h.png')";
-                    bezel.style.padding = '18px 24px';
+                    bezel.style.backgroundImage = `url('note1${suffix}.png')`;
+                    bezel.style.padding = isPortrait ? '18px 16px' : '18px 24px';
                 } else if (noteTemplate === 'classic') {
-                    bezel.style.backgroundImage = "url('note2_h.png')";
-                    bezel.style.padding = '18px 24px';
+                    bezel.style.backgroundImage = `url('note2${suffix}.png')`;
+                    bezel.style.padding = isPortrait ? '18px 16px' : '18px 24px';
                 } else if (noteTemplate === 'spiral') {
-                    bezel.style.backgroundImage = "url('note3_h.png?v=3.2')";
-                    bezel.style.padding = '32px 24px 18px 24px'; // Extra top padding for spiral rings in landscape
+                    bezel.style.backgroundImage = `url('note3${suffix}.png?v=3.2')`;
+                    bezel.style.padding = isPortrait ? '28px 16px 14px 16px' : '32px 24px 18px 24px';
                 } else {
                     bezel.style.backgroundImage = 'none';
                     bezel.style.background = '#f8fafc';
@@ -1692,69 +1937,8 @@
 
         // Render weather on E-Ink mirror preview
         renderWeatherOnEink();
-        function renderEinkClock(template) {
-            if (!einkClock) return;
-            const now = new Date();
-            let hours = now.getHours().toString().padStart(2, '0');
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            const timeStr = `${hours}:${minutes}`;
-            const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
-            const dateStr = now.toLocaleDateString('en-US', dateOptions);
-
-            let html = '';
-            if (template === 'MINIMAL DIGITAL') {
-                html = `
-                    <div style="font-size: 2.2rem; font-weight: 700; color: #0f172a; letter-spacing: -0.02em; line-height: 1;">${timeStr}</div>
-                    <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 6px; letter-spacing: 0.05em;">${dateStr}</div>
-                `;
-            } else if (template === 'CLASSIC ANALOG') {
-                const hrAngle = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
-                const minAngle = now.getMinutes() * 6;
-                html = `
-                    <div style="width: 78px; height: 78px; border: 2px solid #0f172a; border-radius: 50%; position: relative; background: #ffffff; display: flex; align-items: center; justify-content: center;">
-                        <div style="width: 5px; height: 5px; background: #0f172a; border-radius: 50%; z-index: 10;"></div>
-                        <div style="position: absolute; bottom: 50%; left: 50%; width: 2.5px; height: 20px; background: #0f172a; transform-origin: bottom center; transform: translateX(-50%) rotate(${hrAngle}deg); border-radius: 2px;"></div>
-                        <div style="position: absolute; bottom: 50%; left: 50%; width: 1.5px; height: 28px; background: #94a3b8; transform-origin: bottom center; transform: translateX(-50%) rotate(${minAngle}deg); border-radius: 2px;"></div>
-                    </div>
-                `;
-            } else if (template === 'FLIQLO STYLE' || template === 'INDUSTRIAL MATRIX') {
-                html = `
-                    <div style="display: flex; gap: 14px; justify-content: center; align-items: center; width: 100%; height: 100%;">
-                        <div style="background: #1e293b; border-radius: 8px; width: 72px; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; border: 1.5px solid #2e3b4e; box-shadow: 0 6px 12px rgba(0,0,0,0.4);">
-                            <div style="position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: rgba(0,0,0,0.55); z-index: 2;"></div>
-                            <span style="font-size: 2.7rem; font-weight: 800; color: #f8fafc; font-family: sans-serif; line-height: 1; z-index: 1;">${hours}</span>
-                        </div>
-                        <div style="background: #1e293b; border-radius: 8px; width: 72px; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; border: 1.5px solid #2e3b4e; box-shadow: 0 6px 12px rgba(0,0,0,0.4);">
-                            <div style="position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: rgba(0,0,0,0.55); z-index: 2;"></div>
-                            <span style="font-size: 2.7rem; font-weight: 800; color: #f8fafc; font-family: sans-serif; line-height: 1; z-index: 1;">${minutes}</span>
-                        </div>
-                    </div>
-                `;
-            } else if (template === 'BOLD TYPOGRAPHIC') {
-                const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN", "TWENTY", "TWENTY ONE", "TWENTY TWO", "TWENTY THREE", "TWENTY FOUR", "TWENTY FIVE", "TWENTY SIX", "TWENTY SEVEN", "TWENTY EIGHT", "TWENTY NINE", "THIRTY", "THIRTY ONE", "THIRTY TWO", "THIRTY THREE", "THIRTY FOUR", "THIRTY FIVE", "THIRTY SIX", "THIRTY SEVEN", "THIRTY EIGHT", "THIRTY NINE", "FORTY", "FORTY ONE", "FORTY TWO", "FORTY THREE", "FORTY FOUR", "FORTY FIVE", "FORTY SIX", "FORTY SEVEN", "FORTY EIGHT", "FORTY NINE", "FIFTY", "FIFTY ONE", "FIFTY TWO", "FIFTY THREE", "FIFTY FOUR", "FIFTY FIVE", "FIFTY SIX", "FIFTY SEVEN", "FIFTY EIGHT", "FIFTY NINE"];
-                let hrVal = now.getHours();
-                if (hrVal > 12) hrVal -= 12;
-                if (hrVal === 0) hrVal = 12;
-                const hrWord = words[hrVal];
-                
-                let minVal = now.getMinutes();
-                let minWord = '';
-                if (minVal === 0) {
-                    minWord = "O'CLOCK";
-                } else if (minVal < 10) {
-                    minWord = "O' " + words[minVal];
-                } else {
-                    minWord = words[minVal];
-                }
-                html = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
-                        <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.1;">IT IS</div>
-                        <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.1;">${hrWord}</div>
-                        <div style="font-size: 1.15rem; font-weight: 900; color: #cbd5e1; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.1;">${minWord}</div>
-                    </div>
-                `;
-            }
-            einkClock.innerHTML = html;
+        function renderEinkClock(template, orientation = 'landscape') {
+            // All clock templates are static image templates now
         }
 
         // ============================
@@ -1785,84 +1969,51 @@
             if (einkClock) einkClock.style.display = 'none';
             if (headerIcon) headerIcon.src = '32_weather.svg';
 
+            const deployedOrientation = localStorage.getItem('weather_deployed_orientation') || 'landscape';
+
             if (bezel) {
                 bezel.style.background = '#ffffff';
                 bezel.style.backgroundImage = 'none';
-                bezel.style.padding = '18px 24px';
+                if (deployedOrientation === 'portrait') {
+                    bezel.style.width = '240px';
+                    bezel.style.aspectRatio = '3 / 5';
+                    bezel.style.margin = '0 auto';
+                    bezel.style.padding = '0';
+                    bezel.style.border = '1px solid #e2e8f0'; // Light gray border line
+                    bezel.style.overflow = 'hidden';
+                } else {
+                    bezel.style.width = '100%';
+                    bezel.style.aspectRatio = '5 / 3';
+                    bezel.style.margin = '0';
+                    bezel.style.padding = '0';
+                    bezel.style.border = '1px solid #e2e8f0';
+                    bezel.style.overflow = 'hidden';
+                }
+
+                let imgName = '';
+                const suffix = deployedOrientation === 'portrait' ? 's' : 'h';
+
+                if (deployedTemplate === 'CLEAN WEATHER') {
+                    imgName = `weather mockup1_w_${suffix}.png`;
+                } else if (deployedTemplate === 'DETAIL FORECAST') {
+                    imgName = `weather mockup2_w_${suffix}.png`;
+                } else if (deployedTemplate === 'DARK SYSTEM') {
+                    imgName = `weather mockup3_b_${suffix}.png`;
+                } else if (deployedTemplate === 'MODERN PANEL') {
+                    imgName = `weather mockup4_w_${suffix}.png`;
+                } else {
+                    imgName = `weather mockup1_w_${suffix}.png`;
+                }
+
+                bezel.style.backgroundImage = `url('${imgName}')`;
+                bezel.style.backgroundSize = '100% 100%';
+                bezel.style.backgroundRepeat = 'no-repeat';
+                bezel.style.backgroundPosition = 'center center';
             }
 
             if (einkWeather) {
-                einkWeather.style.display = 'flex';
-                einkWeather.style.flexDirection = 'column';
-                einkWeather.style.alignItems = 'stretch';
-                einkWeather.style.justifyContent = 'center';
-
-                if (deployedTemplate === 'CITY CARD') {
-                    einkWeather.style.flexDirection = 'row';
-                    einkWeather.style.alignItems = 'center';
-                    einkWeather.style.justifyContent = 'space-between';
-                    einkWeather.style.padding = '0 12px';
-                    einkWeather.innerHTML = `
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <span style="font-size:0.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.04em;">Shenzhen</span>
-                            <div style="width:32px;height:1px;background:#e2e8f0;"></div>
-                            <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
-                        </div>
-                        <div style="text-align:right;display:flex;flex-direction:column;gap:4px;">
-                            <span style="font-size:0.8rem;font-weight:600;color:#475569;text-transform:uppercase;">Cloudy</span>
-                            <span style="font-size:0.8rem;font-weight:600;color:#64748b;">H 28° / L 19°</span>
-                        </div>
-                    `;
-                } else if (deployedTemplate === 'FORECAST STRIP') {
-                    einkWeather.innerHTML = `
-                        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px;">
-                            <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
-                            <div style="text-align:right;">
-                                <div style="font-size:0.8rem;font-weight:600;color:#475569;text-transform:uppercase;">Cloudy</div>
-                                <div style="font-size:0.7rem;font-weight:600;color:#64748b;">H 28° / L 19°</div>
-                            </div>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;padding:8px 12px 0;border-top:1px solid #e2e8f0;margin-top:6px;position:relative;">
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Mon</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">26°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓18°</span></div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Tue</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">28°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓20°</span></div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Wed</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">22°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓17°</span></div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;border-right:1px solid #f1f5f9;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Thu</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">24°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓19°</span></div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;"><span style="font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase;">Fri</span><span style="font-size:0.75rem;font-weight:700;color:#334155;">21°</span><span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">↓16°</span></div>
-                        </div>
-                    `;
-                } else if (deployedTemplate === 'DETAIL CARD') {
-                    einkWeather.innerHTML = `
-                        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px;">
-                            <div style="display:flex;flex-direction:column;">
-                                <span style="font-size:0.75rem;font-weight:600;color:#475569;text-transform:uppercase;">Cloudy</span>
-                                <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
-                            </div>
-                            <span style="font-size:0.8rem;font-weight:700;color:#475569;">H 28° / L 19°</span>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;padding:8px 12px 0;border-top:1px solid #e2e8f0;margin-top:6px;">
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Wind</span>12 km/h NE</div>
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Humidity</span>65%</div>
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Sunrise</span>05:32</div>
-                            <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-weight:500;color:#475569;"><span style="color:#94a3b8;">Sunset</span>18:45</div>
-                        </div>
-                    `;
-                } else if (deployedTemplate === 'COMPACT HEADER') {
-                    einkWeather.style.flexDirection = 'row';
-                    einkWeather.style.alignItems = 'center';
-                    einkWeather.style.justifyContent = 'space-between';
-                    einkWeather.style.padding = '0 12px';
-                    einkWeather.innerHTML = `
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <span style="font-size:0.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.03em;padding-bottom:3px;border-bottom:1px solid #e2e8f0;">Shenzhen</span>
-                            <span style="font-size:4rem;font-weight:800;color:#0f172a;line-height:1;letter-spacing:-0.03em;">24<sup style="font-size:1.8rem;font-weight:600;">°</sup></span>
-                        </div>
-                        <div style="text-align:right;display:flex;flex-direction:column;gap:4px;">
-                            <span style="font-size:0.8rem;font-weight:600;color:#64748b;">Cloudy</span>
-                            <span style="font-size:0.8rem;font-weight:700;color:#475569;">28° / 19°</span>
-                            <span style="font-size:0.6rem;font-weight:500;color:#94a3b8;">Wind 12 km/h · Humidity 65%</span>
-                        </div>
-                    `;
-                }
+                einkWeather.style.display = 'none';
+                einkWeather.innerHTML = '';
             }
         }
         // AI Voice Assistant Press-and-Hold & Bottom Sheet Logic
