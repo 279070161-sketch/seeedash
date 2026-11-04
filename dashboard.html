@@ -71,29 +71,24 @@
             transform: translateY(-1px);
         }
 
-        /* Rotated small device shape icon - NO BACKGROUND OR BORDER BOX */
+        /* Small device shape icon in header & switcher */
         .device-icon-small-wrapper {
-            width: 22px;
-            height: 22px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: visible;
             flex-shrink: 0;
             background: transparent;
-            /* No background frame as requested */
             border: none;
-            /* No border box as requested */
         }
 
         .device-icon-small {
-            width: 22px;
-            height: 14px;
-            /* Landscape ratio */
-            transform: rotate(90deg);
-            /* Rotated 90 degrees as requested */
-            transform-origin: center;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            display: block;
         }
 
         /* Dropdown Menu Panel */
@@ -1212,13 +1207,13 @@
                 <button class="device-dropdown-trigger" id="deviceTrigger">
                     <i data-lucide="menu" style="width: 16px; height: 16px; color: var(--muted-foreground);" title="Select Device"></i>
                     <div class="device-icon-small-wrapper">
-                        <img src="device_external.png" class="device-icon-small" alt="Device">
+                        <img id="headerDeviceIcon" src="device_e1001_1002.png" class="device-icon-small" alt="reTerminal E1001">
                     </div>
                     <!-- Stacked Device Metadata (Battery & status placed below the device name) -->
                     <div
                         style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 2px;">
                         <span id="currentDeviceName"
-                            style="font-size: 0.9rem; font-weight: 700; color: var(--foreground); max-width: 140px; line-height: 1.2;">reTerminal DM</span>
+                            style="font-size: 0.9rem; font-weight: 700; color: var(--foreground); max-width: 140px; line-height: 1.2;">reTerminal E1001</span>
                         <span class="device-status-sub" id="deviceStatusSub"
                             style="font-size: 0.74rem; font-weight: 500; color: var(--muted-foreground); display: flex; align-items: center; gap: 4px;">
                             <span
@@ -1237,12 +1232,12 @@
                 <div class="device-dropdown-menu" id="deviceMenu">
                     <div class="device-dropdown-header">Select Device</div>
                     
-                    <div class="device-dropdown-item active" onclick="selectDevice('reTerminal DM', '88%', 'online')">
+                    <div class="device-dropdown-item active" onclick="selectDevice('reTerminal E1001', '88%', 'online', 'device_e1001_1002.png')">
                         <div class="device-icon-small-wrapper">
-                            <img src="device_external.png" class="device-icon-small" alt="Device">
+                            <img src="device_e1001_1002.png" class="device-icon-small" alt="E1001">
                         </div>
                         <div class="device-info">
-                            <div class="device-name">reTerminal DM</div>
+                            <div class="device-name">reTerminal E1001</div>
                             <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
                                 <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
                                 <span>Online</span>
@@ -1252,32 +1247,62 @@
                         </div>
                     </div>
 
-                    <div class="device-dropdown-item" onclick="selectDevice('SenseCAP Indicator', '72%', 'sleeping')">
+                    <div class="device-dropdown-item" onclick="selectDevice('reTerminal E1003', '95%', 'online', 'device_e1003.png')">
                         <div class="device-icon-small-wrapper">
-                            <img src="device_external.png" class="device-icon-small" alt="Device">
+                            <img src="device_e1003.png" class="device-icon-small" alt="E1003">
                         </div>
                         <div class="device-info">
-                            <div class="device-name">SenseCAP Indicator</div>
+                            <div class="device-name">reTerminal E1003</div>
                             <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
-                                <i data-lucide="moon" style="width: 10px; height: 10px; color: #3b82f6; fill: #3b82f6;"></i>
-                                <span>Sleeping</span>
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
                                 <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
-                                <span>72%</span>
+                                <span>95%</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="device-dropdown-item" onclick="selectDevice('SenseCAP Watcher', '0%', 'offline')">
+                    <div class="device-dropdown-item" onclick="selectDevice('reTerminal E1004', '76%', 'online', 'device_e1004.png')">
                         <div class="device-icon-small-wrapper">
-                            <img src="device_external.png" class="device-icon-small" alt="Device">
+                            <img src="device_e1004.png" class="device-icon-small" alt="E1004">
                         </div>
                         <div class="device-info">
-                            <div class="device-name">SenseCAP Watcher</div>
+                            <div class="device-name">reTerminal E1004</div>
                             <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
-                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #94a3b8; display: inline-block;"></span>
-                                <span>Offline</span>
-                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #94a3b8;"></i>
-                                <span>0%</span>
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>76%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('EE03', '92%', 'online', 'device_ee03.png')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_ee03.png" class="device-icon-small" alt="EE03">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">EE03</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>92%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('reTerminal DM', '65%', 'sleeping', 'device_external.png')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_external.png" class="device-icon-small" alt="reTerminal DM">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">reTerminal DM</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="moon" style="width: 10px; height: 10px; color: #3b82f6; fill: #3b82f6;"></i>
+                                <span>Sleeping</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>65%</span>
                             </div>
                         </div>
                     </div>
@@ -1541,8 +1566,17 @@
         });
 
         // Device Selection Interactivity
-        function selectDevice(name, battery, status) {
+        function selectDevice(name, battery, status, iconSrc) {
             if (!status) status = 'online';
+            if (!iconSrc) {
+                if (name.toUpperCase().includes('EE03')) iconSrc = 'device_ee03.png';
+                else if (name.includes('E1001') || name.includes('E1002')) iconSrc = 'device_e1001_1002.png';
+                else if (name.includes('E1003')) iconSrc = 'device_e1003.png';
+                else if (name.includes('E1004')) iconSrc = 'device_e1004.png';
+                else iconSrc = 'device_external.png';
+            }
+            const headerIcon = document.getElementById('headerDeviceIcon');
+            if (headerIcon) headerIcon.src = iconSrc;
             
             // Update selected button labels
             document.getElementById('currentDeviceName').textContent = name;

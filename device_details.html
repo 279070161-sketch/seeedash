@@ -541,7 +541,7 @@
         <div class="details-content">
             <!-- Top Card: Visual Frame Mockup -->
             <div class="device-preview-card" style="margin: 0; padding: 0; overflow: hidden; height: 160px; display: flex; justify-content: center; align-items: center;">
-                <img src="sticky.png" alt="sticky device" style="width: auto; height: 150px; object-fit: contain;">
+                <img id="devicePreviewImg" src="device_setting_e1001.png" alt="device preview" style="width: auto; height: 150px; object-fit: contain;">
             </div>
 
             <!-- Device Properties Detail Card -->
@@ -579,7 +579,7 @@
                 <!-- Model -->
                 <div class="detail-row">
                     <span class="detail-label">Model</span>
-                    <span class="detail-value">E1005</span>
+                    <span class="detail-value" id="deviceModelVal">E1001</span>
                 </div>
             </div>
 
@@ -719,9 +719,43 @@
                 firmwareDot.style.display = 'none';
             }
 
-            // Device Name Initialization
-            const savedName = localStorage.getItem('selected_device_name') || 'reTerminal Sticky';
+            // Device Name & Preview Image Initialization
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryDevice = urlParams.get('device');
+            const savedName = queryDevice || localStorage.getItem('selected_device_name') || 'reTerminal E1001';
             document.getElementById('deviceNameVal').textContent = savedName;
+
+            const previewImg = document.getElementById('devicePreviewImg');
+            if (previewImg) {
+                if (savedName.toUpperCase().includes('EE03')) {
+                    previewImg.src = 'device_setting_ee03.png';
+                } else if (savedName.includes('1001')) {
+                    previewImg.src = 'device_setting_e1001.png';
+                } else if (savedName.includes('1002')) {
+                    previewImg.src = 'device_setting_e1002.png';
+                } else if (savedName.includes('1003')) {
+                    previewImg.src = 'device_setting_e1003.png';
+                } else if (savedName.includes('1004')) {
+                    previewImg.src = 'device_setting_e1004.png';
+                } else {
+                    previewImg.src = 'device_setting_e1001.png';
+                }
+            }
+
+            const modelVal = document.getElementById('deviceModelVal');
+            if (modelVal) {
+                if (savedName.toUpperCase().includes('EE03')) {
+                    modelVal.textContent = 'EE03';
+                } else if (savedName.includes('1001')) {
+                    modelVal.textContent = 'E1001';
+                } else if (savedName.includes('1002')) {
+                    modelVal.textContent = 'E1002';
+                } else if (savedName.includes('1003')) {
+                    modelVal.textContent = 'E1003';
+                } else if (savedName.includes('1004')) {
+                    modelVal.textContent = 'E1004';
+                }
+            }
 
             // Device Status Initialization
             const savedStatus = localStorage.getItem('selected_device_status') || 'Online';
