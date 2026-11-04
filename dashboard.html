@@ -1352,21 +1352,6 @@
                         </div>
                     </div>
 
-                    <div class="device-dropdown-item" onclick="selectDevice('reTerminal DM', '65%', 'sleeping', 'device_external.png')">
-                        <div class="device-icon-small-wrapper">
-                            <img src="device_external.png" class="device-icon-small" alt="reTerminal DM">
-                        </div>
-                        <div class="device-info">
-                            <div class="device-name">reTerminal DM</div>
-                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
-                                <i data-lucide="moon" style="width: 10px; height: 10px; color: #3b82f6; fill: #3b82f6;"></i>
-                                <span>Sleeping</span>
-                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
-                                <span>65%</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="device-dropdown-divider"></div>
 
                     <!-- Add Device inside dropdown list -->
@@ -1638,7 +1623,7 @@
                 else if (name.includes('E1002')) iconSrc = 'device_e1002.png';
                 else if (name.includes('E1003')) iconSrc = 'device_e1003.png';
                 else if (name.includes('E1004')) iconSrc = 'device_e1004.png';
-                else iconSrc = 'device_external.png';
+                else iconSrc = 'device_e1001.png';
             }
             const headerIcon = document.getElementById('headerDeviceIcon');
             if (headerIcon) headerIcon.src = iconSrc;
