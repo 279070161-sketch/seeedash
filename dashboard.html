@@ -1207,7 +1207,7 @@
                 <button class="device-dropdown-trigger" id="deviceTrigger">
                     <i data-lucide="menu" style="width: 16px; height: 16px; color: var(--muted-foreground);" title="Select Device"></i>
                     <div class="device-icon-small-wrapper">
-                        <img id="headerDeviceIcon" src="device_e1001_1002.png" class="device-icon-small" alt="reTerminal E1001">
+                        <img id="headerDeviceIcon" src="device_e1001.png" class="device-icon-small" alt="reTerminal E1001">
                     </div>
                     <!-- Stacked Device Metadata (Battery & status placed below the device name) -->
                     <div
@@ -1232,9 +1232,9 @@
                 <div class="device-dropdown-menu" id="deviceMenu">
                     <div class="device-dropdown-header">Select Device</div>
                     
-                    <div class="device-dropdown-item active" onclick="selectDevice('reTerminal E1001', '88%', 'online', 'device_e1001_1002.png')">
+                    <div class="device-dropdown-item active" onclick="selectDevice('reTerminal E1001', '88%', 'online', 'device_e1001.png')">
                         <div class="device-icon-small-wrapper">
-                            <img src="device_e1001_1002.png" class="device-icon-small" alt="E1001">
+                            <img src="device_e1001.png" class="device-icon-small" alt="E1001">
                         </div>
                         <div class="device-info">
                             <div class="device-name">reTerminal E1001</div>
@@ -1243,6 +1243,21 @@
                                 <span>Online</span>
                                 <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
                                 <span>88%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('reTerminal E1002', '85%', 'online', 'device_e1002.png')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_e1002.png" class="device-icon-small" alt="E1002">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">reTerminal E1002</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>85%</span>
                             </div>
                         </div>
                     </div>
@@ -1570,7 +1585,8 @@
             if (!status) status = 'online';
             if (!iconSrc) {
                 if (name.toUpperCase().includes('EE03')) iconSrc = 'device_ee03.png';
-                else if (name.includes('E1001') || name.includes('E1002')) iconSrc = 'device_e1001_1002.png';
+                else if (name.includes('E1001')) iconSrc = 'device_e1001.png';
+                else if (name.includes('E1002')) iconSrc = 'device_e1002.png';
                 else if (name.includes('E1003')) iconSrc = 'device_e1003.png';
                 else if (name.includes('E1004')) iconSrc = 'device_e1004.png';
                 else iconSrc = 'device_external.png';
