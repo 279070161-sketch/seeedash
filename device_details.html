@@ -728,7 +728,9 @@
             const previewImg = document.getElementById('devicePreviewImg');
             if (previewImg) {
                 const uName = savedName.toUpperCase();
-                if (uName.includes('EE02')) {
+                if (uName.includes('STICKY')) {
+                    previewImg.src = 'device_setting_sticky.png';
+                } else if (uName.includes('EE02')) {
                     previewImg.src = 'device_setting_ee02.png';
                 } else if (uName.includes('EE03')) {
                     previewImg.src = 'device_setting_ee03.png';
@@ -752,7 +754,9 @@
             const modelVal = document.getElementById('deviceModelVal');
             if (modelVal) {
                 const uName = savedName.toUpperCase();
-                if (uName.includes('EE02')) {
+                if (uName.includes('STICKY')) {
+                    modelVal.textContent = 'Sticky';
+                } else if (uName.includes('EE02')) {
                     modelVal.textContent = 'EE02';
                 } else if (uName.includes('EE03')) {
                     modelVal.textContent = 'EE03';
