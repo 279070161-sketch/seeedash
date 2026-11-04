@@ -1292,6 +1292,21 @@
                         </div>
                     </div>
 
+                    <div class="device-dropdown-item" onclick="selectDevice('EE02', '96%', 'online', 'device_ee02.png')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_ee02.png" class="device-icon-small" alt="EE02">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">EE02</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>96%</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="device-dropdown-item" onclick="selectDevice('EE03', '92%', 'online', 'device_ee03.png')">
                         <div class="device-icon-small-wrapper">
                             <img src="device_ee03.png" class="device-icon-small" alt="EE03">
@@ -1303,6 +1318,36 @@
                                 <span>Online</span>
                                 <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
                                 <span>92%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('EE04', '89%', 'online', 'device_ee04.png')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_ee04.png" class="device-icon-small" alt="EE04">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">EE04</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>89%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-dropdown-item" onclick="selectDevice('EE05', '94%', 'online', 'device_ee05.png')">
+                        <div class="device-icon-small-wrapper">
+                            <img src="device_ee05.png" class="device-icon-small" alt="EE05">
+                        </div>
+                        <div class="device-info">
+                            <div class="device-name">EE05</div>
+                            <div class="device-meta" style="display: flex; align-items: center; gap: 4px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #22c55e; display: inline-block;"></span>
+                                <span>Online</span>
+                                <i data-lucide="battery-medium" style="width: 12px; height: 12px; color: #22c55e;"></i>
+                                <span>94%</span>
                             </div>
                         </div>
                     </div>
@@ -1584,7 +1629,11 @@
         function selectDevice(name, battery, status, iconSrc) {
             if (!status) status = 'online';
             if (!iconSrc) {
-                if (name.toUpperCase().includes('EE03')) iconSrc = 'device_ee03.png';
+                const uName = name.toUpperCase();
+                if (uName.includes('EE02')) iconSrc = 'device_ee02.png';
+                else if (uName.includes('EE03')) iconSrc = 'device_ee03.png';
+                else if (uName.includes('EE04')) iconSrc = 'device_ee04.png';
+                else if (uName.includes('EE05')) iconSrc = 'device_ee05.png';
                 else if (name.includes('E1001')) iconSrc = 'device_e1001.png';
                 else if (name.includes('E1002')) iconSrc = 'device_e1002.png';
                 else if (name.includes('E1003')) iconSrc = 'device_e1003.png';

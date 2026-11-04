@@ -727,8 +727,15 @@
 
             const previewImg = document.getElementById('devicePreviewImg');
             if (previewImg) {
-                if (savedName.toUpperCase().includes('EE03')) {
+                const uName = savedName.toUpperCase();
+                if (uName.includes('EE02')) {
+                    previewImg.src = 'device_setting_ee02.png';
+                } else if (uName.includes('EE03')) {
                     previewImg.src = 'device_setting_ee03.png';
+                } else if (uName.includes('EE04')) {
+                    previewImg.src = 'device_setting_ee04.png';
+                } else if (uName.includes('EE05')) {
+                    previewImg.src = 'device_setting_ee05.png';
                 } else if (savedName.includes('1001')) {
                     previewImg.src = 'device_setting_e1001.png';
                 } else if (savedName.includes('1002')) {
@@ -744,8 +751,15 @@
 
             const modelVal = document.getElementById('deviceModelVal');
             if (modelVal) {
-                if (savedName.toUpperCase().includes('EE03')) {
+                const uName = savedName.toUpperCase();
+                if (uName.includes('EE02')) {
+                    modelVal.textContent = 'EE02';
+                } else if (uName.includes('EE03')) {
                     modelVal.textContent = 'EE03';
+                } else if (uName.includes('EE04')) {
+                    modelVal.textContent = 'EE04';
+                } else if (uName.includes('EE05')) {
+                    modelVal.textContent = 'EE05';
                 } else if (savedName.includes('1001')) {
                     modelVal.textContent = 'E1001';
                 } else if (savedName.includes('1002')) {
