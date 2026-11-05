@@ -212,6 +212,58 @@
             font-weight: 600;
         }
 
+        .shared-avatars {
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+        }
+
+        .shared-avatar {
+            width: 34px;
+            height: 34px;
+            margin-left: -13px;
+            border: 2.5px solid #ffffff;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: #0f172a;
+            display: grid;
+            place-items: center;
+            font-size: 0.66rem;
+            font-weight: 700;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        }
+
+        .shared-avatar:first-child { margin-left: 0; }
+        .shared-avatar-blue { background: #dbeafe; color: #1d4ed8; }
+        .shared-avatar-green { background: #dcfce7; color: #15803d; }
+        .shared-avatar-purple { background: #f3e8ff; color: #7e22ce; }
+
+        .share-empty-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: grid;
+            place-items: center;
+            color: #64748b;
+        }
+
+        .shared-add-avatar {
+            width: 34px;
+            height: 34px;
+            margin-left: -14px;
+            border: 2.5px solid #ffffff;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #64748b;
+            display: grid;
+            place-items: center;
+            flex: none;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+            position: relative;
+            z-index: 5;
+        }
+
         .detail-edit-icon {
             color: var(--primary);
             cursor: pointer;
@@ -534,7 +586,9 @@
                 <i data-lucide="chevron-left" style="width: 24px; height: 24px;"></i>
             </button>
             <div class="page-header-title">Device Settings</div>
-            <div class="page-header-spacer"></div>
+            <button class="page-back-btn" onclick="showDisconnectDialog()" title="Bluetooth connection" aria-label="Bluetooth connection">
+                <i data-lucide="bluetooth" style="width: 20px; height: 20px;"></i>
+            </button>
         </header>
 
         <!-- Details Content Area -->
@@ -561,13 +615,13 @@
                 <!-- SN -->
                 <div class="detail-row">
                     <span class="detail-label">SN</span>
-                    <span class="detail-value">100056818263300001</span>
+                    <span class="detail-value" id="deviceSnVal">100056818263300001</span>
                 </div>
 
                 <!-- MAC Address -->
                 <div class="detail-row">
                     <span class="detail-label">MAC Address</span>
-                    <span class="detail-value">00:18:1A:52:8F:D4</span>
+                    <span class="detail-value" id="deviceMacVal">00:18:1A:52:8F:D4</span>
                 </div>
 
                 <!-- Device Status -->
@@ -580,6 +634,18 @@
                 <div class="detail-row">
                     <span class="detail-label">Model</span>
                     <span class="detail-value" id="deviceModelVal">E1001</span>
+                </div>
+
+                <div class="detail-row row-clickable" onclick="window.location.href='device_share.html?v=9.2'">
+                    <span class="detail-label">Device Sharing</span>
+                    <span class="detail-value">
+                        <span class="shared-avatars" id="sharedAvatars" aria-label="Shared with Alex Morgan, Emma Chen and Noah Williams">
+                            <span class="shared-avatar shared-avatar-blue" title="Alex Morgan">AM</span>
+                            <span class="shared-avatar shared-avatar-green" title="Emma Chen">EC</span>
+                            <span class="shared-avatar shared-avatar-purple" title="Noah Williams">NW</span>
+                        </span>
+                        <span class="shared-add-avatar" aria-label="Add shared member"><i data-lucide="plus" style="width:18px;height:18px;stroke-width:2.4"></i></span>
+                    </span>
                 </div>
             </div>
 
@@ -596,7 +662,7 @@
 
                 <!-- Power Saving Mode Switch -->
                 <div class="detail-row">
-                    <span class="detail-label">Power Saving Mode</span>
+                    <span class="detail-label">Battery Saver</span>
                     <label class="ios-switch">
                         <input type="checkbox" id="batterySaverSwitch" onchange="toggleBatterySaver(this.checked)">
                         <span class="ios-slider"></span>
@@ -632,7 +698,7 @@
                 </div>
 
                 <!-- Firmware Version -->
-                <div class="detail-row row-clickable" onclick="window.location.href='firmware_update.html'">
+                <div class="detail-row row-clickable" onclick="showFirmwareUpdateDialog()">
                     <span class="detail-label">Firmware Version</span>
                     <span class="detail-value" id="firmwareVal">
                         v1.2.4
@@ -644,9 +710,6 @@
 
             <!-- Action buttons -->
             <div class="detail-list-card" style="margin-top: 1rem; margin-bottom: 1.5rem;">
-                <div class="detail-row" style="justify-content: center; cursor: pointer;" onclick="showDisconnectDialog()">
-                    <span style="color: #64748b; font-weight: 600; font-size: 0.95rem;">Disconnect Bluetooth</span>
-                </div>
                 <div class="detail-row" style="justify-content: center; cursor: pointer;" onclick="showUnbindDialog()">
                     <span style="color: #ef4444; font-weight: 700; font-size: 0.95rem;">Delete Device</span>
                 </div>
@@ -706,6 +769,19 @@
 
         // Load firmware version on page load
         document.addEventListener('DOMContentLoaded', () => {
+            const sharing = document.getElementById('sharedAvatars').closest('.detail-row');
+            const sharingCard = document.createElement('div');
+            sharingCard.className = 'detail-list-card';
+            sharing.closest('.detail-list-card').after(sharingCard);
+            sharingCard.appendChild(sharing);
+            const query = new URLSearchParams(location.search);
+            const model = (query.get('model') || '').toUpperCase();
+            const eSeries = {
+                E1001:{name:'reTerminal E1001',sn:'100056818263310001',mac:'00:18:1A:52:91:01'},
+                E1002:{name:'reTerminal E1002',sn:'100056818263310002',mac:'00:18:1A:52:91:02'},
+                E1003:{name:'reTerminal E1003',sn:'100056818263310003',mac:'00:18:1A:52:91:03'},
+                E1004:{name:'reTerminal E1004',sn:'100056818263310004',mac:'00:18:1A:52:91:04'}
+            };
             const savedFirmware = localStorage.getItem('firmware_version') || 'v1.2.4';
             const firmwareValSpan = document.getElementById('firmwareVal');
             const firmwareDot = document.getElementById('firmwareDot');
@@ -722,12 +798,39 @@
             // Device Name & Preview Image Initialization
             const urlParams = new URLSearchParams(window.location.search);
             const queryDevice = urlParams.get('device');
-            const savedName = queryDevice || localStorage.getItem('selected_device_name') || 'reTerminal E1001';
+            const deviceProfile = eSeries[model];
+            const savedName = queryDevice || deviceProfile?.name || localStorage.getItem('selected_device_name') || 'reTerminal E1001';
             document.getElementById('deviceNameVal').textContent = savedName;
+            document.getElementById('deviceNameInput').value = savedName;
+            if (deviceProfile) {
+                document.getElementById('buzzerMuteSwitch').closest('.detail-row').style.display = 'none';
+                document.getElementById('deviceModelVal').textContent = model;
+                document.getElementById('deviceSnVal').textContent = deviceProfile.sn;
+                document.getElementById('deviceMacVal').textContent = deviceProfile.mac;
+            }
+
+            // Shared member avatar preview
+            const sharedAvatars = document.getElementById('sharedAvatars');
+            const memberCount = Number(localStorage.getItem('device_share_member_count_v2') ?? '3');
+            if (sharedAvatars) {
+                const members = [
+                    { initials:'AM', name:'Alex Morgan', color:'blue' },
+                    { initials:'EC', name:'Emma Chen', color:'green' },
+                    { initials:'NW', name:'Noah Williams', color:'purple' }
+                ];
+                if (memberCount <= 0) {
+                    sharedAvatars.setAttribute('aria-label', 'No shared members');
+                    sharedAvatars.innerHTML = '';
+                } else {
+                    const visibleMembers = members.slice(0, Math.min(memberCount, members.length));
+                    sharedAvatars.setAttribute('aria-label', 'Shared with ' + visibleMembers.map(member => member.name).join(', '));
+                    sharedAvatars.innerHTML = visibleMembers.map(member => `<span class="shared-avatar shared-avatar-${member.color}" title="${member.name}">${member.initials}</span>`).join('');
+                }
+            }
 
             const previewImg = document.getElementById('devicePreviewImg');
             if (previewImg) {
-                const uName = savedName.toUpperCase();
+                const uName = (savedName + ' ' + (model || '')).toUpperCase();
                 if (uName.includes('STICKY')) {
                     previewImg.src = 'device_setting_sticky.png';
                 } else if (uName.includes('EE02')) {
@@ -738,13 +841,13 @@
                     previewImg.src = 'device_setting_ee04.png';
                 } else if (uName.includes('EE05')) {
                     previewImg.src = 'device_setting_ee05.png';
-                } else if (savedName.includes('1001')) {
+                } else if (uName.includes('1001')) {
                     previewImg.src = 'device_setting_e1001.png';
-                } else if (savedName.includes('1002')) {
+                } else if (uName.includes('1002')) {
                     previewImg.src = 'device_setting_e1002.png';
-                } else if (savedName.includes('1003')) {
+                } else if (uName.includes('1003')) {
                     previewImg.src = 'device_setting_e1003.png';
-                } else if (savedName.includes('1004')) {
+                } else if (uName.includes('1004')) {
                     previewImg.src = 'device_setting_e1004.png';
                 } else {
                     previewImg.src = 'device_setting_e1001.png';
@@ -833,7 +936,8 @@
             // Get modified name and details if any, save to localStorage
             const name = document.getElementById('deviceNameVal').textContent;
             localStorage.setItem('selected_device_name', name);
-            window.location.href = 'dashboard.html';
+            const returnPage = new URLSearchParams(location.search).get('return');
+            window.location.href = returnPage || 'dashboard.html';
         }
 
         // Inline name editing
@@ -937,7 +1041,8 @@
         function updateRefreshIntervalState(enabled) {
             const row = document.getElementById('refreshIntervalRow');
             if (row) {
-                row.style.display = enabled ? 'flex' : 'none';
+                const isESeries = /^E100[1-4]$/.test(new URLSearchParams(location.search).get('model') || '');
+                row.style.display = (isESeries || enabled) ? 'flex' : 'none';
             }
         }
 
@@ -972,8 +1077,25 @@
         }
 
         function confirmFirmwareUpdate() {
-            closeDialog('firmwareOverlay');
-            alert('Firmware update started! Please keep the device powered on.');
+            const dialog = document.querySelector('#firmwareOverlay .premium-dialog');
+            dialog.querySelector('.dialog-title').textContent = 'Updating firmware';
+            dialog.querySelector('.dialog-desc').innerHTML = 'Keep your device powered on and connected.<progress id="firmwareProgress" max="100" value="0" style="display:block;width:100%;margin-top:20px"></progress><span id="firmwarePercent">0%</span>';
+            dialog.querySelector('.dialog-actions').hidden = true;
+            let progress = 0;
+            const timer = setInterval(() => {
+                progress = Math.min(100, progress + 10);
+                document.getElementById('firmwareProgress').value = progress;
+                document.getElementById('firmwarePercent').textContent = progress + '%';
+                if (progress === 100) {
+                    clearInterval(timer);
+                    localStorage.setItem('firmware_version', 'v1.2.5');
+                    document.getElementById('firmwareVal').textContent = 'v1.2.5';
+                    dialog.querySelector('.dialog-title').textContent = 'Firmware updated';
+                    dialog.querySelector('.dialog-desc').textContent = 'Your device is up to date. (Preview simulation)';
+                    dialog.querySelector('.dialog-actions').hidden = false;
+                    dialog.querySelector('.dialog-actions').innerHTML = '<button class="dialog-btn dialog-btn-confirm-primary" onclick="closeDialog(\'firmwareOverlay\')">Done</button>';
+                }
+            }, 450);
         }
     </script>
 </body>
