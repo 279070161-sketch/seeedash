@@ -53,7 +53,7 @@
         </header>
         <main class="share-content">
             <div class="device-summary">
-                <div class="device-thumb"><img src="device_sticky.png" alt="Device"></div>
+                <div class="device-thumb"><img id="deviceThumb" src="device_sticky.png" alt="Device"></div>
                 <h2 id="deviceName">reTerminal Sticky</h2>
             </div>
             <section class="share-card">
@@ -76,6 +76,20 @@
     <script>
         lucide.createIcons();
         document.getElementById('deviceName').textContent = localStorage.getItem('selected_device_name') || 'reTerminal Sticky';
+        const _uName = (localStorage.getItem('selected_device_name') || '').toUpperCase();
+        const _thumb = document.getElementById('deviceThumb');
+        if (_thumb) {
+            if (_uName.includes('TRMNL')) _thumb.src = 'device_trmnl.png';
+            else if (_uName.includes('EE02')) _thumb.src = 'device_ee02.png';
+            else if (_uName.includes('EE03')) _thumb.src = 'device_ee03.png';
+            else if (_uName.includes('EE04')) _thumb.src = 'device_ee04.png';
+            else if (_uName.includes('EE05')) _thumb.src = 'device_ee05.png';
+            else if (_uName.includes('E1001')) _thumb.src = 'device_e1001.png';
+            else if (_uName.includes('E1002')) _thumb.src = 'device_e1002.png';
+            else if (_uName.includes('E1003')) _thumb.src = 'device_e1003.png';
+            else if (_uName.includes('E1004')) _thumb.src = 'device_e1004.png';
+            else _thumb.src = 'device_sticky.png';
+        }
         if (localStorage.getItem('device_share_member_count_v2') === null) localStorage.setItem('device_share_member_count_v2','3');
         function toast(message){const old=document.querySelector('.toast');if(old)old.remove();const el=document.createElement('div');el.className='toast';el.textContent=message;document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
         function copyInvite(){if(navigator.clipboard)navigator.clipboard.writeText('628419');toast('Sharing code copied')}

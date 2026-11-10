@@ -831,7 +831,9 @@
             const previewImg = document.getElementById('devicePreviewImg');
             if (previewImg) {
                 const uName = (savedName + ' ' + (model || '')).toUpperCase();
-                if (uName.includes('STICKY')) {
+                if (uName.includes('TRMNL')) {
+                    previewImg.src = 'device_setting_trmnl.png';
+                } else if (uName.includes('STICKY')) {
                     previewImg.src = 'device_setting_sticky.png';
                 } else if (uName.includes('EE02')) {
                     previewImg.src = 'device_setting_ee02.png';
@@ -857,7 +859,9 @@
             const modelVal = document.getElementById('deviceModelVal');
             if (modelVal) {
                 const uName = savedName.toUpperCase();
-                if (uName.includes('STICKY')) {
+                if (uName.includes('TRMNL')) {
+                    modelVal.textContent = 'TRMNL';
+                } else if (uName.includes('STICKY')) {
                     modelVal.textContent = 'Sticky';
                 } else if (uName.includes('EE02')) {
                     modelVal.textContent = 'EE02';
